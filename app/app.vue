@@ -170,11 +170,11 @@ html, body {
   font-size: 22px;
   color: #888;
 }
-.weui-tabbar.vux-demo-tabbar {
-  /** backdrop-filter: blur(10px);
-  background-color: none;
-  background: rgba(247, 247, 250, 0.5);**/
-}
+// .weui-tabbar.vux-demo-tabbar {
+//   /** backdrop-filter: blur(10px);
+//   background-color: none;
+//   background: rgba(247, 247, 250, 0.5);**/
+// }
 .vux-demo-tabbar .weui-bar__item_on .demo-icon-22 {
   color: #F70968;
 }
