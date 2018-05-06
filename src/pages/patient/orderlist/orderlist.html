@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>我的预约单</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/commonWX/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/css/patient/orderlist/orderlist.css?v=1.0.1">
+  <script src="/build/commonWX/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="order-box">
+    <div class="order-main">
+      <ul></ul>
+    </div>
+  </div>
+  <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+  <script src="/build/commonWX/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/common.js?v=1.0.0"></script>
+  <script src="/build/js/patient/orderlist/orderlist.js?v=1.0.0"></script>
+  
+  <script type="text/html" id="orderlist">
+  <% _.forEach(data,function(item) { %>
+    <li class="order-list" data-orderId="<%- item.appointmentId %>">
+      <a href="../details/details.html?appointmentId=<%- item.appointmentId %>">
+      <div class="order-top">
+        <span class="order-num">预约号：<%= item.appointmentCode %></span>
+        <span class="order-time"><%=formatDateTime(item.appointTime,"minute")%></span>
+      </div>
+      <div class="order-cont">
+        <div class="order-cont-img">
+          <img src="<%- item.coverUrl %>" alt=""/>
+        </div>
+        <div class="order-cont-main">
+          <p class="order-tit"><%= item.conferenceName %></p>
+          <% if(item.orderStatus == 1){%>
+          <span class="order-state state-active1">预约中</span>
+          <%}else if(item.orderStatus == 2){%>
+          <span class="order-state">待付订金</span>
+          <%}else if(item.orderStatus == 3){%>
+          <span class="order-state">待付尾款</span>
+          <%}else if(item.orderStatus == 5){%>
+          <span class="order-state state-active1">预约成功</span>
+          <%}else if(item.orderStatus == 13){%>
+          <span class="order-state state-active1">已完成</span>
+          <%}else if(item.orderStatus == 17){%>
+          <span class="order-state state-active2">已关闭</span>
+          <%}%>
+        </div>
+      </div>
+      </a>
+    </li>
+    
+  <% }) %>
+  </script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+        var dt = new Date();
+        dt.setHours(dt.getHours() + 24);
+        document.cookie = "apiVer=3; expires=" + dt.toGMTString() + ";path=/";
+        document.cookie = "appSrc=420000; expires=" + dt.toGMTString() + ";path=/";
+        document.cookie = "appType=5; expires=" + dt.toGMTString() + ";path=/";
+        document.cookie = "appVer=210; expires=" + dt.toGMTString() + ";path=/";
+        document.cookie = "cType=6; expires=" + dt.toGMTString() + ";path=/";
+        document.cookie = "osVer=21; expires=" + dt.toGMTString() + ";path=/";
+        document.cookie = "osUUID=45298B7AF43B066B786532C00CBC26E4; expires=" + dt.toGMTString() + ";path=/";
+    });
+  </script>
+</body>
+</html>

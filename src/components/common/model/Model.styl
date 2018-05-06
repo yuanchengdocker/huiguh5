@@ -1,0 +1,52 @@
+#edit-cover
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(55,55,55,.6);
+    z-index: 100;
+    animation: opacity-change 0.5s ease
+    -webkit-animation: opacity-change 0.5s ease
+#edit-model-content
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 101;
+.model-cover-opacity
+    opacity 0 !important
+    transition: opacity 0.5s ease
+.model-cover-hide
+    display: none
+
+@-webkit-keyframes show-model {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale(0.2);
+                transform: scale(0.2);
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+                transform: scale(1);
+    }
+}
+@-webkit-keyframes hide-model {
+    0% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+                transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        -webkit-transform: scale(0.2);
+                transform: scale(0.2);
+    }
+}
+.edit-container-show
+    animation: show-model 0.5s ease
+    -webkit-animation: show-model 0.5s ease
+.edit-container-hidden
+    animation: hide-model 0.5s ease
+    -webkit-animation: hide-model 0.5s ease

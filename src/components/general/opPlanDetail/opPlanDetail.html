@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>手术方案详情</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css"/>
+  <link rel="stylesheet" href="/build/common/css/public/public.css">
+  <link rel="stylesheet" type="text/css" href="../opPlanDetail/opPlanDetail.css">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body class="op-plan-detail-page">
+    <div id="huigu-header"></div>
+    <script type="text/html" id="huigu-header-container">
+        <div class="huigu-header">
+            <a class="return-container" href="javascript:history.back();">
+                <span class="return"></span>
+            </a>
+            <p class="header-tit">手术方案详情</p>
+        </div>
+    </script>
+    <div id="scheme-container">
+        <div class="op-plan-header" style="margin-top:0">
+            <img src="../../../img/zhuanImg.png"/>
+            <span class="left-flag">疗效：</span>
+            <span class="right-flag">满意度：</span>
+            <div class="op-plan-price">
+                <span class="subscribe">0人成功预约</span>
+                <span class="price">￥：0</span>
+            </div>
+        </div>
+    </div>
+    <script type="text/html" id="scheme-detail">
+        <div class="op-plan-header" style="<%- data.back?'':('margin-top:0') %>">
+            <img src="../../../img/zhuanImg.png"/>
+            <span class="left-flag">疗效：<%= data.efficacy %></span>
+            <span class="right-flag">满意度：<%= data.satisfaction %></span>
+            <div class="op-plan-price">
+                <span class="subscribe"><%= data.bespeakNumber||0 %>人成功预约</span>
+                <span class="price">￥：<%= data.price %></span>
+            </div>
+        </div>
+
+        <div class="op-plan-body hg-pl30 hg-pr30">
+            <p class="op-plan-title hg-mt40 hg-mb20"><%= data.schemeName %></p>
+            <p class="op-plan-address hg-alin-middle"><img src="../../../img/address.png" alt="" class="hg-mr20"/><%= data.address %></p>
+
+            <a class="op-plan-doctor hg-alin-middle" href="<%- 'yiyikangyunhuigu://bll/app.com?functype=112&itemid='+data.doctorId %>">
+                <div style="width: 90%">
+                    <span style="background-image:url('<%- data.headUrl||'../../../img/icon.png' %>')" class="docker-header hg-header-img"></span>
+                    <div class="doctor-main hg-ml20">
+                        <span class="name hg-mr20"><%= data.doctorName %></span>
+                        <span class="page">医生主页</span>
+                        <p class="hospital hg-mt10"><%= data.positionName %>/<%= data.hospitalName %></p>
+                    </div>
+                </div>
+                <img src="../../../img/arrow.png" class="page-flag"/>
+            </a>
+
+            <div class="service-advantage service">
+                <p class="title"><span class="title-flag"></span>服务优势</p>
+                <p class="content">
+                    <%= data.serviceAdvantage %>
+                </p>
+            </div>
+            <div class="service-notice service">
+                <p class="title"><span class="title-flag"></span>注意事项</p>
+                <p class="content">
+                    <%= data.precautions %>
+                </p>
+            </div>
+            <div class="service-counsel service">
+                <p class="title"><span class="title-flag"></span>咨询客服</p>
+                <p class="content">
+                    服务时间：周一至周五      9:00 ~ 18:00
+                </p>
+                <p class="content">
+                    联系电话：<a class="service-phone" href="tel:400-8215742">400-8215742</a>
+                </p>
+            </div>
+        </div>
+    </script>
+
+    <a class="detail-submit" disabled="disabled" href="yiyikangyunhuigu://bll/app.com?functype=128">
+            <span class="detail-submit-status">立即预约</span>
+    </a>
+
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="../../../common/js/require.js" defer async="true" data-main="../opPlanDetail/opPlanDetail.js"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>预约单详情</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/commonWX/css/animate.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/commonWX/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/css/patient/details/details.css?v=1.0.1">
+  <script src="/build/commonWX/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="opera-box"></div>
+  <div class="opera-defrayal">
+    <div class="opera-defrayal-main animated"></div>
+    <div class="opera-pay-confirm">
+      <div class="layout-main">
+        <p>您是否已完成支付</p>
+        <a class="quit">重新支付</a><a class="cancel">已支付</a>
+      </div>
+    </div>
+    <div class="opera-pay-loading">
+      <div class="layout-main">
+        <img src="http://patienth5.szyyky.com/build/imgWX/loading.gif" />
+      </div>
+    </div>
+  </div>
+  <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+  <script src="/build/commonWX/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/common.js?v=1.0.0"></script>
+  <script src="/build/js/patient/details/details.js?v=1.0.0"></script>
+
+  <script type="text/html" id="opera_order">
+    <div class="opera-item-order">
+      <p class="opera-num-tit">预约号：<%=appointmentCode%><span><%=formatDateTime(appointmentTime,"minute")%></span></p>
+      <div class="opera-num-main">
+        <div class="opera-num-left">
+          <img src="<%-coverUrl%>" />
+        </div>
+        <div class="opera-num-right">
+          <p class="tit"><%=appointmentName%></p>
+          <% if(appointStatus == 2){%>
+          <p class="opera-state">待付订金</p>
+          <%}else if(appointStatus == 1){%>
+          <p class="opera-state state-active1">预约中</p>
+          <%}else if(appointStatus == 3){%>
+          <p class="opera-state">待付尾款</p>
+          <%}else if(appointStatus == 5){%>
+          <p class="opera-state state-active1">预约成功</p>
+          <%}else if(appointStatus == 13){%>
+          <p class="opera-state state-active1">已完成</p>
+          <%}else if(appointStatus == 17){%>
+          <p class="opera-state state-active2">已关闭</p>
+          <%}%>
+        </div>
+        <!-- 已关闭状态才会存在 -->
+        <%if(appointStatus == 17){%>
+        <p class="order-close"><i></i>关闭原因：<%=closeReason%></p>
+        <%}%>
+      </div>
+    </div>
+    <%if(appointStatus == 17){%>
+    <%}else{%>
+      <%if(appointStatus == 1){%>
+      <div class="opera-expert">
+        <div class="opera-expert-empty">专家匹配中...</div>
+      </div>
+      <%}else{%>
+        <%if(expectExpert.length >0){%>
+        <div class="opera-expert">
+          <div class="opera-expert-main">
+              <p class="opera-expert-tit">专家信息</p>
+              <ul>
+                <% _.forEach(expectExpert,function(item) { %>
+                <li>
+                  <div class="opera-expert-name">
+                  <%if(item.expertPhoto == ""){%><img src="http://patienth5.szyyky.com/build/imgWX/name.png" /><%}else{%><img src="<%-item.expertPhoto%>" /><%}%>
+                  </div>
+                  <div class="opera-expert-info">
+                    <p class="name"><%=item.expertName%></p>
+                    <p class="info"><%=item.expertTitle%>&nbsp;&nbsp;|&nbsp;&nbsp;<%=item.expertHospital%></p>
+                    <p class="shanchang">擅长：<%=item.expertIn%></p>
+                  </div>
+                </li>
+                <%})%>
+              </ul>
+          </div>
+        </div>
+        <%}%>
+      <%}%>
+    <%}%>
+    <div class="opera-item-sit">
+      <p class="opera-item-headline"><%=diagnosis%></p>
+      <p class="item-headline"><%if(patientSex == 0){%><i class="man"></i><%}else if(patientSex == 1){%><i class="woman"></i><%}%><%=patientName%>&nbsp;<%=patientAge%>岁&nbsp;<%=patientTel%></p>
+      <p class="opera-tit">病情描述</p>
+      <div class="opera-time time1"><%=illnessDescription%></div>
+      <%if(casePicUrls.length > 0){%>
+      <p class="opera-tit">病历</p>
+      <div class="opera-img">
+        <ul>
+          <% _.forEach(casePicUrls,function(list1) { %>
+          <li class="apply-item"><img src="<%-list1.previewPicUrl%>" alt="" class="upload-img"/></li>
+          <%})%>
+        </ul>
+      </div>
+      <%}else{}%>
+      <%if(screenageAppoint != null){%>
+      <p class="opera-tit">影像</p>
+      <div class="opera-img">
+        <ul>
+          <% _.forEach(screenageAppoint.urls,function(list2) { %>
+          <li class="apply-item" onclick="location.href='<%- screenageAppoint.previewUrl %>'"><img src="<%- list2.url%>" alt="" class="upload-img"/></li>
+          <%})%>
+        </ul>
+      </div>
+      <%}else{}%>
+      <p class="opera-tit">手术日期</p>
+      <div class="opera-time time1"><%=formatDateTime(startTime,"")%>&nbsp;—&nbsp;<%=formatDateTime(endTime,"")%></div>
+      <%if(!remark){}else{%>
+      <p class="opera-tit">备注</p>
+      <div class="opera-time"><%=remark%></div>
+      <%}%>
+    </div>
+    <div class="opera-pay">
+      <%if(signType == 1){%>
+      <div class="opera-pay-details2">
+        <p class="opera-tit">支付详情</p>
+        <ul>
+          <li><span class="opera-pay-tit">服务包支付</span><span class="fuwub">手术快约服务包&nbsp;<i class="opera-pay-num">-1</i></span></li>
+        </ul>
+      </div>
+      <%}else if(signType == 2){%>
+      <div class="opera-pay-details1">
+        <p class="opera-tit">支付详情
+        <%if(appointStatus == 13){%>
+        <%if(invoiceId == 0){%><a class="opera-invoice" href="../invoice/apply.html?orderId=<%-orderId%>">申请发票>></a><%}else{%><a class="opera-invoice" href="/build/pages/patient/invoice/result.html?invoiceId=<%-invoiceId%>">查看发票>></a><%}%>
+        <%}%>
+        
+        </p>
+        <ul>
+          <li>
+          <span class="opera-pay-tit">支付订金</span>&nbsp;&nbsp;<%if(hasPayDeposit == true){%>[已支付]<%}else{%>[待支付]<%}%>
+            <span class="opera-money">
+            <%if(hasDeposit == true){%>
+             ￥<i class="opera-pay-money"><%=deposit%></i>
+            <%}else{%>
+              <%if(deposit){%>
+              ￥<i class="opera-pay-money"><%=deposit%></i>
+              <%}else{%>-<%}%>
+            <%}%>
+          </span>
+          </li>
+          <li>
+            <span class="opera-pay-tit">支付尾款</span>&nbsp;&nbsp;<%if(hasPayRetainage == true){%>[已支付]<%}else{%>[待支付]<%}%>
+            <span class="opera-money">
+            <%if(hasRetainage == true){%>
+             ￥<i class="opera-pay-money"><%=retainage%></i>
+            <%}else{%>
+              <%if(retainage){%>
+              ￥<i class="opera-pay-money"><%=retainage%></i>
+              <%}else{%>-<%}%>
+            <%}%>
+            </span>
+          </li>
+        </ul>
+      </div>
+      <%}%>
+    </div>
+    <div class="opera-item-bottom">
+      <p>如有疑问，请致电：<a href="tel:4008215742">4008215742</a></p>
+    </div>
+    <%if(remainingTime.toString().length > 1){%>
+    <div class="opera-payment">
+      <div class="opera-payment-count">剩余<span></span>自动关闭</div>
+      <%if(appointStatus == 2){%>
+      <a class="opera-payment-btn">支付订金</a>
+      <%}else if(appointStatus == 3){%>
+      <a class="opera-payment-btn">支付尾款</a>
+      <%}%>
+    </div>
+    <%}%>
+    <!-- <div class="empty">
+        <img src="http://patienth5.szyyky.com/build/imgWX/empty.png" alt="" />
+        <p>该预约单不存在~</p>
+    </div> -->
+  </script>
+  <script type="text/html" id="opera-pay">
+      <div class="opera-defrayal-tit">
+        <p><i class="opera-defrayal-return"></i>确认支付<i class="opera-defrayal-close"></i></p>
+      </div>
+      <div class="opera-defrayal-name">
+      <%if(appointStatus == 2){%>
+      <p>手术订金<span class="opera-pay-money">应付：￥<i><%=deposit%></i></span></p>
+      <%}else if(appointStatus == 3){%>
+      <p>手术尾款<span class="opera-pay-money">应付：￥<i><%=retainage%></i></span></p>
+      <%}%>
+      </div>
+      <div class="opera-defrayal-pay animated">
+        <ul>
+          <li class="payWx"><img src="http://patienth5.szyyky.com/build/imgWX/pay-wx.png" alt="" class="pay-wx" /><i></i></li>
+          <li class="payZfb"><img src="http://patienth5.szyyky.com/build/imgWX/pay-zfb.png" alt="" class="pay-zfb" /><i></i></li>
+          <li class="payEwm"><img src="http://patienth5.szyyky.com/build/imgWX/pay-ewm.png" alt="" class="pay-ewm" /><i></i></li>
+        </ul>
+        <div class="opera-defrayal-agree">
+          支付即表示同意《<a href="../../info.html">慧骨服务协议</a>》
+        </div>
+      </div>
+      <div class="opera-pay-ewm animated">
+        <img src="http://patienth5.szyyky.com/build/imgWX/er.png" class="ewm" />
+      </div>
+  </script>
+</body>
+</html>

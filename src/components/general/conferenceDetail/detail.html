@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>学术会议</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css">
+  <link rel="stylesheet" href="../conferenceDetail/detail.css">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+    <div class="conference-detail-box">
+        <div class="detail-main"></div>
+    </div>
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+
+    <script type="text/html" id="conference_detail_cont">
+        <div class="detail-head">
+            <div class="detail-adimg">
+                <div class="item-img"><img src="<%- coverUrl %>" /></div>
+                <span class="detail-adimg-time"></span>
+            </div>
+            <div class="detail-desc"><%=conferenceName%></div>
+            <div class="detail-time"><img src="/build/img/time.png"/><%=formatDateTime(holdingStartTime,"minute")%> 至 <%=formatDateTime(holdingEndTime,"minute")%></div>
+            <div class="detail-address"><img src="/build/img/address-flag.png"/><%=holdingCity%>/<%=holdingPlace%></div>
+        </div>
+        <div class="detail-cont">
+            <div class="detail-tab">
+                <ul class="detail-tab-container">
+                    <li class="detail-tab-item">
+                    <div class="tab-bar"></div>
+                    <a id="detail-tab-introduce" class="tab-active" onclick="conferenceDetailAction.tabChange('detail-tab-introduce')">介绍</a></li>
+                    <li class="detail-tab-item">
+                    <div class="tab-bar"></div>
+                    <a id="detail-tab-schedule" onclick="conferenceDetailAction.tabChange('detail-tab-schedule')">日程</a></li>
+                    <li class="detail-tab-item">
+                    <div class="tab-bar"></div>
+                    <a id="detail-tab-guest" onclick="conferenceDetailAction.tabChange('detail-tab-guest')">嘉宾</a></li>
+                </ul>
+            </div>
+            <div class="detail-tab-cont">
+                <div class="tab-container">
+                    <div class="detail-tab-introduce">
+                        <%=introduction%>
+                    </div>
+                    <div class="detail-tab-schedule" style="height:0">
+                        <%=schedule%>
+                    </div>
+                    <div class="detail-tab-guest" style="height:0">
+                        <%=specialGuest%>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+            </div>
+        </div>
+        <a class="detail-submit download-btn">
+        <span class="detail-submit-status">立即预约</span><span class="detail-submit-count">（已预约0）</span></a>
+    </script>
+
+    <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+    <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+    <script src="/build/common/js/common.js?v=1.0.0"></script>
+    <script src="/build/common/js/address.js?v=1.0.0"></script>
+    <script src="../conferenceDetail/detail.js"></script>
+    <script src="/build/common/js/download-bar.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>慧骨学院</title>
+  <meta name="cache-control" content="none-cache">
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css"/>
+  <link rel="stylesheet" href="/build/common/css/public/public.css">
+  <link rel="stylesheet" type="text/css" href="../college/college.css">
+  <link rel="stylesheet" type="text/css" href="/build/common/css/swiper.min.css" />
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+  <style>
+        ::-webkit-scrollbar {
+           width: 0em;
+        }
+        ::-webkit-scrollbar:horizontal {
+          height: 0em;
+        }
+    </style>
+</head>
+<body class="college-page">
+    <div class="banner-container" id="banner-container"></div>
+    <div class="college-channels">
+        <a href="" class="channel-item">
+            <img src="/build/img/wx-hot-news.png" alt=""/>
+            <span>资讯热点</span>
+        </a>
+        <a href="" class="channel-item">
+            <img src="/build/img/wx-video-course.png" alt=""/>
+            <span>视频课程</span>
+        </a>
+        <a href="" class="channel-item">
+            <img src="/build/img/wx-case-discussion.png" alt=""/>
+            <span>病例讨论</span>
+        </a>
+        <a href="" class="channel-item">
+            <img src="/build/img/wx-train.png" alt=""/>
+            <span>培训进修</span>
+        </a>
+        <a href="" class="channel-item">
+            <img src="/build/img/wx-reference-guide.png" alt=""/>
+            <span>参考指南</span>
+        </a>
+        <a href="" class="channel-item">
+            <img src="/build/img/wx-library.png" alt=""/>
+            <span>学术文库</span>
+        </a>
+    </div>
+    <script type="text/html" id="channelIcons">
+        <% _.forEach(data,function(item){%>
+        <a href="<%- item.url %>" class="channel-item">
+            <img src="/build/img/<%- item.img %>.png" alt=""/>
+            <span><%= item.channelName %></span>
+        </a>
+        <%})%>
+    </script>
+
+    <div class="channel-container">
+    </div>
+    <script type="text/html" id="channel-container">
+        <% _.forEach(data,function(item,index){%>
+        <div class="college-content">
+            <div class="content-item">
+                <h5 class="item-header">--<%= item.name %>--</h5>
+                <div class="main-content" id="college-content-<%-item.code %>"></div>
+                <a href="<%- item.url %>" class="item-footer"><%= item.more %>></a>
+            </div>
+        </div>
+        <%})%>
+    </script>
+
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="../../../common/js/require.js" defer async="true" data-main="../college/college.js"></script>
+    
+</body>
+</html>

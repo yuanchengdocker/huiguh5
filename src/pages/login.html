@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>登录</title>
+		<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+		<link rel="stylesheet" type="text/css" href="/build/commonWX/css/base.css">
+		<link rel="stylesheet" type="text/css" href="/build/css/styleWX.css">
+		<script type="text/javascript" src="/build/commonWX/js/flexible.js"></script>
+	</head>
+
+	<body class="login">
+		<section class="login-main">
+			<img src="http://patienth5.szyyky.com/build/imgWX/logo.png" class="logo" />
+		  <section class="login-from">
+		  	<p class="from-phone"><i class="icon"></i><input type="telephone" name="" placeholder="请输入手机号" required="required" maxlength="11" id="mobilePhone" /></p>
+		  	<p class="from-img" id="fromImg"><i class="icon"></i><input type="text" name="" placeholder="请输入图像验证码" required="required" maxlength="4" id="imgphoto" /><img class="validCode" src="" onclick="loginAction.DataValidCode()"/></p>
+		  	<p class="from-yzm"><i class="icon"></i><input type="telephone" name="" placeholder="请输入验证码" required="required" maxlength="4" id="captcha">
+		  	<a class="authcode"><span class="huoqu" style="display:block" onclick="loginAction.phoneNumchecked()">获取验证码</span><span class="djs" style="display:none"><i></i>s重新获取</span></a>
+		  	</p>
+		  </section>
+		  <p class="shuoming">未注册账号验证后自动注册</p>
+		  <section class="login-btn">
+		    <input type="button" name="btn" id="btn" onclick="loginAction.submit()" value="进入慧骨" >
+		  </section>
+		  <div class="xieyi">
+			  <div class="piaochecked on_check">
+	          <input name="need_inv" type="checkbox" class="radioclass input" value="1" id="check" checked="checked" onchange="loginAction.checkAction()">
+	      </div>已阅读并同意<a href="sytk_hg.html">《使用条款及隐私政策》</a>
+      </div>
+		</section>
+		<section class="login-layout">
+			<div class="layout-main">
+				<p>验证码短信已发送，请注意查收~</p>
+				<a onclick="loginAction.layoutClick();">我知道了</a>
+			</div>
+		</section>
+		<div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+		<script src="/build/commonWX/js/jquery.min.js"></script>
+		<script src="/build/commonWX/js/common.js"></script>
+		<script src="/build/commonWX/js/address.js"></script>
+		<script src="/build/js/login.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+			    var dt = new Date();
+			    dt.setHours(dt.getHours() + 24);
+			    document.cookie = "cType=6; expires=" + dt.toGMTString() + ";path=/";
+			    document.cookie = "appVer=210; expires=" + dt.toGMTString() + ";path=/";
+			    document.cookie = "appSrc=420000; expires=" + dt.toGMTString() + ";path=/";
+			    document.cookie = "apiVer=3; expires=" + dt.toGMTString() + ";path=/";
+			    document.cookie = "appType=5; expires=" + dt.toGMTString() + ";path=/";
+			    document.cookie = "osUUID=45298B7AF43B066B786532C00CBC26E4; expires=" + dt.toGMTString() + ";path=/";
+			    document.cookie = "osVer=21; expires=" + dt.toGMTString() + ";path=/";
+			});
+		</script>
+	</body>
+
+</html>

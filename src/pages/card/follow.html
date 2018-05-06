@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>二维码关注</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <link rel="stylesheet" type="text/css" href="/build/commonWX/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/build/css/card/follow.css">
+    <script type="text/javascript" src="/build/commonWX/js/flexible.js"></script>
+  </head>
+
+  <body>
+    <section class="follow">
+      <div class="follow-main">
+        <p class="follow-top1">为了提供更好的服务给您，请识别下图二维码</p>
+        <p class="follow-top2">关注“<span>慧骨勤行</span>”公众号</p>
+        <p class="follow-top3"><img src="/build/imgWX/ewm1.png" /></p>
+      </div>
+    </section>
+    
+    <script src="/build/commonWX/js/jquery.min.js"></script>
+    <script src="/build/commonWX/js/common.js"></script>
+    <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+    <script type="text/javascript">
+      window.onload = function(){
+        if(dataPath.WXvalueApich == 'wxf5bdc71fe3151bc4'){
+          $(".follow-top2 span").html("慧骨健康")
+          $(".follow-top3 img")[0].src = dataPath.WXhttpPathch + "build/imgWX/ewm2.png";
+        }else{
+          $(".follow-top2 span").html("慧骨勤行")
+          $(".follow-top3 img")[0].src = dataPath.WXhttpPathch + "build/imgWX/ewm1.png";
+        }
+      }
+    </script>
+  </body>
+
+</html>

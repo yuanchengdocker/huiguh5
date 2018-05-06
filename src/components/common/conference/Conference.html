@@ -1,0 +1,27 @@
+<a href="/build/components/general/conferenceDetail/detail.html?conferenceId=<%- item.itemId %>">
+    <div class="list-item">
+        <div class="list-item-img">
+        <% if(item.conferenceStatus==0){ %>
+            <span class="list-item-flag flag1">
+                <span>可预约</span>
+            </span>
+        <% }else if(item.conferenceStatus==1){ %>
+            <span class="list-item-flag flag2">
+                <span>已截止</span>
+            </span>
+        <% }else if(item.conferenceStatus==2){ %>
+            <span class="list-item-flag flag3">
+                <span>已约满</span>
+            </span>
+        <% } %>
+        <div class="item-img"><img src="<%- item.coverUrl %>"/></div></div>
+        <p class="list-item-title">
+        <span class="title"><%= item.conferenceName %></span>
+        <span class="price"><%= item.price==0?"免费":"￥"+item.price.toFixed(2) %></span></p>
+        <div class="list-item-bottom">
+            <span class="time"><img src="/build/img/time.png"/><%=formatDateTime(item.holdingStartTime)%></span>
+            <span class="address"><img src="/build/img/address-flag.png"/><%= item.holdingCity %></span>
+            
+        </div>
+    </div>
+</a>

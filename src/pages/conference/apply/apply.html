@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>设置联系人</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/css/conference/apply/apply.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+    <div class="conference-apply-box">
+        <div class="apply-main">
+        </div>
+    </div>
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script type="text/html" id="conference_apply_form">
+        <div class="apply-prod-cont">
+            <div class="apply-head">
+                <span class="apply-head-time">预约截止日期：<%=formatDateTime(appointEndTime,"minute")%></span>
+                <span class="apply-head-ticket"><%= leftTicket %></span>
+            </div>
+            <div class="apply-prod">
+                <img class="apply-prod-img" src="/build/img/conference-apply-prod.png"/>
+                <p><%= conferenceName %></p>
+                <div class="apply-prod-num">
+                    <span class="apply-prod-money">￥<%=price.toFixed(2)%></span>
+                    <span class="apply-prod-num-modify">
+                        <img src="/build/img/down-none-flag.png" id="prodNumDown" onclick="conferenceApplyAction.prodNumChange(-1)"/>
+                        <span id="prodNum">1</span>
+                        <img src="/build/img/add-none-flag.png" id="prodNumAdd" onclick="conferenceApplyAction.prodNumChange(1)"/>
+                    </span>
+                </div>
+            </div>
+            <div class="apply-price">
+                <span>合计：</span>
+                <span class="apply-price-money" id="totalPrice">￥<%=price.toFixed(2)%> </span>
+            </div>
+        </div>
+        <div class="apply-cont">
+            <p class="apply-form-title">指定联系人：</p>
+            <ul class="apply-form-cont">
+                <li class="apply-form-item">
+                    <span class="require-flag">*</span>
+                    <span class="apply-form-label">姓名</span>
+                    <input class="apply-form-value" id="applyFormName" value="<%-appointUser%>" onchange="conferenceApplyAction.requiredChecked('applyFormName')" placeholder="请输入姓名" maxlength="20"/>
+                </li>
+                <li class="apply-form-item">
+                    <span class="require-flag">*</span>
+                    <span class="apply-form-label">手机</span>
+                    <input type="telephone" class="apply-form-value" value="<%-appointPhone%>" id="applyFormPhone" required="required" placeholder="请输入手机号" onchange="conferenceApplyAction.phoneNumchecked()" maxlength="11"/>
+                </li>
+                <li class="apply-form-item">
+                    <span class="require-flag">&nbsp</span>
+                    <span class="apply-form-label">邮箱</span>
+                    <input class="apply-form-value" id="applyFormEmail" value="<%-appointEmail%>" onchange="conferenceApplyAction.emailNumchecked()" placeholder="请输入邮箱" maxlength="20"/>
+                </li>
+            </ul>
+        </div>
+        <div class="apply-tip">预约成功后，您会收到一条短信邀请函。请凭此函缴费入场。
+        </div>
+        <input type="submit" class="apply-submit" onclick="conferenceApplyAction.submit()" value="提交" />
+    </script>
+  <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/common/js/common.js?v=1.0.0"></script>
+  <script src="/build/common/js/address.js?v=1.0.0"></script>
+  <script src="/build/common/js/yykyjsbridge.js?v=1.0.0"></script>
+  <script src="/build/js/conference/apply/apply.js"></script>
+
+
+</body>
+</html>

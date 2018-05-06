@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>预约单</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/css/conference/result/result.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="conference-order">
+  </div>
+  <script type="text/html" id="conference_order_detail">
+    <div class="conference-order-num">
+      <a href="../detail/detail.html?conferenceId=<%- conferenceId %>">
+        <p class="order-num-tit">预约编号：<%=appointmentCode%><span><%=formatDateTime(appointTime,"minute")%></span></p>
+        <div class="apply-prod">
+            <img class="apply-prod-img" src="<%-coverUrl%>"/>
+            <p><%=conferenceName%></p>
+            <div class="apply-prod-num">
+                <span class="apply-prod-money">￥<%=price.toFixed(2)%></span>
+                <span class="apply-prod-num-modify">
+                    <span>x <%=appointCount%></span>
+                </span>
+            </div>
+        </div>
+        <div class="apply-price">
+            <span>合计：</span>
+            <span class="apply-price-money">￥<%=totalPrice.toFixed(2)%></span>
+        </div>
+      </a>
+    </div>
+    <div class="conference-order-patient">
+       <p><span class="order-title">举办地： </span><span class="order-cont"><%=holdingProvince%>/<%=holdingCity%></span></p>
+       <p><span class="order-title">时间： </span><span class="order-cont"><%=formatDateTime(holdingStartTime,"minute")%> 至 <%=formatDateTime(holdingEndTime,"minute")%></span></p>
+       <p><span class="order-title">详细地址： </span><span class="order-cont"><%=holdingPlace%></span></p>
+    </div>
+    <div class="conference-order--info">
+      <p class="order-title">指定联系人:</p>
+      <p class="orderConts cont1"><span>姓名： </span><%=appointUser%></p>
+      <p class="orderConts cont2"><span>手机： </span><%=appointPhone%></p>
+      <p class="orderConts cont3"><span>邮箱： </span><%=appointEmail%></p>
+    </div>
+    <div class="conference-order-bottom">
+        <p>使用说明：</p>
+        <p><span>1、</span><span class="bottom-cont">凭指定联系人的有效证件，在会议开始前半小时购票入场。</span></p>
+        <p><span>2、</span><span class="bottom-cont">我们仅为您提供已预约数量的票券。如需增加预约人数，请为新增的用户重新预约。</span></p>
+        <p><span>3、</span><span class="bottom-cont">本活动的最终解释权归主办方所有。</span></p>
+        <p><span>4、</span><span class="bottom-cont">关于购票有任何疑问请致电：<a href="tel:4008215742">4008215742</a>
+        或联系<a href="yiyikangyunhuigu://bll/app.com?functype=101">在线客服-小助手。</a></span></p>
+    </div>
+  </script>
+  <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/common/js/common.js?v=1.0.0"></script>
+  <script src="/build/common/js/address.js?v=1.0.0"></script>
+  <script src="/build/js/conference/result/result.js?v=1.0.0"></script>
+
+</body>
+</html>

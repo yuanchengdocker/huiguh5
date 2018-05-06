@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>学术会议</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/css/conference/list/list.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+    <div class="conference-list-box">
+        <div class="list-main">
+            <ul class="list-container">
+            </ul>
+        </div>
+    </div>
+    <script type="text/html" id="conference_list">
+        <% _.forEach(data,function(item){ %>
+            <a href="../detail/detail.html?conferenceId=<%- item.conferenceId %>">
+                <div class="list-item">
+                    <div class="list-item-img">
+                    <% if(item.conferenceStatus==0){ %>
+                        <span class="list-item-flag flag1">
+                            <span>可预约</span>
+                        </span>
+                    <% }else if(item.conferenceStatus==1){ %>
+                        <span class="list-item-flag flag2">
+                            <span>已截止</span>
+                        </span>
+                    <% }else if(item.conferenceStatus==2){ %>
+                        <span class="list-item-flag flag3">
+                            <span>已约满</span>
+                        </span>
+                    <% } %>
+                    <div class="item-img"><img src="<%- item.coverUrl %>"/></div></div>
+                    <p class="list-item-title">
+                    <span class="title"><%= item.conferenceName %></span>
+                    <span class="price"><%= item.price==0?"免费":"￥"+item.price.toFixed(2) %></span></p>
+                    <div class="list-item-bottom">
+                        <span class="time"><img src="/build/img/time.png"/><%=formatDateTime(item.holdingStartTime)%></span>
+                        <span class="address"><img src="/build/img/address-flag.png"/><%= item.holdingCity %></span>
+                        
+                    </div>
+                </div>
+            </a>
+        <% }) %>
+    </script>
+    <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+    <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+    <script src="/build/common/js/common.js?v=1.0.0"></script>
+    <script src="/build/common/js/address.js?v=1.0.0"></script>
+    <script src="/build/js/conference/list/list.js"></script>
+
+
+</body>
+</html>

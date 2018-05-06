@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>个人名片</title>
+    <meta name="keywords" content="your keywords">
+    <meta name="description" content="your description">
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1"/>
+    <style>
+    * {
+      margin: 0;
+      padding: 0; }
+
+    *, *:before, *:after {
+      box-sizing: border-box; }
+
+    html * {
+      outline: 0;
+      -webkit-text-size-adjust: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+       -ms-user-select: none;
+           user-select: none; }
+
+    body {
+      font-size: 14px;
+      font-family: Heiti SC, "PingFang SC", "Lantinghei SC", "Microsoft Yahei", "Hiragino Sans GB", "Microsoft Sans Serif", "WenQuanYi Micro Hei", sans;
+      line-height: 1.5;
+      color: #333;
+      background-color: #f2f2f2; }
+
+    a {
+      color: #333;
+      text-decoration: none; }
+
+    ul {
+      list-style: none; }
+
+    body {
+      background-color: #fff; }
+
+    img {
+      max-width: 100%;
+      vertical-align: middle; }
+    .content {
+      padding: 20px 15px; }
+    .info {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex; }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      overflow: hidden;
+      border-radius: 48px;
+      background-color: #f8f8f8; }
+
+    .meta {
+      margin-left: 12px; }
+    .meta .name {
+        font-size: 16px;
+        color: #333333; }
+    .meta .yike, .meta .department, .meta .hospital, .meta .title {
+        font-size: 12px;
+        color: #808080; }
+    .tip {
+        position: relative;
+        font-size: 14px;
+        color: #FFFFFF;
+        background-color: #388DE2;
+        width: 290px;
+        padding: 8px 10px;
+        line-height: 1.2;
+        border-radius: 10px;
+        margin-left: 35px; }
+    .tip:before {
+        content: '';
+        position: absolute;
+        left: -6px;
+        top: 5px;
+        display: block;
+        width: 6px;
+        height: 9px;
+        background-image: url("");
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        background-size: 100% 100%; }
+    .qr-code {
+        margin-top: 45px; }
+    .qr-code img {
+        display: block;
+        width: 200px;
+        height: 200px;
+        background-color: #f2f2f2;
+        padding-top:0;
+        margin: 0 auto; }
+    .qr-code .shuoming{
+        font-size:14px;
+        color:#808080;
+        text-align: center;
+        margin-top:10px;
+    }
+    .qr-code img.error {
+        background-image: url("");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 55px 73px; }
+
+    .download-bar {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      z-index: 10000;
+      width: 100%;
+      height: 70px;
+      background-color: #36bac9;
+    }
+
+    .download-bar .download-logo {
+      float: left;
+      width: 192px;
+      height: 50px;
+      background: url("/build/img/download_bar_info.png") no-repeat 0 0;
+      background-size: cover;
+      margin-top: 10.5px;
+      margin-left: 9.5px;
+    }
+
+    .download-bar .download-btn {
+      display: inline-block;
+      float: right;
+      background-color: #fff;
+      color: #36bac9;
+      font-size: 14px;
+      height: 30px;
+      width: 80px;
+      line-height: 30px;
+      text-align: center;
+      margin-top: 21px;
+      margin-right: 9.5px;
+      text-decoration: none
+    }
+    </style>
+
+    <!-- 微信分享 -->
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
+    <!-- wxapiauth.hk515.com -->
+    <script type="text/javascript" id="wxscript"></script>
+    <script type="text/javascript">
+      var star = encodeURIComponent(location.href.split('#')[0]);
+      document.getElementById('wxscript').src='http://hg-weixin.szyyky.com/thirdpartyapi/thirdPartyUser/getSignature?appId=wxf5bdc71fe3151bc4&noncestr=1428560985&timestamp=1428560985&callback=wxInput&url='+ star;
+    </script>
+
+    <script>
+      var sTitle = "慧骨丨顶尖骨科专家与您同行";
+      var sTitle2 = "慧骨丨顶尖骨科专家与您同行";
+      var sDesc = "我正在使用慧骨APP观看临床教学视频，课程分专题和小节，内容清晰明了，你也来下载使用吧";
+      var sLink = window.location.href;
+      var imgUrl = 'http://huiguh5.szyyky.com/build/img/logo.png';
+      
+      function wxInput(obj) {
+        window.cookieObj = obj;
+
+        var wxShare = document.createElement("script");
+        wxShare.src='/build/common/js/wxShare.js';
+        document.getElementsByTagName("body")[0].appendChild(wxShare);
+      }
+    </script>
+</head>
+
+<body>
+<div class="content"></div>
+<script type="text/html" id="doctor_data">
+    <div class="info">
+        <div class="avatar">
+          <% if(!avatarUrl){ %>
+            <img src="/build/img/icon.png" alt="">
+          <% }else{ %>
+            <img src="<%- avatarUrl %>" alt="">
+          <% } %>
+        </div>
+        <div class="meta">
+            <div class="meta-wrap"><span class="name"><%= doctorName %></span></div>
+            <div class="meta-wrap"><span class="yike">慧骨号：<%= doctorNumber %></span></div>
+            <div class="meta-wrap"><span class="hospital"><%= hospitalName %></span></div>
+            <div class="meta-wrap"><span class="department"><%= departmentName %></span>&nbsp;&nbsp;<span class="title"><%= professionalTitleName %></span></div>
+        </div>
+    </div>
+    <div class="qr-code">
+        <% if(!qrCode){ %>
+          <img src="/build/img/ewm.png" id="qrCodePlaceholder" class="error">
+        <% }else{ %>
+          <img src="<%- qrCode %>" id="qrCodePlaceholder" class="error">
+        <% } %>
+        <p class="shuoming">扫一扫二维码图案、立刻找到我</p>
+    </div>
+</script>
+    <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+    <script src="/build/common/js/download-bar.js?v=1.0.0"></script>
+    <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+    <script src="/build/common/js/address.js?v=1.0.0"></script>
+    <script type="text/javascript">
+        (function () {
+        // 获取用户的userid
+        $.getUrlParam = function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return decodeURIComponent(r[2]);
+            return null;
+        };
+        var userId = $.getUrlParam('doctorid');
+        $.ajax({
+          url: huiguPostUrl.getDoctorUserService,
+          type: 'post',
+          datatype: 'json',
+          contentType: 'application/json',
+          data:JSON.stringify({
+            "userId": userId
+          }),
+          success: function(data){
+            if(data.code == 0){
+               $(".content").html(_.template($("#doctor_data").html()) (data.data));
+            }
+          },
+          error: function(){
+            // toast("服务错误，请重新稍后");
+          }
+        });
+    })();
+    </script>
+
+</body>
+</html>

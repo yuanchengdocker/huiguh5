@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>慧骨患者端</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/commonWX/css/base.css?v=1.0.1">
+  <script src="/build/commonWX/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="box"></div>
+  <script src="/build/commonWX/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/common.js?v=1.0.0"></script>
+  <script type="text/javascript">
+    $(function(){
+      //判断是否在微信APP里面
+      var isWechat = (/MicroMessenger/ig).test(navigator.userAgent);
+      if(isWechat){
+        var _tDiv = document.createElement('div');
+        _tDiv.className ='g-tip2 g-AlipayWxPay';
+        document.body.appendChild(_tDiv);
+        _tDiv.onclick = function(e){
+            this.parentNode.removeChild(_tDiv);
+            return false;
+        }
+        setTimeout(function(){
+          window.location.href = dataPath.WXhttpPathch + 'build/pages/patient/details/details.html?appointmentId='+$.getUrlParam('appointmentId')+'&AlipayWxPay';
+        },20000);
+      }else{
+        huiguPost(function(data){
+          window.location.href = data;
+
+        },huiguPostUrl.getAliWAPPay,{"orderId":$.getUrlParam('orderId')});
+      }
+    })
+  </script>
+</body>
+</html>

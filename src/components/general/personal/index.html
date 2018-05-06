@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>专家主页</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="../personal/index.css">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+    <div class="personal-detail-box">
+        <div class="detail-header"></div>
+        <div class="detail-cont"></div>
+    </div>
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+
+    <script type="text/html" id="personal_detail">
+        <div class="detail-header-bg">
+            <div class="detail-header-flit"></div>
+            <% if(!avatarUrl){ %>
+            <img src="/build/img/icon.png">
+            <% }else{ %>
+            <img src="<%- avatarUrl %>">
+            <% } %>
+        </div>
+        <div class="detail-header-main">
+            <div class="detail-header-img">
+                <div class="detail-header-autor">
+                    <% if(!avatarUrl){ %>
+                    <img src="/build/img/icon.png" class="detail-autor">
+                    <% }else{ %>
+                    <img src="<%- avatarUrl %>" class="detail-autor">
+                    <% } %>
+                </div>
+                <% if(doctorStatus == 1){ %>
+                <img src="/build/img/doctorStatus1.png" class="status detail-status1">
+                <% }else if(doctorStatus == 2){ %>
+                <img src="/build/img/doctorStatus2.png" class="status detail-status2">
+                <% }else{ %>
+                <img src="/build/img/doctorStatus3.png" class="status detail-status3">
+                <% } %>
+            </div>
+            <a href="javascript:void(0);" class="detail-add download-btn">+好友</a>
+            <div class="detail-header-con">
+                <p class="detail-tit"><span><%= doctorName %></span><%= professionalTitleName %></p>
+                <p class="detail-subtitle"><%= subDepartmentName %>&nbsp;&nbsp;|&nbsp;&nbsp;<%= hospitalName %></p>
+                <p class="detail-tag">
+                <% _.forEach(expertiseTag,function(item){ %>
+                    <span><%= item %></span>
+                <% }) %>
+                </p>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="personal_detail_cont">
+        <div class="detail-tab">
+            <ul class="detail-tab-container">
+                <li class="detail-tab-item">
+                <div class="tab-bar"></div>
+                <a id="detail-tab-introduce" class="tab-active" onclick="conferenceDetailAction.tabChange('detail-tab-introduce')">简介</a></li>
+                <li class="detail-tab-item">
+                <div class="tab-bar"></div>
+                <a id="detail-tab-team" onclick="conferenceDetailAction.tabChange('detail-tab-team')">团队</a></li>
+                <li class="detail-tab-item">
+                <div class="tab-bar"></div>
+                <a id="detail-tab-opus" onclick="conferenceDetailAction.tabChange('detail-tab-opus')">作品</a></li>
+                <li class="detail-tab-item">
+                <div class="tab-bar"></div>
+                <a id="detail-tab-serve" onclick="conferenceDetailAction.tabChange('detail-tab-serve')">服务</a></li>
+            </ul>
+        </div>
+        <div class="detail-tab-cont">
+            <div class="tab-container">
+                <div class="detail-tab-introduce">
+                    <%= userDescribe %>
+                    <div class="personal-empty">
+                      <img src="/build/img/fulp-empty.png" class="emptyImg"><p>暂无记录</p>
+                    </div>
+                </div>
+                <div class="detail-tab-team" style="height:0">
+                    <ul></ul>
+                    <div class="personal-empty">
+                      <img src="/build/img/fulp-empty.png" class="emptyImg"><p>暂无记录</p>
+                    </div>
+                </div>
+                <div class="detail-tab-opus" style="height:0">
+                    <ul></ul>
+                    <div class="personal-empty">
+                      <img src="/build/img/fulp-empty.png" class="emptyImg"><p>暂无记录</p>
+                    </div>
+                </div>
+                <div class="detail-tab-serve" style="height:0">
+                    <div class="personal-empty">
+                      <img src="/build/img/fulp-empty.png" class="emptyImg"><p>暂无记录</p>
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+    </script>
+
+    <script type="text/html" id="teamList">
+    <% _.forEach(data,function(item){ %>
+        <li onclick="location.href='/build/components/general/studio/studio.html?doctorStudioId=<%- item.doctorStudioId %>'">
+            <div class="tab-team-top">
+                <% if(!item.thumbnailUrl){ %>
+                    <a class="team-artor"><img src="/build/img/icon.png" class="detail-autor"></a>
+                <% }else{ %>
+                    <a class="team-artor"><img src="<%- item.thumbnailUrl %>"></a>
+                <% } %>
+                <span><%= item.name %></span>
+            </div>
+            <div class="tab-team-photo">
+                <div><p><%= item.introduction %></p></div>
+                <% if(!item.photo){ %>
+                <img src="/build/img/studio_cover1.png" />
+                <% }else{ %>
+                <img src="<%- item.photo %>" />
+                <% } %>
+                
+            </div>
+            <div class="tab-team-info">
+                <div><i></i><span><%= item.courseCount %>课程</span></div>
+                <div><i></i><span><%= item.projectCount %>专题</span></div>
+                <div><i></i><span><%= item.articleCount %>文章</span></div>
+            </div>
+        </li>
+    <% }) %>
+    </script>
+    <script type="text/html" id="opusList">
+    <% _.forEach(productionDetailDtoList,function(item){ %>
+        <% if(item.itemType == 1){ %> <!-- 课程 -->
+        <li onclick="location.href='/build/components/general/course/course.html?courseId=<%- item.itemId %>'">
+            <div class="tab-opus-contain">
+                <div class="opus-contain-tit">
+                    <%= item.itemName %>
+                </div>
+                <div class="opus-contain-img">
+                    <% if(!item.itemImage){ %>
+                    <img src="/build/img/studio_img.png" alt="" class="containImg"/>
+                  <% }else{ %>
+                    <img src="<%- item.itemImage %>" alt="" class="containImg"/>
+                  <% } %>
+                  <% if(item.isTrailer == 1){ %>
+                    <img src="/build/img/yu.png" alt="" class="yu" />
+                  <% } %>
+                  <img src="/build/img/meng.png" class="meng">
+                </div>
+            </div>
+            <div class="tab-opus-bottom">
+                <span class="opus-bottom-time"><i></i><%= item.videoTime %>min</span>
+                <% if(item.isFree == 0){ %>
+                <p class="opus-bottom-money">￥<%= item.courseDiscountPrice %></p>
+                <% }else{ %>
+                <p class="opus-bottom-fix">免费</p>
+                <% } %>
+            </div>
+        </li>
+        <% }else if(item.itemType == 2){ %> <!-- 专题 -->
+        <li onclick="location.href='/build/components/general/courseSeries/courseSeries.html?projectId=<%- item.itemId %>'">
+            <div class="tab-opus-contain">
+                <div class="opus-contain-tit">
+                    【专题】<%= item.itemName %>
+                </div>
+                <div class="opus-contain-img">
+                    <% if(!item.itemImage){ %>
+                    <img src="/build/img/studio_img.png" alt="" class="containImg"/>
+                  <% }else{ %>
+                    <img src="<%- item.itemImage %>" alt="" class="containImg"/>
+                  <% } %>
+                </div>
+            </div>
+            <div class="tab-opus-bottom">
+                <span class="opus-bottom-tit">已更新<%= item.updatedCount %>课</span>
+            </div>
+        </li>
+        <% }else if(item.itemType == 3){ %> <!-- 文章 -->
+        <li onclick="location.href='/build/pages/article-share/article-share.html?newsId=<%- item.itemId %>'">
+            <div class="tab-opus-contain">
+                <div class="opus-contain-tit">
+                    <%= item.itemName %>
+                </div>
+                <div class="opus-contain-img">
+                    <% if(!item.itemImage){ %>
+                    <img src="/build/img/studio_img.png" alt="" class="containImg"/>
+                    <% }else{ %>
+                    <img src="<%- item.itemImage %>" class="containImg">
+                    <% } %>
+                </div>
+            </div>
+            <div class="tab-opus-bottom">
+                <span class="opus-bottom-tit">
+                <%= item.newsCategoryTypeName %></span>
+                <p class="opus-contain-give"><span><i></i><%= item.readCount %></span><span><i></i><%= item.praiseCount %></span></p>
+            </div>
+        </li>
+        <% } %>
+    <% }) %>
+    </script>
+
+    <script type="text/html" id="serveList">
+    <div class="tab-serve-tap">
+        <ul>
+        <% _.forEach(serviceInfo,function(item){ %>
+            <% if(item == 1){ %>
+            <li data-id="">
+                <div class="serve-tap-main">
+                    <span>手术快约</span>
+                    <img src="/build/img/studio_cover1.png" class="tap-main-bg" />
+                </div>
+                <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a>
+            </li>
+            <% }else if(item == 2){ %>
+            <li data-id="">
+                <div class="serve-tap-main">
+                    <span>预约坐诊</span>
+                    <img src="/build/img/studio_cover1.png" class="tap-main-bg" />
+                </div>
+                <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a>
+            </li>
+            <% }else if(item == 3){ %>
+            <li data-id="">
+                <div class="serve-tap-main">
+                    <span>培训教育</span>
+                    <img src="/build/img/studio_cover1.png" class="tap-main-bg" />
+                </div>
+                <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a>
+            </li>
+            <% } %>
+        <% }) %>
+        </ul>
+    </div>
+    <% if(speicalService.length == 0){ %>
+    <% }else{ %>
+    <div class="tab-serve-list">
+        <p class="serve-list-tit"><i></i>专项服务</p>
+        <ul>
+        <% _.forEach(speicalService,function(item){ %>
+        <li>
+            <div class="serve-list-main">
+                <span class="list-main-liao download-btn">疗效：<%= item.efficacy %></span>
+                <span class="list-main-man download-btn">满意度：<%= item.satisfaction %></span>
+                <p class="list-main-title download-btn"><%= item.reservationCount %>人成功预约</p>
+                <img src="/build/img/zhuanImg.png"  class="list-main-bg download-btn" />
+            </div>
+            <p class="list-title download-btn"><%= item.speicalServiceName %></p>
+            <p class="list-adress download-btn"><i></i><%= item.speicalServiceAddress %></p>
+        </li>
+        <% }) %>
+        </ul>
+    </div>
+    <% } %>
+    
+    </script>
+    <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+    <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+    <script src="/build/common/js/common.js?v=1.0.0"></script>
+    <script src="/build/common/js/address.js?v=1.0.0"></script>
+    <script src="../personal/index.js"></script>
+    <script src="/build/common/js/download-bar.js?v=1.0.0"></script>
+    
+</body>
+</html>

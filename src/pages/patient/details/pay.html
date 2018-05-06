@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>慧骨</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/commonWX/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/css/patient/details/pay.css?v=1.0.1">
+  <script src="/build/commonWX/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="pay-box"></div>
+  <div class="opera-defrayal">
+    <div class="opera-pay-confirm">
+      <div class="layout-main">
+        <p>您是否已完成支付</p>
+        <a class="quit">重新支付</a><a class="cancel">已支付</a>
+      </div>
+    </div>
+    <div class="opera-pay-loading">
+      <div class="layout-main">
+        <img src="http://patienth5.szyyky.com/build/imgWX/loading.gif" />
+      </div>
+    </div>
+  </div>
+  <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+  <script src="/build/commonWX/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/common.js?v=1.0.0"></script>
+  <script src="/build/js/patient/details/pay.js?v=1.0.0"></script>
+  
+  <script type="text/html" id="pay_order">
+    <p class="care"><i></i>您正在慧骨申请相关服务，请核对信息并完成支付—<p>
+    <section class="payName">
+      <p>支付类型<span><%=title%></span></p>
+    </section>
+    <section class="payNumber">
+      <p>订单编号<span><%=orderPaymentRecordId%></span></p>
+    </section>
+    <section class="payTime">
+      <p>支付日期<span><%=formatDateTime(createDateTime,"minute")%></span></p>
+    </section>
+    <section class="payMoney">
+      <p><span class="amount"><span class="amount-name">应付：</span><i>￥<%=amount%></i></span></p>
+    </section>
+    <section class="payBtn"><a>立即支付</a></section>
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,262 @@
+.studio-page
+    width: 100%
+    .empty
+        height: auto
+    .studio-header
+        position: relative
+        width: 100%
+        height: 320px
+        color: #ffffff
+        .studio-header-img
+            width: 100%
+            height: 100%
+        .studio-header-content
+            width: 100%;
+            height: 100%;
+            top: 0;
+            position: absolute;
+            background-color: rgba(0,0,0,0.5)
+            .huigu-header
+                background-color: transparent 
+                .return
+                    background: url('/build/img/return-flag.png') no-repeat top center;
+                    background-size: 100% 100%;
+            .header-tit
+                position: absolute
+                top: 40%
+                width: 100%
+                text-align: center
+                font-size: 36px
+            .series-detail
+                width: 100%
+                font-size: 26px
+                position: absolute
+                bottom 50px
+                display: flex
+                justify-content: space-around
+                img
+                    width: 50px
+                    height: 50px
+                    margin-right: 10px
+    .studio-tab
+        margin: 10px auto;
+        .studio-tab-container
+            position: relative
+            margin: 0 auto;
+            width: 430px
+            display: flex
+            justify-content: space-between
+            .studio-tab-item
+                font-size: 30px
+                color: #344559
+                padding: 20px 0;
+            .active-flag
+                position: absolute
+                width: 60px
+                border-bottom: 4px solid #5fd3e4
+                bottom: 0;
+                left: 0;
+                transition: left 500ms ease
+                -o-transition: left 500ms ease
+                -ms-transition: left 500ms ease
+                -moz-transition: left 500ms ease
+                -webkit-transition: left 500ms ease
+            .active-0
+                left: 0px;
+            .active-1
+                left: 124px;
+            .active-2
+                left: 248px;
+            .active-3
+                left: 372px;
+    .studio-list
+        width: 100%
+        padding: 20px 0;
+        overflow: hidden
+        height: 68%;
+        padding-bottom: 142px
+        .studio-container
+            height: 100%
+            width: 400%
+            margin-left: 0
+            transition: margin-left 500ms ease
+            -o-transition: margin-left 500ms ease
+            -ms-transition: margin-left 500ms ease
+            -moz-transition: margin-left 500ms ease
+            -webkit-transition: margin-left 500ms ease
+            .studio-item-page
+                float: left
+                width: 25%
+            .studio-detail
+                height: 100%;
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+                padding: 18px 40px
+                .detail-title
+                    font-size: 28px
+                    color: #36bac9
+                .detail-goodat
+                    margin: 40px 0;
+                    .goodat-item
+                        display: inline-block
+                        padding: 10px 30px
+                        border: 0.0277rem solid #919dae
+                        border-radius: 30px
+                        font-size: 26px
+                        color: #919dae
+                        margin-right: 10px
+                        margin-bottom: 20px
+                    .content
+                        font-size: 30px
+                        color: #919dae
+            .studio-member
+                height: 100%
+                padding: 18px 40px
+                .member-container
+                    height: 100%;
+                    overflow-y: scroll;
+                    -webkit-overflow-scrolling: touch;
+                    .member-item
+                        display: inherit;
+                        margin-bottom: 40px
+                        .member-header
+                            float: left
+                            display: inline-block
+                            width: 140px
+                            height: 140px
+                            border-radius: 50%
+                            background-position: center
+                        .member-main
+                            width: 76%;
+                            float: left
+                            height: 180px
+                            padding-bottom: 40px
+                            border-bottom: 0.0277rem solid #dbdbdb
+                            .name
+                                width: 30%
+                                font-size: 32px
+                                color: #4e5e75
+                            .flag
+                                display: inline-block
+                                line-height: 40px;
+                                .item
+                                    display: inline-block;
+                                    text-align: center
+                                    width: 36px
+                                    height: 36px
+                                    line-height: 36px;
+                                    border-radius 50%
+                                    color: #ffffff
+                                    margin-right: 5px
+                                .art
+                                    background-color: #36bac9
+                                .teacg
+                                    background-color: #679bea
+                                .examine
+                                    background-color: #f6b252
+                            .position-item
+                                display: inline-block
+                                padding: 1px 20px
+                                border: 0.0277rem solid #fb699d
+                                border-radius: 30px
+                                font-size: 26px
+                                color: #fb699d
+                                float: right
+                            .hospital
+                                font-size: 26px
+                                color: #919dae
+                            .gootat
+                                font-size: 28px
+                                color: #919dae 
+            .studio-article
+                height: 100%
+                padding: 18px 40px
+                overflow: hidden
+                .article-container
+                    height: 100%
+                    overflow-y: scroll;
+                    -webkit-overflow-scrolling: touch;
+                    .article-item
+                        margin-bottom: 30px
+                        border-bottom: 0.0277rem solid #dbdbdb
+                        .title
+                            width: 60%
+                            float: left
+                            font-size: 32px
+                            line-height: 48px
+                            color: #344559
+                        .content
+                            width: 267px
+                            height: 212px
+                            float: left
+                            position: relative
+                            img
+                                width: 100%
+                                height: 100%
+                                display: inline-block
+                                position: absolute
+                            .cover
+                                display: none
+                                width: 100%
+                                height: 100%
+                                position: absolute
+                                background-color: rgba(0,0,0,0.3)
+                                color: #ffffff
+                                overflow: hidden
+                                .video
+                                    display: inline-block
+                                    width: 50px
+                                    height: 50px
+                                    margin: 0 auto;
+                                    background-image: url('../../../img/video.png')
+                                    background-size: 100%
+                            .video-show
+                                display: flex;
+                                display: -webkit-flex;
+                        .article-main
+                            padding: 30px 0;
+                            display: flex
+                            justify-content: space-between
+                            font-size: 24px
+                            color: #a2acba
+                            .name
+                                .time
+                                    width: 30px
+                                    height: 30px
+            .studio-service
+                height: 100%;
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+                padding: 18px 20px
+                .service-container
+                    .service-item
+                        display: inline-block;
+                        margin: 0 20px 20px 20px
+                        .service-main
+                            position: relative
+                            width: 311px
+                            height: 200px
+                            display: inline-block
+                            img
+                                width: 100%
+                                height: 100%
+                            .title
+                                position: absolute
+                                top: 0
+                                left: 0
+                                padding: 10px 15px
+                                color: #ffffff
+                                background-color: #36bac9
+                        .service-link
+                            width: 311px     
+                            padding: 20px
+                            text-align: center
+                            .link
+                                display: inline-block
+                                font-size: 30px
+                                color: #c0c6d0
+                                padding: 20px 70px
+                                border: 0.0277rem solid #c0c6d0
+                                border-radius 36px
+
+

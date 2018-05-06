@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>发票信息</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <link rel="stylesheet" type="text/css" href="/build/commonWX/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/build/css/patient/invoice/result.css">
+    <script type="text/javascript" src="/build/commonWX/js/flexible.js"></script>
+  </head>
+
+  <body>
+    <section class="invoice"></section>
+    <script src="/build/commonWX/js/jquery.min.js"></script>
+    <script src="/build/commonWX/js/lodash.js?v=1.0.0"></script>
+    <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+    <script src="/build/commonWX/js/common.js"></script>
+    <script src="/build/js/patient/invoice/result.js"></script>
+    <script type="text/html" id="invoice_result">
+      <div class="invoice-top">
+        <p class="firstp"><span class="tit">收件人</span><span><%=receiverName%></span></p>
+        <p class="lastp"><span class="tit">联系电话</span><span><%=receiverMobile%></span></p>
+      </div>
+      <div class="invoice-bottom">
+        <p class="tit">邮寄地址</p>
+        <p class="adress"><%=receiverAddress%></p>
+      </div>
+    </script>
+  </body>
+
+</html>

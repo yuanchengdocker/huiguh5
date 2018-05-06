@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>交流群</title>
+    <meta name="keywords" content="your keywords">
+    <meta name="description" content="your description">
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1"/>
+    <link rel="stylesheet" href="article_detail.css?v=1.0.1">
+    <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+    <style>
+        header{border-bottom:1px solid #eee;padding:10px}header h1{background:url(/build/img/logo.png) no-repeat 0 0;height:40px;-webkit-background-size:contain;background-size:contain;font-size:18px;color:#333;padding-left:50px;line-height:40px}.room-info{padding:20px 0;text-align:center}.room-info span{display:inline-block}.room-info .icon-chat{width:40px;height:40px;background:url(/build/img/icon_chat.png) no-repeat 0 0;-webkit-background-size:contain;background-size:contain;vertical-align:middle}.room-info .desc{height:40px;line-height:40px;font-size:16px;margin-left:8px}.room-qrcode-wrap{text-align:center}.room-qrcode-wrap p{font-size:14px;color:#999;padding:10px 0}.room-qrcode-wrap img{width:60%;}
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>慧骨</h1>
+    </header>
+    <div class="wrap" id="studioExchange">
+    </div>
+    <script type="text/html" id="studioExchange_data">
+        <div class="room-info">
+            <span class="icon icon-chat"></span>
+            <!--名医团队名称和人数后端填数据-->
+            <span class="desc"><%= data.groupChatName %>交流群<%= data.nowUserCount %>人</span>
+        </div>
+        <div class="room-qrcode-wrap">
+            <!--二维码地址后端填数据-->
+            <% if(!data.groupQr){ %>
+              <img src="/build/img/ewm.png" alt="" class="qrcode" />
+            <% }else{ %>
+              <img src="<%- data.groupQr %>" class="qrcode" />
+            <% }%>
+            <p>慧骨扫一扫二维码、立即找到我</p>
+        </div>
+    </script>
+    <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+    <script src="/build/common/js/download-bar.js?v=1.0.0"></script>
+    <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+    <script src="/build/common/js/common.js?v=1.0.0"></script>
+    <script src="/build/common/js/address.js?v=1.0.0"></script>
+    <script type="text/javascript">
+        (function () {
+        // 获取用户的userid
+        $.getUrlParam = function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return decodeURIComponent(r[2]);
+            return null;
+        };
+        var groupId = $.getUrlParam('groupId');
+        $.ajax({
+          url: huiguPostUrl.getSerceGroupPageService,
+          type: 'post',
+          datatype: 'json',
+          contentType: 'application/json',
+          data:JSON.stringify({
+            "groupId": groupId,    
+            "type": 0
+          }),
+          success: function(data){
+            if(data.code == 0){
+               $("#studioExchange").html(_.template($("#studioExchange_data").html()) (data));
+
+                sTitle = '慧骨邀请你加入'+ data.data.groupChatName +'群聊';
+                sTitle2 = '慧骨邀请你加入'+ data.data.groupChatName +'群聊';
+                sDesc = '快来慧骨和全国医生一起交流学习吧';
+                sLink = data.data.doctorGroupShareUrl;
+                if(data.data.groupChatCovUrl == ""){
+                    imgUrl = 'http://huiguh5.szyyky.com/build/img/logo.png';
+                }else{
+                    imgUrl = data.data.groupChatCovUrl;
+                }
+
+                var wxShare = document.createElement("script");
+                wxShare.src='/build/common/js/wxShare.js';
+                document.getElementsByTagName("body")[0].appendChild(wxShare);
+            }
+          },
+          error: function(){
+            // toast("服务错误，请重新稍后");
+          }
+        });
+        })();
+    </script>
+
+    <!-- 微信分享 -->
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
+  <!-- wxapiauth.hk515.com -->
+  <script type="text/javascript" id="wxscript"></script>
+  <script type="text/javascript">
+    var star = encodeURIComponent(location.href.split('#')[0]);
+    document.getElementById('wxscript').src='http://hg-weixin.szyyky.com/thirdpartyapi/thirdPartyUser/getSignature?appId=wxf5bdc71fe3151bc4&noncestr=1428560985&timestamp=1428560985&callback=wxInput&url='+ star;
+  </script>
+
+  <script>
+    function wxInput(obj) {
+      window.cookieObj = obj;
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<div class="course-series-container">
+    <div class="content">
+        <img src="<%- data.itemImage %>" alt="" class="back-container">
+        <% if(data.itemType == 1){  %>
+            <a class="cover" href="/build/components/general/course/course.html?projectCourseId=&courseId=<%-data.itemId%>"></a>
+        <%}else{%>
+            <a class="cover" href="/build/components/general/courseSeries/courseSeries.html?projectId=<%-data.itemId%>"></a>
+        <%}%>
+        <% if(data.itemType == 1){  %>
+        <img src="/build/img/video.png" alt="" class="video-flag">
+        <% if(data.isTrailer == 1){%>
+        <span class="advance">预告</span>
+        <% } %>
+        <% } %>
+        <% if(data.studyNumber > 0){%>
+        <div class="header">
+            <% _.forEach(data.studentIconArr,function(item,index) { %>
+                <%if(!item){ %>
+                <img src="/build/img/icon.png" alt="" class="study-head">
+                <% }else{ %>
+                <img src="<%- item %>" alt="" class="study-head">
+                <% } %>
+                
+            <% }) %>
+            <span><%= data.studyNumber %>人学习中</span>  
+            <img src="/build/img/learn-group.png" alt="" class="learn-group"> 
+            学习群
+        </div>
+        <%}%>
+        <% if(data.itemType == 1){  %>
+        <div class="footer">
+            <span class="time"><img src="/build/img/white-time.png" alt=""><span><%= parseInt(data.videoTime/60) %>min</span> </span>
+            <% if(data.courseTags) {%>
+            <span class="flag">#<%= data.courseTags %></span>
+            <% } %>
+        </div>
+        <% } %>
+
+        <% if(data.itemType == 2){ %>
+        <div class="swiper">
+            <div class="swiper-container" id="<%-data.id%>">
+                <div class="swiper-wrapper">
+                    <% _.forEach(data.projectCourseList,function(item,index) { %>
+                    <span class="item-container swiper-slide">
+                        <a class="series-item  series-item-advance" href="<%- '/build/components/general/course/course.html?projectCourseId='+item.projectCourseId ||'javascript:void(0);' %>">
+                            <p class="class-num">第<%= item.courseNum %>课</p>
+                            <span class="class-desc hg-word-clamp hg-word-clamp-1"><%= item.courseName %></span>
+                            <%if(item.isTrailer==1){%>
+                            <span class="advance">预告</span>
+                            <%}%>
+                        </a>
+                        <span class="item-border"></span>
+                    </span>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <p class="title hg-word-clamp hg-word-clamp-1"><%= data.itemName %></p>
+    <p class="desc hg-word-clamp hg-word-clamp-1"><%= data.itemDesc %></p>
+    <div class="author">
+        <span class="left hg-word-clamp hg-word-clamp-1">
+            <img src="<%- data.producerIconUrl||'/build/img/icon.png' %>" alt="" class="author-head">
+            <span><%= data.producerName %></span>
+            <% if(data.producerName && data.producerHospitalName){%>
+                <span> | </span>
+            <%}%>
+            <span><%= data.producerHospitalName %></span>
+        </span>
+        <% if(data.itemType == 1){ %>
+        <span class="price"><%= data.isFree==1?'免费':'￥'+data.courseDiscountPrice  %></span>
+        <%}%>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>输入身份证</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <link rel="stylesheet" type="text/css" href="/build/commonWX/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/build/css/card/card.css">
+    <script type="text/javascript" src="/build/commonWX/js/flexible.js"></script>
+  </head>
+
+  <body>
+    <section class="apply-main">
+      <p class="card01"><i></i><input type="text" name="" placeholder="请输入姓名" required="required" maxlength="10" id="name" oninput="applyAction.changBtn();" onporpertychange="applyAction.changBtn();" ></p>
+      <p class="card02"><i></i><input type="telephone" name="" placeholder="请输入身份证号码" required="required" maxlength="18" id="identityCard" oninput="applyAction.changBtn();" onporpertychange="applyAction.changBtn();" ></p>
+    </section>
+    <input id="apply-btn" value="提交" type="button" onclick="applyAction.submit()">
+
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="/build/commonWX/js/jquery.min.js"></script>
+    <script src="/build/commonWX/js/common.js"></script>
+    <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+    <script src="/build/js/card/card.js"></script>
+
+  </body>
+
+</html>

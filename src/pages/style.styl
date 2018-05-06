@@ -1,0 +1,477 @@
+#container
+  height: 105%;
+  display: block;
+  overflow-y: scroll;
+  -webkit-overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  font-family "微软雅黑";
+  
+.article_com
+  margin: 30px 11px 0 22px;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  .newsTitle
+    font-size: 40px;
+    line-height: 50px;
+    font-weight: bold;
+    margin-bottom: 34px
+    color: #344559;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    word-wrap:break-word; 
+    word-break:normal;
+    -webkit-box-orient: vertical;
+    text-decoration: none
+  .ar-info
+    color: #919dae;
+    position: relative;
+    line-height: 40px;
+    font-size: 26px;
+    .fl
+      font-size: 26px
+    .fr
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 24px;
+      .fr-read
+        position: absolute;
+        background: url("/build/img/readIcon.png") top center no-repeat;
+        background-size: 100% 100%;
+        display: inline-block;
+        width: 34px;
+        height: 25px;
+        top: 50%;
+        margin-top: -12px;
+        left: -48px;
+        -webkit-tap-highlight-color: rgba(0,0,0,0)
+  .ar-cont
+    margin: 26px 0;
+    word-wrap: break-word;
+    word-break: normal;
+    font-size: 30px !important;
+    -webkit-overflow-scrolling: touch;
+    display: inherit;
+    color #4e5e75
+    .bodyimg
+      display: block;
+      width: 100%
+      img
+        width: 100%
+  .ar-footer
+    position: relative;
+    width: 100%;
+    color: #919dae;
+    span.give
+      color: #4e5e75;
+      height: 28px;
+      line-height: 28px;
+      font-size: 24px;
+      display: inline-block;
+      position relative
+      a
+        width: 34px;
+        height: 34px;
+        position: relative;
+        top: 0px;
+        -webkit-tap-highlight-color: rgba(0,0,0,0)
+      .give-img
+        background: url("/build/img/giveIcon.png") top center no-repeat;
+        background-size: 100% 100%;
+        display: inline-block;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      .give-img.active
+        background: url("/build/img/give-active.png") top center no-repeat
+      .give-img-active
+        background: url("/build/img/give-active.png") top center no-repeat;
+        background-size: 100% 100%;
+        animation: myfirst .5s;
+        -moz-animation: myfirst .5s;
+        -webkit-animation: myfirst .5s;
+        -o-animation: myfirst .5s
+    .footer-collect
+      margin-left: 48px;
+      .ar-footer-collect
+        background: url("/build/img/collect.png") top center no-repeat;
+        background-size: 100% 100%;
+        width: 30px;
+        height: 26px;
+        display: inline-block;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        margin-bottom: -5px
+      .ar-footer-collect.active
+        background: url("/build/img/collect-active.png") top center no-repeat
+      .collect-active
+        background: url("/build/img/collect-active.png") top center no-repeat;
+        background-size: 100% 100%;
+        animation: myfirst .5s;
+        -moz-animation: myfirst .5s;
+        -webkit-animation: myfirst .5s;
+        -o-animation: myfirst .5s
+    .footer-share
+      position: absolute;
+      right: 0;
+      font-size: 26px;
+      width: 100px;
+      height: 40px;
+      color: #4e5e75;
+      text-decoration: none;
+      .ar-footer-share
+        background: url("/build/img/share.png") top center no-repeat;
+        background-size: 100% 100%;
+        display: inline-block;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        width: 28px;
+        height: 28px;
+        position: relative;
+        top: 4px;
+  .ar-wku
+    width 670px
+    height 350px
+    background:url('/build/img/wenku.png') no-repeat top center
+    background-size 100% 100%
+    display none
+    margin 21px auto 35px
+    position relative
+    .wenIcon
+      position absolute
+      width 87px
+      height 70px
+      left 50%
+      margin-left -43px
+      top 84px
+    .wenBtn
+      display block
+      width 250px
+      height 72px
+      line-height 72px
+      background-color:rgba(0,0,0,0)
+      border 1px solid #fff
+      border-radius 36px
+      font-size 32px
+      color #fff
+      position absolute
+      left 50%
+      margin-left -125px
+      bottom 80px
+      text-align center
+.article_add
+  margin: 50px 11px 0 22px;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  .relevant
+    width 100%
+    .tit
+      font-size 30px
+      color #344559
+      margin-bottom 26px
+    .relevant-com
+      padding 0 30px
+      a
+        margin-bottom 20px
+        font-size 30px
+        color #919dae
+        overflow hidden
+        -webkit-line-clamp 1
+        word-wrap:break-word; 
+        word-break:normal;
+        text-overflow ellipsis
+        white-space nowrap
+        display block
+      a:hover
+        color #36bac9
+        padding-bottom 2px
+        text-decoration underline
+      a:before
+        content: " "
+        width: 6px
+        height: 6px
+        border-radius: 50%
+        display: inline-block;
+        background-color #919dae
+        margin-right: 22px;
+        margin-bottom: 10px;
+.article_item
+  margin: 52px 23px 0px 23px;
+  font-size: 30px;
+  line-height: 48px;
+  color: #344559
+  .empty 
+    img
+      margin-top: 20px;
+
+.comment-box
+  height: 100%
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 23px;
+  margin: 0 auto;
+  font-size: 30px;
+  line-height: 48px;
+  color: #344559;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  .tit
+    font-size: 50px;
+    color: #344559
+
+.c-list
+  margin-top: 44px;
+  position: relative;
+  display: block;
+ .avatar
+    position: absolute;
+    left: 22px;
+    img.author-img
+      width: 90px !important;
+      height: 90px !important;
+      border-radius: 50%
+  .give
+    position: absolute;
+    display: block;
+    right: 0;
+    z-index: 20;
+    .give-img
+      background: url("/build/img/giveIcon.png") top center no-repeat;
+      background-size: 100% 100%;
+      display: inline-block;
+      width: 34px;
+      height: 34px;
+      margin-bottom -5px
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    .give-img.active
+      background: url("/build/img/give-active.png") top center no-repeat
+    .give-img-active
+      background: url("/build/img/give-active.png") top center no-repeat;
+      background-size: 100% 100%;
+      animation: myfirst .5s;
+      -moz-animation: myfirst .5s;
+      -webkit-animation: myfirst .5s;
+      -o-animation: myfirst .5s
+  .con
+    position: relative;
+    margin-left: 118px;
+    color: #4e5e75;
+    font-size: 28px;
+    lien-height: 36px;
+    .user
+      color: #919dae;
+      font-size: 26px;
+      line-height: 48px;
+      width: 90%;
+      overflow: hidden;
+      white-space: nowrap;
+      -o-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      word-wrap:break-word; 
+      word-break:normal;
+      .author
+        margin-left: 22px;
+        color: #36bac9;
+        font-size: 30px;
+        text-decoration: none
+    .sub_cont 
+      .sub_comment
+        background-color: #f3f3f3;
+        padding: 0 22px;
+        word-wrap:break-word; 
+        word-break:normal;
+        .author
+          color: #36bac9;
+          font-size: 28px;
+          line-height: 48px;
+          text-decoration: none
+      .sub_comment:active
+        background-color: #fff
+      .sub_comment:first-child
+        padding-top: 25px
+      .sub_comment:last-child
+        padding-bottom: 25px
+    .comment_main
+      color: #4e5e75;
+      font-size: 28px;
+      line-height: 36px;
+      margin-left: 23px;
+      word-wrap: break-word;
+      word-break: normal;
+    .comment_main:active
+      background-color: #f3f3f3
+    .time
+      color: #c0c6d0;
+      font-size: 24px;
+      line-height: 48px;
+      margin-left: 24px
+.c-list:last-child
+  margin-bottom: 40px
+
+.u-list
+  margin: 0 18px;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  li
+    margin-top: 44px;
+    position: relative;
+    .notice-icon
+      position: absolute;
+      img
+        width: 90px;
+        height: 90px;
+        border-radius: 45px
+    .notice-con
+      margin-left: 115px;
+      a.delete-style
+        background-color: #c0c6d0;
+        padding: 5px;
+        color: #4e5e75;
+        text-decoration: none
+      .notice-tit
+        font-size: 32px;
+        color: #344559;
+        line-height: 35px;
+        text-decoration: none;
+        .pushContent
+          text-decoration: none;
+          color: #344559
+        .author
+          color: #36bac9;
+          font-size: 32px;
+          text-decoration: none
+      .notice-com
+        margin-top: 30px;
+        background-color: #f3f3f3;
+        color: #919dae;
+        font-size: 26px;
+        padding: 5px 23px 20px 23px;
+        p
+          font-size: 26px;
+          color: #4e5e75;
+          height: 40px;
+          line-height: 40px;
+          position: relative;
+          a.notice-span
+            font-size: 26px;
+            color: #4e5e75;
+            position: absolute;
+            overflow: hidden;
+            width: 440px;
+            white-space: nowrap;
+            -o-text-overflow: ellipsis;
+            text-overflow: ellipsis;
+            display: inline-block;
+            text-decoration: none
+      p
+        color: #919dae;
+        font-size: 24px;
+        margin-top: 20px
+      .baike
+        width: 100%;
+        height: 2px;
+        background-color: #dbdbdb;
+        line-height: 3;
+        margin-top: 40px
+  li:last-child
+    margin-bottom: 40px;
+    .notice-con 
+      .baike
+        display: none
+
+
+@-webkit-keyframes myfirst {
+  0% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+
+  50% {
+    transform: cale(1.8);
+    -webkit-transform: scale(1.8)
+  }
+
+  100% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+}
+@-moz-keyframes myfirst {
+  0% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+
+  50% {
+    transform: cale(1.8);
+    -webkit-transform: scale(1.8)
+  }
+
+  100% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+}
+
+@-webkit-keyframes myfirst {
+  0% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+
+  50% {
+    transform: cale(1.8);
+    -webkit-transform: scale(1.8)
+  }
+
+  100% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+}
+
+@-o-keyframes myfirst {
+  0% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+
+  50% {
+    transform: cale(1.8);
+    -webkit-transform: scale(1.8)
+  }
+
+  100% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+}
+
+@keyframes myfirst {
+  0% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+
+  50% {
+    transform: cale(1.8);
+    -webkit-transform: scale(1.8)
+  }
+
+  100% {
+    transform: cale(1);
+    -webkit-transform: scale(1)
+  }
+}

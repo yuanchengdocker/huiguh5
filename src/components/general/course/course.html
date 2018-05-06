@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>课程</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css"/>
+  <link rel="stylesheet" href="/build/common/css/public/public.css">
+  <link rel="stylesheet" type="text/css" href="../course/course.css">
+  <link rel="stylesheet" type="text/css" href="/build/common/css/swiper.min.css" />
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+  <style>
+        ::-webkit-scrollbar {
+           width: 0em;
+        }
+        ::-webkit-scrollbar:horizontal {
+          height: 0em;
+        }
+    </style>
+</head>
+<body class="course-page">
+    <div class="course-video" id="course-video">
+        <video controls preload="none" 
+            width="100%"  x5-video-player-type="h5" 
+            x5-video-player-fullscreen="true" playsinline="true" webkit-playsinline="true" x-webkit-airplay="true">
+        </video>
+    </div>
+    <script type="text/html"  id="course-video-container">
+        <div class='pay-container hg-alin-middle'>
+            <div style='width:100%' class="">
+                <p class='title'>当前课程需付费观看</p>
+                <p class='price'>￥<%= data.price %></p>
+                <a class='pay-link download-btn'>立即支付</a>
+            </div>
+        </div>
+    </script>
+    <div class="course-tab">
+      <ul class="course-tab-container">
+          <li class="course-tab-item course-tab-active"><a>详情</a></li>
+          <li class="course-tab-item"><a>评论</a></li>
+          <span class="active-flag"></span>
+      </ul>
+    </div>
+    <div class="course-list">
+        <div class="course-container hg-clear">
+            <div id="course-detail-page" class="course-item-page course-detail">
+                <div id="series-swiper"></div>
+                <script type="text/html" id="swiper-container">
+                    <% if(data.courses.length > 0){ %>
+                    <p class="question-table-tit">所属专题：<%= data.currentCourse.projectTitle %></p>
+                    <% } %>
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <% _.forEach(data.courses,function(item,index) { %>
+                            <div class="series-item swiper-slide" course="<%- item.courseId %>" courseTitle="<%- item.courseTitle %>">
+                                <div class="cover">
+                                    <img src="<%- item.coursePicUrl %>" alt=""/>
+                                    <div class="content hg-alin-middle">
+                                        <div style="width:100%">
+                                            <span class="num">【第<%= item.courseNo %>课】</span>
+                                            <span class="title hg-word-clamp hg-word-clamp-2"><%= item.courseTitle %></span>
+                                            <span class="video"></span>
+                                        </div>
+                                        <% if(item.isForenotice){ %>
+                                        <span class="advance">预告</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                </script>
+                <div class="course-detail-list">
+                </div>
+                <script type="text/html" id="courses-list">
+                    <% _.forEach(data.videos,function(item,index) { %>
+                        <ul class="detail-list-container">
+                            <li class="course-item hg-alin-middle">
+                                <% if(data.isCharge == 0 && index == 0){ %>
+                                    <a class="item-title hg-alin-middle item-title-active" url="<%- item.videoUrl %>">
+                                <% }else{ %>
+                                    <a class="item-title hg-alin-middle" url="<%- item.videoUrl %>">   
+                                <% } %>
+                                    <span class="video-flag"></span>
+                                    <span class="video-title"><%= item.no+"."+item.videoTitle %></span>
+                                </a>
+                                <span class="hg-alin-middle">
+                                    <img class="video-time-png" src="../../../img/time.png"/>
+                                    <span class="time"><%= parseInt(item.videoTimeLength/60) %>min</span>
+                                </span>
+                            </li>
+                        </ul>
+                    <% }) %>
+                </script>
+
+                <div class="bottom-container"></div>
+
+                <script type="text/html" id="bottom-container">
+                    <% if(data.groupChatId){ %>
+                    <div class="course-communication">
+                        <div class="left hg-alin-middle">
+                            <img src="../../../img/course-communication.png"/>
+                            <span class="num"><%= data.groupChatMemberCount||0 %></span>
+                            人在交流
+                        </div>
+                        <div class="right">
+                            <span class="download-btn">进入课程交流群 ></span>
+                        </div>
+                    </div>
+                    <% } %>
+    
+                    <div class="course-producer">
+                        <p class="producer-title">出品方</p>
+                        <div class="producer-detail-container">
+                            
+                            <!-- href="<%- data.producerType==1?'/build/components/general/personal/index.html?doctorUserId='+data.producerId:'/build/components/general/studio/studio.html?doctorStudioId='+data.producerId %>" -->
+                        
+                            <a style="background-image:url('<%- data.producerIconUrl||'../../../img/icon.png' %>')" class="producer-head hg-header-img" ></a>
+                            <div class="content">
+                                <span class="name"><%= data.producerName %></span>
+                                <span class="hospital"><%= data.producerHospitalName %></span>
+                                <div class="introduce">
+                                    <%= data.courseDesc %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </script>
+            </div>
+            <div id="course-comm-page" class="course-item-page course-comm">    
+                <ul class="course-comm-container" id="course-comms-container">
+                </ul>
+            </div>
+            <script type="text/html" id="course-comm-container">
+                <% _.forEach(data,function(item,index) { %>
+                    <li class="course-comm-item hg-clear">
+                        <!-- href="<%- '/build/components/general/personal/index.html?doctorUserId='+item.userId %>"  -->
+                        <a  style="background-image:url('<%- item.thumbnailUrl||'../../../img/icon.png' %>')" class="comm-head hg-header-img"></a>
+                        <div class="comm-content">
+                            <div class="hg-ml20" style="width:100%">
+                                <span class="title-container hg-word-clamp hg-word-clamp-1">
+                                    <span class="name"><%= item.isPerfectInformation == true?item.doctorName:item.mobilePhone %></span>
+                                    <% if(item.isPerfectInformation == true){ %>
+                                    <span class="office hg-middle-line"><%= item.professionalTitleName||'其他' %></span>
+                                    <span class="office"><%= item.hospitalName||'其他' %></span>
+                                    <% }else{ %>
+                                        <span class="office">未认证用户</span>
+                                    <% } %>
+                                </span>
+                                <span class="islike nolike">
+                                    <span class="like-png"></span><%= countData(item.praiseNum) %>
+                                </span>
+                                <p class="comm-detail">
+                                    <%= item.content %>
+                                </p>
+                                <span class="time">
+                                    <%= formatDateTime(item.createTime,'minute') %>
+                                </span>
+                            </div>
+
+                            <% if(item.subList.length > 0){ %>
+                                <div class="comm-reply-content"> 
+                                    <% _.forEach(item.subList, function(conts) { %>
+                                        <!-- 评论人的被评论  -->
+                                        <div class="item">
+                                            <a class="name" data-authorid="<%- conts.userId %>"><%= conts.isPerfectInformation?conts.doctorName:conts.mobilePhone %>
+                                            <% if(conts.replyUserName != ""){%></a>回复
+                                            <span class="name" data-repltid="<%- conts.replyUserId %>"><%= conts.replyIsPerfectInformation?conts.replyUserName:conts.replyMobilePhone %>：</span>
+                                            <% }else{%>
+                                                ：</a>
+                                            <% } %>
+                                            <span class="content"><%- conts.replyContent %></span>
+                                        </div>
+                                    <% })%>
+                                </div>
+                            <% };%>
+                            
+                        </div>
+                    </li>
+                <% }) %>
+            </script>
+
+        </div>
+    </div>
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="../../../common/js/require.js" defer async="true" data-main="../course/course.js"></script>
+    <script src="/build/common/js/download-bar.js?v=1.0.0"></script>
+</body>
+</html>

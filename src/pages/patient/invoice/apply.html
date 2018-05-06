@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>申请发票</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <link rel="stylesheet" type="text/css" href="/build/commonWX/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/build/css/patient/invoice/apply.css">
+    <script type="text/javascript" src="/build/commonWX/js/flexible.js"></script>
+  </head>
+
+  <body>
+    <section class="people">
+      <p><i></i><span>收件人</span><input type="text" name="" required="required" maxlength="10" id="name"></p>
+    </section>
+    <section class="phone">
+      <p><i></i><span>联系电话</span><input type="telephone" name="" required="required" maxlength="11" id="phone"></p>
+    </section>
+    <section class="adress">
+      <p><i></i><span>邮寄地址</span></p>
+      <textarea rquired="required" maxlength="35" placeholder="请输入您的地址" id="adress"></textarea>
+    </section>
+    <section class="button">
+      <p><i></i>提交后不可修改，发票将在3个工作日内邮寄给您~</p>
+      <a class="btn">提交</a>
+    </section>
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="/build/commonWX/js/jquery.min.js"></script>
+    <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+    <script src="/build/commonWX/js/common.js"></script>
+    <script src="/build/js/patient/invoice/apply.js"></script>
+  </body>
+
+</html>

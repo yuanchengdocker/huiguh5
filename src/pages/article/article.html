@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>资讯详情</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1"/>
+  <link rel="stylesheet" href="/build/css/style.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+
+</head>
+<body style="background-color: #fff">
+  <div id="container">
+    <div class="article_com">
+      <h2 class="newsTitle"></h2>
+      <div class="ar-info">
+        <div class="fl"></div>
+        <div class="fr">
+          <a href="javascript:;" class="fr-read"></a>
+        </div>
+      </div>
+      <div class="ar-cont"></div>
+      <div class="ar-wku">
+        <img src="/build/img/wenIcon.png" alt="" class="wenIcon" />
+        <a class="wenBtn download-btn" href="javascript:void(0);">点击阅读</a>
+      </div>
+    </div>
+    <div class="article_add">
+      <div class="relevant">
+        <div class="tit" id="tit">相关阅读</div>
+        <div class="relevant-com"></div>
+      </div>
+    </div>
+    <div class="article_item" style="margin-bottom:2.2rem;">
+      <div class="ar-commentbox">
+        <div class="tit">全部评论</div>
+        <div id="log"></div>
+        <!-- 全部评论 -->
+        <div class="line">
+          <!-- 全部评论 -->
+          <div class="c-item">
+           <!-- 单条评论 -->
+            <ul class="item">
+              <!-- 评论 -->
+            </ul>
+          </div>
+        </div>  
+        <div class="empty">
+          <img src="/build/img/empty.png" alt="" />
+          <p>暂无内容</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var isArticleListPage = true;
+  </script>
+  <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/common/js/address.js?v=1.0.0"></script>
+  <script src="/build/common/js/common.js?v=1.0.0"></script>
+  <script src="/build/js/article/infolist.js?v=1.0.0"></script>
+  <script type="text/html" id="article_com">
+        <span class="give">
+          <% if(isPraise){ %>
+            <a href="javascript:;" class="give-img give-img-active"></a>
+          <% } else{ %>
+            <a href="javascript:;" class="give-img"></a>
+          <% } %>
+          <span class="num"><%= praiseCountTag %></span>
+        </span>
+        <span class="footer-collect">
+           <a href="javascript:void(0);" class="ar-footer-collect download-btn"></a>
+        </span>
+  </script>
+  <script type="text/html" id="comment">
+        <% _.forEach(data, function(item) { %>
+        <li class="c-list" data-commentid="<%- item.commentId %>">
+          <!-- 评论人的头像 -->
+          <div class="avatar">
+            <% if(item.thumbnailUrl == ""){ %>
+              <img class="author-img" src="/build/img/icon.png"  alt="" />
+            <% }else{ %>
+              <img class="author-img" src="<%- item.thumbnailUrl %>"  alt="" />
+            <% } %>
+          </div>
+           <!-- 评论上的点赞 -->
+          <div class="give">
+            <% if(item.isPraise){ %>
+              <a href="javascript:;" class="give-img give-img-active"></a>
+            <% } else{ %>
+              <a href="javascript:;" class="give-img"></a>
+            <% } %>
+            <span class="num"><%= item.praiseNum %></span>
+          </div>
+          <!-- 评论人的内容 -->
+          <div class="con" id="con">
+            <div class="user">
+               <!-- 判断是否是认证用户 -->
+               <% if(item.isPerfectInformation == true){ %>
+               <a class="author" data-authorid="<%- item.userId %>"><%= item.doctorName %></a>
+               <span class="job"><%= item.professionalTitleName %></span> |
+               <span class="hospital"><%= item.hospitalName %></span>
+                <% }else{ %>
+                <a class="author" data-authorid="<%- item.userId %>"><%= item.mobilePhone %></a>
+                <span class="job">未认证用户</span>
+                <% } %>
+            </div>
+        <div class="comment_main" data-commentid="<%- item.commentId %>"><%- item.content %></div>
+            <div class="time"><%= item.createTime %></div>
+            <!-- 评论人被评论 -->
+            <% if(item.subList.length > 0){ %>
+            <div class="sub_cont"> 
+                <% _.forEach(item.subList, function(conts) { %>
+                    <!-- 评论人的被评论  -->
+                    <div class="sub_comment">
+                      <a class="author" data-authorid="<%- conts.userId %>">
+                        <!-- 判断是否是认证用户 -->
+                      <% if(conts.isPerfectInformation == true){ %>
+                        <%= conts.doctorName %>
+                      <% }else{ %>   
+                        <%= conts.mobilePhone %> 
+                      <% } %>
+                      </a>
+                      <% if(conts.replyUserName != ""){%>回复<span class="author" data-repltid="<%- conts.replyUserId %>">
+                      <!-- 判断是否是认证用户 -->
+                      <% if(conts.replyIsPerfectInformation == true){ %>
+                        <%= conts.replyUserName %>
+                      <% }else{ %>  
+                        <%= conts.replyMobilePhone %>
+                      <% } %>
+                      </span><% }%>:<span><%- conts.replyContent %></span>
+                    </div>
+                <% })%>
+            </div>
+            <% };%>
+          </div>
+          <div class="baike"></div>
+        </li>
+        <% }); %>
+      </ul>
+    </div>
+  </script>
+  
+  <script type="text/html" id="template-article">
+  <% _.forEach(data, function(list) { %>
+    <a href="/build/pages/article/article.html?newsId=<%- list.newsId %>"><%= list.newsTitle %></a>
+  <% }) %>
+  </script>
+
+  <!-- 微信分享 -->
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
+  <!-- wxapiauth.hk515.com -->
+  <script type="text/javascript" id="wxscript"></script>
+  <script type="text/javascript">
+    // var star = encodeURIComponent(location.href.split('#')[0]);
+    // document.getElementById('wxscript').src='http://hg-weixin.szyyky.com/thirdpartyapi/thirdPartyUser/getSignature?appId=wxf5bdc71fe3151bc4&noncestr=1428560985&timestamp=1428560985&callback=wxInput&url='+ star;
+  </script>
+
+  <script>
+    // var sTitle,sTitle2,sDesc,sLink,imgUrl;
+    // huiguPost(function(data){
+    //   if(data.code == 0){
+    //     sTitle = data.data.shareTitle;
+    //     sTitle2 = data.data.shareTitle;
+    //     sDesc = data.data.shareContent;
+    //     sLink = data.data.shareUrl;
+    //     imgUrl = data.data.shareImgUrl;
+
+    //     var wxShare = document.createElement("script");
+    //     wxShare.src='/build/common/js/wxShare.js';
+    //     document.getElementsByTagName("body")[0].appendChild(wxShare);
+    //   }
+    // },huiguPostUrl.getShare,{"topicId":optUrlParams("newsId"),"topicType":3})
+    
+    // function wxInput(obj) {
+    //   window.cookieObj = obj;
+    // }
+  </script>
+</body>
+</html>

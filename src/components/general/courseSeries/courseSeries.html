@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>课程专题</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css"/>
+  <link rel="stylesheet" href="/build/common/css/public/public.css">
+  <link rel="stylesheet" type="text/css" href="../courseSeries/courseSeries.css">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body class="course-series-page">
+    <div id="course-series-container">
+    </div>
+
+    <script type="text/html" id="course-series">
+        <div class="course-series-header">
+            <img src="<%- data.coverPicUrl %>" alt="" class="series-header-img"/>
+            <div class="series-header-content">
+                <div class="huigu-header">
+                    <p class="header-tit"><%= data.projectTitle %></p>
+                </div>
+                <div class="series-producer hg-alin-middle">
+                    <a style="background-image:url('<%- data.producerIconUrl||'../../../img/icon.png' %>')" 
+                        class="producer-header hg-header-img" ></a>
+                        <!-- href="<%- data.producerType==1?'/build/components/general/personal/index.html?doctorUserId='+data.producerId:'/build/components/general/studio/studio.html?doctorStudioId='+data.producerId %>" -->
+                    <span class="name"><%= data.producerName %>  <%= data.producerHospitalName %></span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="series-content">
+            <p class="series-introduce">
+                <%= data.projectDesc %>
+            </p>
+            <% if(data.totalCount == data.updatedCount){ %>
+            <p class="course-list-title">共<%= data.totalCount||0 %>课</p>
+            <% }else{ %>
+            <p class="course-list-title">已更新<%= data.updatedCount||0 %>课</p>
+            <% } %>
+            <div class="course-list hg-clear">
+                <% _.forEach(data.subjectList, function(item) { %>
+                    <a class="course-item" 
+                    href="<%- '/build/components/general/course/course.html?projectCourseId='+item.projectCourseId+'&courseId='+item.courseId %>">
+                        <div class="img-container">
+                            <img src="<%- item.coursePicUrl %>" alt=""/>
+                            <div class="img-detail">
+                                <span class="img-time hg-alin-middle"><img class="time-png" src="../../../img/time.png"/><%= parseInt(item.courseTime/60) %>min</span>
+                                <% if(item.isForenotice){ %>
+                                <span class="advance">预告</span>
+                                <% } %>
+
+                                <% if(!item.payState){ %>
+                                <span class="price">免费</span>
+                                <% }else{ %>
+                                <span class="price">￥<%= item.price %></span>
+                                <% } %>
+                            </div>
+                        </div>
+                        <p class="course-title hg-word-clamp hg-word-clamp-1">【第<%= item.courseNo %>课】<%= item.courseTitle %></p>
+                    </a>
+                <% })%>
+            </div>
+        </div>
+    </script>
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="../../../common/js/require.js" defer async="true" data-main="../courseSeries/courseSeries.js"></script>
+</body>
+</html>

@@ -1,0 +1,562 @@
+.personal-detail-box
+  width: 100%
+  height: auto
+  background-color #fff
+  .detail-header
+    width 100%
+    position relative
+    margin-bottom 99px
+    .detail-header-main
+      height 340px
+      background-color #36bac9
+      color #fff
+      top 79px
+      position absolute
+      width 670px
+      left 50%
+      margin-left -335px
+      z-index 5
+      .detail-header-img
+        position absolute
+        width 140px
+        height 140px
+        border-radius 50%
+        top -64px
+        left 50%
+        margin-left -70px
+        .detail-header-autor
+          overflow hidden
+          width 140px
+          height 140px
+          border-radius 50%
+          border 5px solid #36bac9
+          .detail-autor
+            width auto
+            height auto
+            min-height 100%
+            min-width 100%
+        .status
+          position absolute
+          width 31px
+          height 31px
+        .detail-status1
+          right 0px
+          bottom 10px
+          display block
+        .detail-status2
+          width 85px
+          height 29px
+          right -50px
+          bottom 13px
+          display block
+        .detail-status3
+          right 0px
+          bottom 10px
+          display block
+      .detail-header-con
+        text-align center
+        margin-top 100px
+        position relative
+        font-size 26px
+        .detail-tit
+          margin-bottom 28px
+          display -webkit-box
+          -webkit-box-orient vertical
+          overflow hidden
+          text-overflow ellipsis
+          -webkit-line-clamp 1
+          word-wrap:break-word; 
+          word-break:normal;
+          span
+            font-size 34px
+            margin-right 20px
+        .detail-subtitle
+          margin 0 auto 40px
+          width 90%
+          display -webkit-box
+          -webkit-box-orient vertical
+          overflow hidden
+          text-overflow ellipsis
+          -webkit-line-clamp 1
+          word-wrap:break-word; 
+          word-break:normal;
+        .detail-tag
+          display -webkit-box
+          -webkit-box-orient vertical
+          overflow hidden
+          text-overflow ellipsis
+          -webkit-line-clamp 1
+          word-wrap:break-word; 
+          word-break:normal;
+          span
+            border 0.0275rem solid #fff
+            padding 18px 23px
+            margin-right 15px
+            border-radius 50px
+            display inline-block
+            margin-bottom 20px
+          span:last-child
+            margin-right 0
+     .detail-add
+        position absolute
+        border 0.0275rem solid #fff
+        width 120px
+        height 40px
+        line-height 35px
+        font-size 24px
+        border-radius 20px
+        text-align center
+        top 29px
+        right 29px
+        color #fff
+    .detail-header-bg
+      height 370px
+      width 100%
+      overflow hidden
+      position relative
+      .detail-header-flit
+        position absolute
+        width 100%
+        height 100%
+        background-color rgba(0, 0, 0, .5)
+        z-index 2
+      img
+        width 100%
+        height auto
+        display block
+        margin 0 auto
+        -webkit-filter blur(5px) /* Chrome, Opera */
+        -moz-filter blur(5px)
+        -ms-filter blur(5px)  
+        filter blur(5px)
+  .detail-cont
+    width: 100%
+    padding: 10px 40px
+    background-color: #ffffff
+    .detail-tab
+      width: 100%
+      margin-bottom: 10px
+      .detail-tab-container
+        width: 100%
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: space-between;
+        -webkit-justify-content: space-between;
+        justify-content: space-between
+        position: relative
+        .detail-tab-item
+          float: left
+          position relative
+          a
+            padding: 0 22px 30px;
+            margin:0 28px;
+            font-size: 30px
+            color: #344559
+            display: inline-block
+            // border-bottom: 5px solid #ffffff
+            -webkit-transition: color .3s cubic-bezier(.645,.045,.355,1);
+            transition: color .3s cubic-bezier(.645,.045,.355,1);
+          a:hover
+            color: #36bac9
+            border-bottom-color:#36bac9
+          .tab-active
+            color: #36bac9
+            border-bottom-color:#36bac9
+          .tab-bar
+            display: block;
+            transform: translate3d(0px, 0px, 0px);
+            width: 80px;
+            margin-left:-40px;
+            left 50%
+            z-index: 1;
+            position: absolute;
+            bottom: 1px;
+            box-sizing: border-box;
+            height: 5px;
+            display none
+            background-color: #36bac9;
+            -webkit-transform-origin: 0 0;
+            -ms-transform-origin: 0 0;
+            transform-origin: 0 0;
+            -webkit-transition: width .3s cubic-bezier(.645,.045,.355,1),-webkit-transform .3s cubic-bezier(.645,.045,.355,1);
+            transition: width .3s cubic-bezier(.645,.045,.355,1),-webkit-transform .3s cubic-bezier(.645,.045,.355,1); 
+            transition: transform .3s cubic-bezier(.645,.045,.355,1),width .3s cubic-bezier(.645,.045,.355,1); 
+            transition: transform .3s cubic-bezier(.645,.045,.355,1),width .3s cubic-bezier(.645,.045,.355,1),-webkit-transform .3s cubic-bezier(.645,.045,.355,1);
+        .detail-tab-item:first-child
+          .tab-bar
+            display block
+    .detail-tab-cont
+      width: 100%
+      overflow: hidden;
+      padding-bottom: 160px
+      min-height: 500px
+      .tab-container
+        width: 2680px
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        .detail-tab-introduce
+          display: block
+          width: 670px
+          font-size 30px
+          line-height 55px
+          color #919dae
+          margin-top 50px
+          text-indent:55px
+          word-wrap:break-word; 
+          word-break:normal;
+          .introduce-headimg
+            width: 100%
+          .introduce-desc
+            font-size: 30px 
+            line-height: 36px
+            color: #344559
+            padding: 30px 0;
+            padding-bottom: 27px;
+        .detail-tab-team
+          width: 670px
+          display: block
+          ul
+            li
+              width 100%
+              border-bottom 0.0275rem solid #dbdbdb
+              margin-top 33px
+              .tab-team-top
+                font-size 34px
+                color #344559
+                margin-bottom 22px
+                line-height 72px
+                position relative
+                overflow:hidden; 
+                text-overflow:ellipsis;
+                display:-webkit-box; 
+                -webkit-box-orient:vertical;
+                -webkit-line-clamp:1; 
+                word-wrap:break-word; 
+                word-break:normal;
+                a.team-artor
+                  width 72px
+                  height 72px
+                  border-radius 50%
+                  margin-right 26px
+                  overflow hidden
+                  display inline-block
+                  position relative
+                  bottom -10px
+                  img
+                      width auto
+                      height 100%
+              .tab-team-photo
+                  width 100%
+                  height 300px
+                  position relative
+                  overflow hidden
+                  div
+                    height  115px
+                    position absolute
+                    bottom 0
+                    left 0
+                    width 100%
+                    background-color rgba(0, 0, 0, .4)
+                    p
+                      font-size 28px
+                      color #fff
+                      padding 0 12px
+                      margin-top 33px
+                      line-height 34px
+                      overflow:hidden; 
+                      text-overflow:ellipsis;
+                      display:-webkit-box; 
+                      -webkit-box-orient:vertical;
+                      -webkit-line-clamp:2; 
+                      word-wrap:break-word; 
+                      word-break:normal;
+                  img
+                    width 100%
+                    height auto
+              .tab-team-info
+                width 100%
+                position relative
+                clear both
+                display block
+                height 115px
+                div
+                  float left
+                  display inline-block
+                  width 33%
+                  height 115px
+                  line-height 115px
+                  font-size 26px
+                  color #919dae
+                  text-align center
+                  i
+                    width 50px
+                    height 50px
+                    border-radius 50%
+                    background url("/build/img/studio_special.png") no-repeat top center
+                    background-size 100% 100%
+                    display inline-block
+                    margin-right 14px
+                    margin-bottom -10px
+                div:first-child
+                  text-align left
+                  i
+                    background url("/build/img/video-start.png") no-repeat top center
+                    background-size 100% 100%
+                div:last-child
+                  text-align right
+                  i
+                    background url("/build/img/studio_article.png") no-repeat top center
+                    background-size 100% 100%
+        .detail-tab-opus
+          width: 670px
+          display: block
+          margin-top 22px
+          ul
+            li
+              border-bottom 0.0275rem solid #dadada
+              padding 32px 0 40px
+              .tab-opus-contain
+                position relative
+                margin-bottom 26px
+                height 160px
+                .opus-contain-tit
+                  font-size 32px
+                  color #344559
+                  line-height 48px
+                  width 428px
+                  overflow:hidden; 
+                  text-overflow:ellipsis;
+                  display:-webkit-box; 
+                  -webkit-box-orient:vertical;
+                  -webkit-line-clamp:3; 
+                  word-wrap:break-word; 
+                  word-break:normal;
+                .opus-contain-img
+                  position absolute
+                  top 0
+                  right 0
+                  width 220px
+                  height 160px
+                  .containImg
+                    width 100%
+                    height 100%
+                  .meng
+                    position absolute
+                    top 0
+                    right 0
+                    width 100%
+                    height 100
+                    z-index 10
+                  .yu
+                    position absolute
+                    right 0
+                    top 0
+                    z-index 12
+                    height 87px
+                    width 87px
+              .tab-opus-bottom
+                width 100%
+                position relative
+                .opus-bottom-time
+                  font-size 24px
+                  color #a2acba
+                  i
+                    width 30px
+                    height 30px
+                    background url("/build/img/time.png") no-repeat top center
+                    background-size 100% 100%
+                    margin-right 10px
+                    display inline-block
+                    margin-bottom -5px
+                .opus-bottom-tit
+                  font-size 26px
+                  color #919dae
+                .opus-bottom-fix
+                  position absolute
+                  right 0
+                  top 0
+                  font-size 26px
+                  color #a2acba
+                .opus-bottom-money
+                  position absolute
+                  right 0
+                  top 0
+                  font-size 30px
+                  color #36bac9
+                .opus-contain-give
+                  position absolute
+                  right 0
+                  top 0
+                  font-size 24px
+                  color #c0c6d0
+                  span
+                    margin-left 69px
+                    display inline-block
+                    i
+                      width 28px
+                      height 28px
+                      background url("/build/img/give.png") no-repeat top center
+                      background-size 100% 100%
+                      display inline-block
+                      margin-right 10px
+                  span:first-child
+                    margin-left 0px
+                    i
+                      width 30px
+                      height 22px
+                      background url("/build/img/read.png") no-repeat top center
+                      background-size 100% 100%
+        .detail-tab-serve
+          width 670px
+          display block
+          .tab-serve-tap
+            margin-top 40px
+            border-bottom 0.0275rem solid #dbdbdb
+            li
+              width 315px
+              display inline-block
+              margin-right 30px
+              text-align center
+              margin-bottom 45px
+              .serve-tap-main
+                height 200px
+                position relative
+                span
+                  position absolute
+                  top 0
+                  left 0
+                  width 120px
+                  height 40px
+                  line-height 40px
+                  background-color #36bac9
+                  color #fff
+                  font-size 24px
+                  text-align center
+                  z-index 10
+                .tap-main-bg
+                  width 100%
+                  height 100%
+              .serve-tap-btn
+                width 250px
+                height 72px
+                line-height 72px
+                border 0.0275rem solid #c0c6d0
+                border-radius 36px
+                text-align center
+                font-size 30px
+                color #919dae 
+                display block
+                margin 20px auto 0
+            li:nth-child(2n)
+              margin-right 0
+          .tab-serve-list
+            margin-top 50px
+            .serve-list-tit
+              font-size 30px
+              color #344559
+              i
+                display inline-block
+                width 6px
+                height 29px
+                background-color #36bac9
+                border-radius 3px
+                margin-right 22px
+            ul
+              li
+                margin-top 50px
+                .serve-list-main
+                  width 100%
+                  height 300px
+                  position relative
+                  .list-main-bg
+                    width 100%
+                    height 100%
+                  .list-main-title
+                    position absolute
+                    width 100%
+                    height 70px
+                    line-height 70px
+                    background-color rgba(52,69,89,0.5)
+                    bottom 0
+                    left 0
+                    color #fff
+                    font-size 28px
+                    padding-left 20px
+                    overflow:hidden; 
+                    text-overflow:ellipsis;
+                    display:-webkit-box; 
+                    -webkit-box-orient:vertical;
+                    -webkit-line-clamp:1; 
+                    word-wrap:break-word; 
+                    word-break:normal;
+                  .list-main-liao
+                    position absolute
+                    width 190px
+                    height 36px
+                    border-radius 18px
+                    background-color rgba(54,186,201,0.8)
+                    text-align center
+                    top 21px
+                    left 18px
+                    color #fff
+                    font-size 24px
+                    z-index 10
+                  .list-main-man
+                    position absolute
+                    height 36px
+                    border-radius 18px
+                    text-align center
+                    top 21px
+                    color #fff
+                    font-size 24px
+                    z-index 10
+                    right 22px
+                    width 220px
+                    background-color rgba(103,155,234,0.8)
+                .list-title
+                  font-size 32px
+                  color #344559
+                  margin-top 28px
+                  margin-bottom 30px
+                  overflow:hidden; 
+                  text-overflow:ellipsis;
+                  display:-webkit-box; 
+                  -webkit-box-orient:vertical;
+                  -webkit-line-clamp:1;
+                  word-wrap:break-word; 
+                  word-break:normal; 
+                .list-adress
+                  font-size 26px
+                  color #919dae
+                  i
+                    width 24px
+                    height 30px
+                    display inline-block
+                    background url("/build/img/address.png") no-repeat top center
+                    background-size 100% 100%
+                    margin-right 20px
+                    margin-bottom -5px
+        .show
+          display: block
+          
+
+.personal-empty
+    margin 15% 20%
+    text-align center
+    display none
+    .emptyImg
+      width 57px
+      height 59px
+      margin 0 auto 28px
+    p
+      font-size 30px
+      color #c0c6d0
+
+            
+            
+
+

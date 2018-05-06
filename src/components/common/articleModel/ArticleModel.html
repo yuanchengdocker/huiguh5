@@ -1,0 +1,10 @@
+<a class="articleA" href='/build/pages/article/article.html?newsId=<%- item.itemId %>'>
+    <div class="article-list-top">
+      <div class="article-list-title"><%= item.newsTitle %></div>
+      <div class="article-list-img"><img src="<%- item.coverUrl %>"></div>
+    </div>
+    <div class="article-list-bottom">
+      <span class="article-list-source"><%= item.sourceChannel %></span>
+      <p class="list-source"><span class="article-list-view"><i></i><%= item.readCount %></span><span class="article-list-give"><i></i><%= item.praiseCount %></span></p>
+    </div>
+  </a>
