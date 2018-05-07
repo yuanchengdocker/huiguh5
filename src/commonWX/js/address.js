@@ -35,10 +35,10 @@ var huiguPostUrl = {
 }
 
 
-var httpPathch = 'http://ddpay.huiguqx.com/'; //测试环境地址
-//var httpPathch = 'http://patienth5.szyyky.com/'; //正式环境地址
-var valuePath = 'wxf5bdc71fe3151bc4'; //慧骨健康
-//var valuePath = 'wx00d754ba950e306a'; //慧骨勤行
+// var httpPathch = 'http://ddpay.huiguqx.com/'; //测试环境地址
+var httpPathch = 'http://patienth5.szyyky.com/'; //正式环境地址
+// var valuePath = 'wxf5bdc71fe3151bc4'; //慧骨健康
+var valuePath = 'wx00d754ba950e306a'; //慧骨勤行
 var dataPath = {
     WXhttpPathch: httpPathch,
     WXvalueApich: valuePath,

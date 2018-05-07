@@ -14,14 +14,14 @@ module.exports = {
     devtool: process.env.NODE_ENV === 'development' ? '#cheap-module-eval-source-map' : 'none',
     output: {
         filename: isDev ? 'js/[name].[hash:8].js' : 'js/bunld.[chunkhash:8].js',
-        publicPath: '/build/vuepage'
+        publicPath: '/build/vuepage/'
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                exclude: /node-modules/,
+                exclude: [/node-modules/,/NIM_Web_SDK.*\.js/],
             },
             {
                 test: /\.css$/,

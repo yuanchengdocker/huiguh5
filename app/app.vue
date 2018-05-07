@@ -1,19 +1,8 @@
 <template>
-  <div style="height:100%;">
+  <div style="height:100%;" class="g-window">
     <div v-transfer-dom>
-      <loading v-model="isLoading"></loading>
+      <loading v-model="loadingStatus"></loading>
     </div>
-    <div v-transfer-dom>
-      <actionsheet :menus="menus" v-model="showMenu" @on-click-menu="changeLocale"></actionsheet>
-    </div>
-
-    <drawer
-    width="200px;"
-    :show.sync="drawerVisibility"
-    :show-mode="showModeValue"
-    :placement="showPlacementValue"
-    :drawer-style="{'background-color':'#35495e', width: '200px'}">
-
 
       <!-- main content -->
       <view-box ref="viewBox" :body-padding-top="isShowNav ? '46px' : '0'" body-padding-bottom="55px">
@@ -51,42 +40,22 @@
         </tabbar>
 
       </view-box>
-    </drawer>
   </div>
 </template>
 
 <script>
-import { Radio, Group, Cell, Badge, Drawer, Actionsheet, ButtonTab, ButtonTabItem, ViewBox, XHeader, Tabbar, TabbarItem, Loading, TransferDom } from 'vux'
 import { setTimeout } from 'timers';
+import {mapActions,mapState} from 'vuex'
 export default {
-  directives: {
-    TransferDom
-  },
-  components: {
-    Radio,
-    Group,
-    Cell,
-    Badge,
-    Drawer,
-    ButtonTab,
-    ButtonTabItem,
-    ViewBox,
-    XHeader,
-    Tabbar,
-    TabbarItem,
-    Loading,
-    Actionsheet
-  },
   methods: {
+    ...mapActions(['updatedLoadingStatus']),
     onShowModeChange (val) {
-      /** hide drawer before changing showMode **/
       this.drawerVisibility = false
       setTimeout(one => {
         this.showModeValue = val
       }, 400)
     },
     onPlacementChange (val) {
-      /** hide drawer before changing position **/
       this.drawerVisibility = false
       setTimeout(one => {
         this.showPlacementValue = val
@@ -100,12 +69,14 @@ export default {
       this.$locale.set(locale)
     }
   },
+  created () {
+    this.updatedLoadingStatus({status:true})
+  },
   mounted () {
     this.handler = () => {
-      
     }
     setTimeout(()=>{
-      this.isLoading=false
+      this.updatedLoadingStatus({status:false})
     },2000)
   },
   beforeDestroy () {
@@ -114,6 +85,9 @@ export default {
   watch: {
   },
   computed: {
+    ...mapState({
+        loadingStatus: state => state.loadingStatus
+    }),
     isShowBar () {
       if (this.entryUrl.indexOf('hide-tab-bar') > -1) {
         return false
@@ -146,9 +120,13 @@ export default {
       showModeValue: 'push',
       showPlacement: 'left',
       showPlacementValue: 'left',
-      isLoading:true,
       isTabbarDemo:true
     }
+  },
+  updated () {
+    // 提交sdk连接请求
+    this.$store.dispatch('connect')
+    this.$store.dispatch('updateRefreshState')
   }
 }
 </script>

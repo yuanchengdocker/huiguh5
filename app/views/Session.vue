@@ -22,12 +22,17 @@
         </group>
         <span class="vux-1px">test</span>
         <icon type="success"></icon>
-        <x-button type="primary" link="/demo">Go to demo list</x-button>
+        <x-button type="primary" @click.native="postTest">Go to demo list</x-button>
         <x-icon type="ios-arrow-up" class="icon-red"></x-icon>
     </div>
 </template>
 
 <script>
+    import {
+        mapState,
+        mapActions
+    } from 'vuex'
+import { setTimeout } from 'timers';
     export default {
         data() {
             return {
@@ -52,6 +57,14 @@
             }
         },
         methods: {
+            ...mapActions(['updatedLoadingStatus']),
+            postTest() {
+                console.log(this)
+                this.updatedLoadingStatus({status:true})
+                setTimeout(()=>{
+                    this.updatedLoadingStatus({status:false})
+                },2000)
+            },
             enterSysMsgs() {
                 if (this.hideDelBtn())
                     return
@@ -69,7 +82,7 @@
             },
             deleteSession() {
                 if (this.delSessionId !== null) {
-                    this.$store.dispatch('deleteSession', this.delSessionId)
+                    // this.$store.dispatch('deleteSession', this.delSessionId)
                 }
             },
             showDelBtn(vNode) {

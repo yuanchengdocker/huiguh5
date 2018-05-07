@@ -15,8 +15,8 @@ export default [
         meta: { keepAlive: true }
     },
     {
-        path: '/build/vuepage/page2',
-        component: () => import('../views/Session.vue'),
+        path: '/build/vuepage/chat',
+        component: () => import('../views/Chat.vue'),
         meta: { keepAlive: false }
     }
 ]

@@ -89,6 +89,7 @@
     "react-router-dom": "^4.2.2",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
+    "vuex": "^3.0.1",
     "vux": "^2.9.0"
   },
   "repository": {
