@@ -5,7 +5,8 @@
 import config from '../../config/nim.config.js'
 import store from '../'
 import { onSessions, onUpdateSession } from './session.js'
-import { onRoamingMsgs, onOfflineMsgs, onMsg } from './msgs'
+import { onRoamingMsgs, onOfflineMsgs, onMsg,sendMsg,sendFileMsg } from './msgs'
+import { onMyInfo, onUserInfo } from './userInfo'
 
 const SDK = require('../../sdk/' + config.sdk)
 
@@ -56,6 +57,11 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
         onroamingmsgs: onRoamingMsgs,
         onofflinemsgs: onOfflineMsgs,
         onmsg: onMsg,
+        // 用户名片 - actions/userInfo
+        onmyinfo: onMyInfo,
+        onupdatemyinfo: onMyInfo,
+        onusers: onUserInfo,
+        onupdateuser: onUserInfo,
         // // 同步完成
         onsyncdone: function onSyncDone() {
             dispatch('updatedLoadingStatus', { status: false })

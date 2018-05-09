@@ -1,29 +1,15 @@
 <template>
     <div class="g-inherit m-main p-session">
         <group class="u-list">
-            <cell 
-                v-for="(session,index) in sessionlist" 
-                class="u-list-item" 
-                :title="session.name" 
-                :inline-desc="session.lastMsgShow" 
-                :key="session.id" 
-                :sessionId="session.id" 
-                v-touch:swipeleft="showDelBtn" 
-                v-touch:swiperight="hideDelBtn"
-                @click.native="enterChat(session)"
-            >
+            <cell v-for="(session) in sessionlist" class="u-list-item" :title="session.name" :inline-desc="session.lastMsgShow" :key="session.id" :sessionId="session.id" v-touch:swipeleft="showDelBtn" v-touch:swiperight="hideDelBtn" @click.native="enterChat(session)">
                 <img class="icon u-circle" slot="icon" width="24" :src="session.avatar">
                 <span class='u-session-time'>
-                    {{session.updateTimeShow}}
-                </span>
+                            {{session.updateTimeShow}}
+                        </span>
                 <span v-show="session.unread > 0" class="u-unread">{{session.unread}}</span>
                 <span class="u-tag-del" :class="{active: delSessionId===session.id}" @click="deleteSession"></span>
             </cell>
         </group>
-        <span class="vux-1px">test</span>
-        <icon type="success"></icon>
-        <x-button type="primary" @click.native="postTest">Go to demo list</x-button>
-        <x-icon type="ios-arrow-up" class="icon-red"></x-icon>
     </div>
 </template>
 
@@ -32,53 +18,82 @@
         mapState,
         mapActions
     } from 'vuex'
-import { setTimeout } from 'timers';
+    import util from '../utils'
+    import config from '../config/nim.config'
+    import {
+        setTimeout
+    } from 'timers';
     export default {
+        name: 'session',
         data() {
             return {
                 delSessionId: null,
-                stopBubble: false
+                stopBubble: false,
             }
         },
         computed: {
-            userInfos() {
+            userInfos(){
                 return this.$store.state.userInfos
             },
-            myInfo() {
-                return this.$store.state.myInfo
-            },
             myPhoneId() {
-                return `${this.$store.state.userUID}`
+                return this.$store.state.userUID
             },
             sessionlist() {
-                return [
-                    {name:'test',lastMsgShow:'this is msg show',id:'12345',updateTimeShow:'0503',unread:1,avatar:'http://yx-web.nos.netease.com/webdoc/h5/im/default-group.png'}
-                ]
+                let sessionlist = this.$store.state.sessionlist.filter(item => {
+                    item.name = ''
+                    item.avatar = ''
+                    if (item.scene === 'p2p') {
+                        let userInfo = null
+                        if (item.to !== this.myPhoneId) {
+                            userInfo = this.userInfos[item.to]
+                        } else {
+                            userInfo = this.myInfo
+                            userInfo.alias = '我的手机'
+                            userInfo.avatar = `${config.myPhoneIcon}`
+                            return false
+                        }
+                        if (userInfo) {
+                            item.name = util.getFriendAlias(userInfo)
+                            item.avatar = userInfo.avatar
+                        }
+                    } else if (item.scene === 'team') {
+                        return false
+                        let teamInfo = null
+                        if (teamInfo) {
+                            item.name = teamInfo.name
+                            item.avatar = teamInfo.avatar || (teamInfo.type === 'normal' ? this.myGroupIcon : this.myAdvancedIcon)
+                        } else {
+                            item.name = `群${item.to}`
+                            item.avatar = item.avatar
+                        }
+                    }
+                    let lastMsg = item.lastMsg || {}
+                    if (lastMsg.type === 'text') {
+                        item.lastMsgShow = lastMsg.text || ''
+                    } else if (lastMsg.type === 'custom') {
+                        item.lastMsgShow = lastMsg.text || ''
+                    } else if (lastMsg.scene === 'team' && lastMsg.type === 'notification') {
+                        item.lastMsgShow = util.generateTeamSysmMsg(lastMsg)
+                    } else if (util.mapMsgType(lastMsg)) {
+                        item.lastMsgShow = `[${util.mapMsgType(lastMsg)}]`
+                    } else {
+                        item.lastMsgShow = ''
+                    }
+                    if (item.updateTime) {
+                        item.updateTimeShow = util.formatDate(item.updateTime, true)
+                    }
+                    return item
+                })
+                return sessionlist
             }
         },
         methods: {
             ...mapActions(['updatedLoadingStatus']),
-            postTest() {
-                console.log(this)
-                this.updatedLoadingStatus({status:true})
-                setTimeout(()=>{
-                    this.updatedLoadingStatus({status:false})
-                },2000)
-            },
-            enterSysMsgs() {
-                if (this.hideDelBtn())
-                    return
-                location.href = '#/sysmsgs'
-            },
             enterChat(session) {
                 if (this.hideDelBtn())
                     return
                 if (session && session.id)
-                    location.href = `#/chat/${session.id}`
-            },
-            enterMyChat() {
-                // 我的手机页面
-                location.href = `#/chat/p2p-${this.myPhoneId}`
+                    this.$router.push(`/build/vuepage/chat/${session.id}`);
             },
             deleteSession() {
                 if (this.delSessionId !== null) {
@@ -86,7 +101,6 @@ import { setTimeout } from 'timers';
                 }
             },
             showDelBtn(vNode) {
-                console.log(vNode)
                 if (vNode && vNode.data && vNode.data.attrs) {
                     this.delSessionId = vNode.data.attrs.sessionId
                     this.stopBubble = true
@@ -116,8 +130,11 @@ import { setTimeout } from 'timers';
     .vux-x-icon {
         fill: #F70968;
     }
+    .g-window .weui-cell::before {
+        height: 1px;
+    }
 </style>
 <style lang="less" scoped>
-@button-global-height:100px;
+    @button-global-height: 100px;
 </style>
 

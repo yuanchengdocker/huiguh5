@@ -22,9 +22,37 @@ function updateSessionAccount (sessions) {
   }
 }
 
+export function setCurrSession ({state, commit, dispatch}, sessionId) {
+    const nim = state.nim
+    if (sessionId) {
+      commit('updateCurrSessionId', {
+        type: 'init',
+        sessionId
+      })
+      if (nim) {
+        // 如果在聊天页面刷新，此时还没有nim实例，需要在onSessions里同步
+        nim.setCurrSession(sessionId)
+        commit('resetNoMoreHistoryMsgs')
+        commit('updateCurrSessionMsgs', {
+          type: 'init',
+          sessionId
+        })
+        // 发送已读回执
+        dispatch('sendMsgReceipt')
+      }
+    }
+  }
+  
+  export function resetCurrSession ({state, commit}) {
+    const nim = state.nim
+    nim.resetCurrSession()
+    commit('updateCurrSessionMsgs', {
+      type: 'destroy'
+    })
+  }
+
 // onSessions只在初始化完成后回调
 export function onSessions (sessions) {
-    console.log(sessions)
   updateSessionAccount(sessions)
   store.commit('updateSessions', sessions)
 }
@@ -71,30 +99,3 @@ export function deleteSession ({state, commit}, sessionId) {
   }
 }
 
-export function setCurrSession ({state, commit, dispatch}, sessionId) {
-  const nim = state.nim
-  if (sessionId) {
-    commit('updateCurrSessionId', {
-      type: 'init',
-      sessionId
-    })
-    if (nim) {
-      // 如果在聊天页面刷新，此时还没有nim实例，需要在onSessions里同步
-      nim.setCurrSession(sessionId)
-      commit('updateCurrSessionMsgs', {
-        type: 'init',
-        sessionId
-      })
-      // 发送已读回执
-      dispatch('sendMsgReceipt')
-    }
-  }
-}
-
-export function resetCurrSession ({state, commit}) {
-  const nim = state.nim
-  nim.resetCurrSession()
-  commit('updateCurrSessionMsgs', {
-    type: 'destroy'
-  })
-}

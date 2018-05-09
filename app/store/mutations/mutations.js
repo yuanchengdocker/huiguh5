@@ -7,6 +7,21 @@ import util from '../../utils'
 import config from '../../config/nim.config.js'
 import Vue from 'Vue'
 export default {
+    updateChatLoading(state,show){
+        state.isChatLoading = show
+    },
+    showLoading(state){
+        state.loadingStatus = true
+    },
+    hideLoading(state){
+        state.loadingStatus = false
+    },
+    setCurrRoute(state, route){
+        state.route = route
+    },
+    updateMenuBarShow(state, isShow) {
+        state.showMenuBar = isShow
+    },
     updateLoadingStatus(state, { status }) {
         state.loadingStatus = status
     },
@@ -114,13 +129,16 @@ export default {
     },
     updateSessions(state, sessions) {
         const nim = state.nim
+        let unReadCount = 0
         state.sessionlist = nim.mergeSessions(state.sessionlist, sessions)
         state.sessionlist.sort((a, b) => {
             return b.updateTime - a.updateTime
         })
         state.sessionlist.forEach(item => {
             state.sessionMap[item.id] = item
+            unReadCount += item.unread
         })
+        state.sessionUnreadCount = unReadCount
     },
     deleteSessions(state, sessionIds) {
         const nim = state.nim
@@ -278,7 +296,7 @@ export default {
                     }
                     state.currSessionMsgs.push(msg)
                 })
-                store.dispatch('checkTeamMsgReceipt', state.currSessionMsgs)
+                // store.dispatch('checkTeamMsgReceipt', state.currSessionMsgs)
             }
         } else if (type === 'put') { // 追加一条消息
             let newMsg = obj.msg
@@ -295,7 +313,7 @@ export default {
                     })
                 }
                 state.currSessionMsgs.push(newMsg)
-                store.dispatch('checkTeamMsgReceipt', [newMsg])
+                // store.dispatch('checkTeamMsgReceipt', [newMsg])
             }
         } else if (type === 'concat') {
             // 一般用于历史消息拼接
@@ -318,7 +336,7 @@ export default {
             if (obj.msgs[0]) {
                 state.currSessionLastMsg = obj.msgs[0]
             }
-            store.dispatch('checkTeamMsgReceipt', currSessionMsgs)
+            // store.dispatch('checkTeamMsgReceipt', currSessionMsgs)
         } else if (type === 'replace') {
             let msgLen = state.currSessionMsgs.length
             let lastMsgIndex = msgLen - 1

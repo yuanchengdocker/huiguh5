@@ -1,5 +1,8 @@
 import { initNimSDK } from './initNimSDK'
 import cookie from '../../utils/cookie'
+import {resetSearchResult, searchUsers, searchTeam} from './search'
+import { onSessions, onUpdateSession, setCurrSession, resetCurrSession } from './session.js'
+import { getLocalSessionMsg, sendMsg, sendFileMsg, sendMsgReceipt, sendRobotMsg, revocateMsg, getHistoryMsgs, resetNoMoreHistoryMsgs, continueRobotMsg } from './msgs'
 
 function connectNim({ state, commit, dispatch }, obj) {
     let { force } = Object.assign({}, obj)
@@ -20,7 +23,35 @@ function connectNim({ state, commit, dispatch }, obj) {
 }
 
 let indexActions = {
-    updateRefreshState({commit}){
+    // 显示原图片
+    showFullscreenImg({ state, commit }, obj) {
+        if (obj) {
+            obj.type = 'show'
+            commit('updateFullscreenImage', obj)
+        }
+    },
+    // 隐藏原图片
+    hideFullscreenImg({ state, commit }) {
+        commit('updateFullscreenImage', {
+            type: 'hide'
+        })
+    },
+    updateChatLoading({ state, commit },show){
+        commit('updateChatLoading', show)
+    },
+    showLoading({ state, commit }) {
+        commit('showLoading')
+    },
+    hideLoading({ state, commit }) {
+        commit('hideLoading')
+    },
+    setCurrRoute({ state, commit }, route) {
+        commit('setCurrRoute', route)
+    },
+    updateMenuBarShow({ state, commit }, isShow) {
+        commit('updateMenuBarShow', isShow)
+    },
+    updateRefreshState({ commit }) {
         commit('updateRefreshState')
     },
     updatedLoadingStatus(store, { status }) {
@@ -49,7 +80,20 @@ let indexActions = {
         }
         // pageUtil.turnPage('', 'login')
     },
-    initNimSDK
+    initNimSDK,
+    // 设置当前会话
+    setCurrSession,
+    // 重置当前会话
+    resetCurrSession,
+    //已读回调
+    sendMsgReceipt,
+    //发送普通消息
+    sendMsg,
+    sendFileMsg,
+    getHistoryMsgs,
+    resetNoMoreHistoryMsgs,
+    searchUsers,
+    getLocalSessionMsg
 }
 
 export default indexActions

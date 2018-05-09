@@ -1,11 +1,12 @@
 <template>
   <ul id="chat-list" class="m-chat-list p-chat-list">
-    <li class="u-msg item-time" v-if="canLoadMore">
+    <li class="u-msg item-time" v-if="canLoadMore&&!isLoading">
       ---- 上拉加载更多 ----
     </li>
-    <li class="u-msg item-time" v-else>
+    <li class="u-msg item-time" v-if="!canLoadMore&&!isLoading">
       ---- 已无更多记录 ----
     </li>
+    <load-more v-if="isLoading" :tip="'正在加载'"></load-more>
     <chat-item
       v-for="msg in msglist"
       :type="type"
@@ -67,6 +68,14 @@
       //     return {}
       //   }
       // }
+    },
+    computed:{
+      isNoData(){
+        return this.msglist.length <= 0
+      },
+      isLoading(){
+        return this.$store.state.isChatLoading
+      }
     },
     data () {
       return {

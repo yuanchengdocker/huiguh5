@@ -27,6 +27,11 @@
       /*left: 0;*/
     }
   }
+  .weui-loadmore{
+    margin: 0 auto;
+    height: 1.6em;
+    font-size: .8rem;
+  }
   /* 按钮组 */
   .weui-btn {
     font-size: 1rem;

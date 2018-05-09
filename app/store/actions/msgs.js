@@ -259,6 +259,20 @@ function sendMsgReceiptDone(error, obj) {
     console.log('发送消息已读回执' + (!error?'成功':'失败'), error, obj);
 }
 
+export function getLocalSessionMsg({state, commit}, obj){
+  const nim = state.nim
+  if (nim) {
+    let {sessionId} = obj
+    nim.getLocalMsgs({
+      sessionId: sessionId,
+      limit: 100,
+      done: function(error,obj){
+        console.log('获取本地消息' + (!error?'成功':'失败'), error, obj)
+      }
+    })
+  }
+}
+
 export function getHistoryMsgs ({state, commit}, obj) {
   const nim = state.nim
   if (nim) {
@@ -283,7 +297,7 @@ export function getHistoryMsgs ({state, commit}, obj) {
             })
           }
         }
-        store.dispatch('hideLoading')
+        store.dispatch('updateChatLoading', false)
       }
     }
     if (state.currSessionLastMsg) {
@@ -292,7 +306,7 @@ export function getHistoryMsgs ({state, commit}, obj) {
         endTime: state.currSessionLastMsg.time,
       })
     }
-    store.dispatch('showLoading')
+    store.dispatch('updateChatLoading', true)
     nim.getHistoryMsgs(options)
   }
 }

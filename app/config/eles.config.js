@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import {TransferDom,TabbarItem,Tabbar,Loading,Drawer,Icon,Group, Cell, XHeader, XInput, XTextarea, XButton, XSwitch, Datetime, ViewBox, Search, ButtonTab, ButtonTabItem, Divider, Actionsheet, AlertPlugin, ConfirmPlugin} from 'vux'
+import {LoadMore,TransferDom,TabbarItem,Tabbar,Loading,Drawer,Icon,Group, Cell, XHeader, XInput, XTextarea, XButton, XSwitch, Datetime, ViewBox, Search, ButtonTab, ButtonTabItem, Divider, Actionsheet, AlertPlugin, ConfirmPlugin} from 'vux'
 import ToastPlugin from '../plugins/toastPlugin'
 import VueTouch from '../plugins/touchEvent'
 Vue.use(VueTouch)
@@ -23,6 +23,7 @@ Vue.component('actionsheet', Actionsheet)
 Vue.component('icon', Icon)
 Vue.component('Drawer', Drawer)
 Vue.component('Loading', Loading)
+Vue.component('LoadMore',LoadMore)
 
 Vue.component('ViewBox', ViewBox)
 Vue.component('Tabbar', Tabbar)
@@ -31,6 +32,7 @@ Vue.component('TabbarItem', TabbarItem)
 Vue.use(AlertPlugin)
 Vue.use(ConfirmPlugin)
 Vue.use(ToastPlugin)
+
 // import {
 // //   Pagination,
 //   Dialog,

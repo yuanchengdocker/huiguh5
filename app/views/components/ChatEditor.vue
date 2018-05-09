@@ -1,5 +1,5 @@
 <template>
-  <div class="m-chat-editor" @click="hideRobotList">
+  <div class="m-chat-editor">
     <chat-emoji
       v-bind:type="type"
       v-bind:scene="scene"
@@ -8,11 +8,6 @@
       v-on:add-emoji="addEmoji"
       v-on:hide-emoji="hideEmoji"
     ></chat-emoji>
-    <group v-show="isRobotListShown" class="m-chat-emoji m-chat-robot">
-      <cell v-for="robot in robotslist" :title="robot.nick" :key="robot.account" @click.native="chooseRobot(robot)">
-        <img class="icon u-circle" slot="icon" width="20" height="20" :src="robot.avatar">
-      </cell>
-    </group>
     <div class="m-chat-editor-main" :class="{robot:isRobot}">
       <span class="u-editor-input">
         <textarea v-model="msgToSent" @focus='onInputFocus'></textarea>
@@ -25,9 +20,6 @@
           <i class="u-icon-img"><img :src="icon2"></i>
           <input type="file" ref="fileToSent">
         </span>
-        <span v-if="!isRobot && !advancedTeam" class="u-editor-icon" @click.stop="sendPlayMsg">
-          <i class="u-icon-img"><img :src="icon3"></i>
-        </span>
         <span v-if='advancedTeam' class="u-editor-send u-editor-receipt" @click="turnToMsgReceipt">回执</span>
         <span class="u-editor-send" @click="sendTextMsg">发 送</span>
       </span>
@@ -36,14 +28,15 @@
 </template>
 
 <script>
+import ChatEmoji from './ChatEmoji'
 import util from '../../utils'
 import config from '../../config/nim.config.js'
 import pageUtil from '../../utils/page'
 
 export default {
-  components: {
-    ChatEmoji
-  },
+    components: {
+        ChatEmoji
+    },
   updated () {
     window.document.body.addEventListener('click', () => {
       this.isEmojiShown = false
@@ -85,19 +78,12 @@ export default {
         return
       }
       let indexAt = this.msgToSent.indexOf('@')
-      if (indexAt >= 0 && (indexAt === this.msgToSent.length - 1)) {
-        if (this.robotslist && this.robotslist.length > 0) {
-          this.isRobotListShown = true
-        }
-      } else if (this.isRobotListShown === true) {
-        this.isRobotListShown = false
-      }
+     
     }
   },
   data () {
     return {
       isEmojiShown: false,
-      isRobotListShown: false,
       msgToSent: '',
       icon1: `${config.resourceUrl}/im/chat-editor-1.png`,
       icon2: `${config.resourceUrl}/im/chat-editor-2.png`,
@@ -105,25 +91,9 @@ export default {
     }
   },
   computed: {
-    continueRobotAccid () {
-      return this.$store.state.continueRobotAccid
-    },
-    robotslist () {
-      return this.$store.state.robotslist
-    },
-    robotInfos () {
-      return this.$store.state.robotInfos
-    },
-    robotInfosByNick () {
-      return this.$store.state.robotInfosByNick
-    }
   },
   methods: {
     sendTextMsg () {
-      if (this.invalid) {
-        this.$toast(this.invalidHint)
-        return
-      }
       if (/^\s*$/.test(this.msgToSent)) {
         this.$vux.alert.show({
           title: '请不要发送空消息'
@@ -195,85 +165,10 @@ export default {
             })
           }
         }
-      } else if (this.type === 'chatroom') {
-        let robotAccid = ''
-        let robotText = ''
-
-        let atUsers = this.msgToSent.match(/@[^\s@$]+/g)
-        if (atUsers) {
-          for (let i = 0; i < atUsers.length; i++) {
-            let item = atUsers[i].replace('@', '')
-            if (this.robotInfosByNick[item]) {
-              robotAccid = this.robotInfosByNick[item].account
-              robotText = (this.msgToSent + '').replace(atUsers[i], '').trim()
-              break
-            }
-          }
-        }
-        if (robotAccid) {
-          if (robotText) {
-            this.$store.dispatch('sendChatroomRobotMsg', {
-              type: 'text',
-              robotAccid,
-              // 机器人后台消息
-              content: robotText,
-              // 显示的文本消息
-              body: this.msgToSent
-            })
-          } else {
-            this.$store.dispatch('sendChatroomRobotMsg', {
-              type: 'welcome',
-              robotAccid,
-              // 显示的文本消息
-              body: this.msgToSent
-            })
-          }
-        } else {
-          this.$store.dispatch('sendChatroomMsg', {
-            type: 'text',
-            text: this.msgToSent
-          })
-        }
-      }
+      } 
       this.msgToSent = ''
     },
-    sendPlayMsg () {
-      if (this.invalid) {
-        this.$toast(this.invalidHint)
-        return
-      }
-      // 发送猜拳消息
-      if (this.type === 'session') {
-        this.$store.dispatch('sendMsg', {
-          type: 'custom',
-          scene: this.scene,
-          to: this.to,
-          pushContent: '[猜拳]',
-          content: {
-            type: 1,
-            data: {
-              value: Math.ceil(Math.random()*3)
-            }
-          }
-        })
-      } else if (this.type === 'chatroom') {
-        this.$store.dispatch('sendChatroomMsg', {
-          type: 'custom',
-          pushContent: '[猜拳]',
-          content: {
-            type: 1,
-            data: {
-              value: Math.ceil(Math.random()*3)
-            }
-          }
-        })
-      }
-    },
     sendFileMsg () {
-      if (this.invalid) {
-        this.$toast(this.invalidHint)
-        return
-      }
       let ipt = this.$refs.fileToSent
       if (ipt.value) {
         if (this.type === 'session') {
@@ -320,10 +215,6 @@ export default {
       }, 200)
     },
     turnToMsgReceipt() {
-      if (this.invalid) {
-        this.$toast(this.invalidHint)
-        return
-      }
       location = `#/teamSendMsgReceipt/${this.to}`
     }
   }

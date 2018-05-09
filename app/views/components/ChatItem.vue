@@ -26,60 +26,11 @@
       <span v-if="msg.type==='text'" class="msg-text" v-html="msg.showText"></span>
       <span v-else-if="msg.type==='custom-type1'" class="msg-text" ref="mediaMsg"></span>
       <span v-else-if="msg.type==='custom-type3'" class="msg-text" ref="mediaMsg"></span>
-      <span v-else-if="msg.type==='image'" class="msg-text" ref="mediaMsg" @click.stop="showFullImg(msg.originLink)"></span>
-      <span v-else-if="msg.type==='video'" class="msg-text" ref="mediaMsg"></span>
+      <span v-else-if="msg.type==='image'" class="msg-text msg-image" ref="mediaMsg" @click.stop="showFullImg(msg.originLink)"></span>
+      <span v-else-if="msg.type==='video'" class="msg-text msg-video" ref="mediaMsg"></span>
       <span v-else-if="msg.type==='audio'" class="msg-text" @click="playAudio(msg.audioSrc)">{{msg.showText}}</span>
       <span v-else-if="msg.type==='file'" class="msg-text"><a :href="msg.fileLink" target="_blank"><i class="u-icon icon-file"></i>{{msg.showText}}</a></span>
-      <span v-else-if="msg.type==='robot'" class="msg-text" :class="{'msg-robot': msg.robotFlow!=='out' && !isRobot}">
-        <div v-if="msg.robotFlow==='out'">{{msg.showText}}</div>
-        <div v-else-if="msg.subType==='bot'">
-          <!-- 多次下发的机器人消息 -->
-          <div v-for="tmsgs in msg.message">
-            <!-- 多个机器人模板 -->
-            <div v-for="tmsg in tmsgs">
-              <div v-if="tmsg.type==='text'">
-                <p>{{tmsg.text}}</p>
-              </div>
-              <div v-else-if="tmsg.type==='image'">
-                <p>
-                  <img :src="tmsg.url">
-                </p>
-              </div>
-              <div v-else-if="tmsg.type==='url'">
-                <a :class="tmsg.style" :href="tmsg.target" target="_blank">
-                  <div v-if="tmsg.image">
-                    <p v-for="tmsg2 in tmsg.image">
-                      <img :src="tmsg2.url">
-                    </p>
-                  </div>
-                  <div v-if="tmsg.text">
-                    <p v-for="tmsg2 in tmsg.text">{{tmsg2.text}}</p>
-                  </div>
-                </a>
-              </div>
-              <div v-else-if="tmsg.type==='block'">
-                <a :class="tmsg.style" :params="tmsg.params" :target="tmsg.target" @click="sendRobotBlockMsg(tmsg, msg)">
-                  <div v-if="tmsg.image">
-                    <p v-for="tmsg2 in tmsg.image">
-                      <img :src="tmsg2.url">
-                    </p>
-                  </div>
-                  <div v-if="tmsg.text">
-                    <p v-for="tmsg2 in tmsg.text">{{tmsg2.text}}</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div v-else-if="msg.subType==='faq'">
-          <!--p>{{msg.message.question}}</p-->
-          <p>{{msg.message.answer}}</p>
-        </div>
-        <span v-if="msg.robotFlow!=='out' && !isRobot" class="msg-link">
-          <a class="link-right" @click="continueRobotMsg(msg.content.robotAccid)">继续对话</a>
-        </span>
-      </span>
+
       <span v-else-if="msg.type==='notification'" class="msg-text notify">{{msg.showText}}</span>
       <span v-else class="msg-text" v-html="msg.showText"></span>
       <span v-if="msg.status==='fail'" class="msg-failed"><i class="weui-icon-warn"></i></span>
@@ -91,7 +42,7 @@
 <script type="text/javascript">
   import util from '../../utils'
   import config from '../../config/nim.config.js'
-
+ import emojiObj from '../../config/emoji'
   export default {
     props: {
       type: String, // 类型，chatroom, session
@@ -125,12 +76,7 @@
           return false
         }
       }
-      // robotInfos: {
-      //   type: Object,
-      //   default () {
-      //     return {}
-      //   }
-      // }
+ 
     },
     data () {
       return {
@@ -358,46 +304,6 @@
           }
         }
       },
-      sendRobotBlockMsg (msg, originMsg) {
-        if(this.isHistory) {
-          // 在历史消息中，不进行机器人交互
-          return
-        }
-        let body = '[复杂按钮模板触发消息]'
-        if (msg.text && msg.text.length === 1) {
-          body = msg.text[0].text
-        }
-        let robotAccid = originMsg.content.robotAccid
-        if (!this.isRobot) {
-          body = `@${this.robotInfos[robotAccid].nick} ${body}`
-        }
-        if (this.type === 'session') {
-          this.$store.dispatch('sendRobotMsg', {
-            type: 'link',
-            scene: originMsg.scene,
-            to: originMsg.to,
-            robotAccid,
-            // 机器人后台消息
-            params: msg.params,
-            target: msg.target,
-            // 显示的文本消息
-            body
-          })
-        } else if (this.type === 'chatroom') {
-          this.$store.dispatch('sendChatroomRobotMsg', {
-            type: 'link',
-            robotAccid,
-            // 机器人后台消息
-            params: msg.params,
-            target: msg.target,
-            // 显示的文本消息
-            body
-          })
-        } 
-      },
-      continueRobotMsg (robotAccid) {
-        this.$store.dispatch('continueRobotMsg', robotAccid)
-      },
       showFullImg (src) {
         this.$store.dispatch('showFullscreenImg', {
           src
@@ -447,5 +353,8 @@
     right: 0.5rem;
     font-size: 0.9rem;
     color: #0091e4;
+  }
+  .msg-video{
+    height: 8rem !important;
   }
 </style>

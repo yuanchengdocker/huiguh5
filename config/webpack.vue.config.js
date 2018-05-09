@@ -14,9 +14,10 @@ function resolve(dir) {
 }
 const devServer = {
     port: '9999',
+    host: '0.0.0.0',
     progress: true,
-    // overlay: {
-    // },
+    overlay: {
+    },
     //   errors: true
     hot: true,
     historyApiFallback: {

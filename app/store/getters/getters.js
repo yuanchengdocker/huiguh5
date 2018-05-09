@@ -1,5 +1,7 @@
 export default {
-    changeLoadingStatus (state) {
-        return !state.loadingStatus;
+    sessionUnreadCount (state) {
+        let result = '';
+        result = state.sessionUnreadCount <= 99 ? state.sessionUnreadCount : '99+'
+        return result?result+'':'';
     }
 }

@@ -15,6 +15,7 @@ const router = createRouter()
 
 router.beforeEach((to, from,next) => {
     console.log(to)
+    store.dispatch('setCurrRoute',to)
     next()
 })
 

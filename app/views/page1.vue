@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-upload 
+        <!-- <el-upload 
             class="avatar-uploader" 
             action="http://192.168.27.215:4000/upload" 
             :on-preview="handlePreview"
@@ -22,7 +22,8 @@
         </el-upload>
         <el-dialog :visible.sync="dialogVisible">
             <img width="100%" :src="dialogImageUrl" alt="">
-        </el-dialog>
+        </el-dialog> -->
+        page1
     </div>
 </template>
 
