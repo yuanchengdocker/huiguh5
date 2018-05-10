@@ -25,6 +25,7 @@
   }
   /* 主背景皮肤 */
   .m-main {
+    padding-bottom: $height_nav;
     background: $theme_background;
   }
   .m-article {
@@ -245,11 +246,14 @@
       position: relative;
       display: block;
       box-sizing: border-box;
-      padding: 1rem 2%;
+      /* padding: 1rem 2%; */
       width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: -webkit-box;
       -webkit-overflow-scrolling: touch;
-      overflow-y: scroll;
-      overflow-x: hidden;
+      /* overflow-y: scroll;
+      overflow-x: hidden; */
     }
   }
   .m-chat-editor {

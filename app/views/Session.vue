@@ -1,6 +1,7 @@
 <template>
     <div class="g-inherit m-main p-session">
-        <group class="u-list">
+        <div class="session-wrapper" ref="sessionWrapper">
+        <group class="u-list session-container">
             <cell v-for="(session) in sessionlist" class="u-list-item" :title="session.name" :inline-desc="session.lastMsgShow" :key="session.id" :sessionId="session.id" v-touch:swipeleft="showDelBtn" v-touch:swiperight="hideDelBtn" @click.native="enterChat(session)">
                 <img class="icon u-circle" slot="icon" width="24" :src="session.avatar">
                 <span class='u-session-time'>
@@ -10,10 +11,12 @@
                 <span class="u-tag-del" :class="{active: delSessionId===session.id}" @click="deleteSession"></span>
             </cell>
         </group>
+        </div>
     </div>
 </template>
 
 <script>
+    import BScroll from 'better-scroll'
     import {
         mapState,
         mapActions
@@ -25,10 +28,21 @@
     } from 'timers';
     export default {
         name: 'session',
+        components:{
+        },
         data() {
             return {
                 delSessionId: null,
                 stopBubble: false,
+                isClick:false
+            }
+        },
+        mounted(){
+
+            },
+        updated(){
+            if(this.$refs.sessionWrapper){
+                this.initScroll()
             }
         },
         computed: {
@@ -90,10 +104,17 @@
         methods: {
             ...mapActions(['updatedLoadingStatus']),
             enterChat(session) {
-                if (this.hideDelBtn())
-                    return
-                if (session && session.id)
-                    this.$router.push(`/build/vuepage/chat/${session.id}`);
+                if(!this.isClick){
+                    console.log('enterChat')
+                    setTimeout(()=>{
+                        this.isClick = false
+                        if (this.hideDelBtn())
+                            return
+                        if (session && session.id)
+                            this.$router.push(`/build/vuepage/chat/${session.id}`);
+                    },20)
+                }
+                this.isClick = true
             },
             deleteSession() {
                 if (this.delSessionId !== null) {
@@ -116,7 +137,37 @@
                     return true
                 }
                 return false
-            }
+            },
+            initScroll() {
+                this.scroll = new BScroll(this.$refs.sessionWrapper, {
+                    // probeType: 3,    
+                    scrollY: true,
+                    click: true,
+                    // pullUpLoad: {   // 配置上啦加载
+                    //   threshold: -80   //上啦80px的时候加载
+                    // },
+                    // openPullDown: true,
+                    // pullDownRefresh: {
+                    //     threshold: 50,
+                    //     stop: 20
+                    // },
+                    mouseWheel: { // pc端同样能滑动
+                        speed: 20,
+                        invert: false
+                    },
+                    useTransition: true, // 防止iphone微信滑动卡顿
+                });
+                // this.scroll.on('pullingDown', (pos) => {
+                //     // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
+                //     if(!this.pullDowning){
+                //         console.log(pos)
+                //         this.getHistoryMsgs()
+                //         this.pullDowning = true
+                //         this.gotoDown = false
+                //         this.scroll.closePullUp()
+                //     }
+                // });
+            },
         }
     }
 </script>
@@ -132,6 +183,13 @@
     }
     .g-window .weui-cell::before {
         height: 1px;
+    }
+    .session-wrapper{
+        height: 100%;
+        overflow: hidden;
+    }
+    .session-container{
+        height: 101%;
     }
 </style>
 <style lang="less" scoped>

@@ -357,4 +357,7 @@
   .msg-video{
     height: 8rem !important;
   }
+  .msg-image{
+    height: 8rem !important;
+  }
 </style>

@@ -27,8 +27,8 @@
 </template>
 
 <script>
-const sessionHistory = window.sessionStorage
-import FullscreenImg from './views/components/FullscreenImg'
+  const sessionHistory = window.sessionStorage
+  import FullscreenImg from './views/components/FullscreenImg'
   import {
     setTimeout
   } from 'timers';
@@ -38,9 +38,11 @@ import FullscreenImg from './views/components/FullscreenImg'
     mapGetters
   } from 'vuex'
   import cookie from './utils/cookie'
-import pageUtil from './utils/page'
+  import pageUtil from './utils/page'
   export default {
-    components:{FullscreenImg},
+    components: {
+      FullscreenImg
+    },
     methods: {
       ...mapActions(['updatedLoadingStatus'])
     },
@@ -64,27 +66,16 @@ import pageUtil from './utils/page'
         if (to && from) {
           let toPath = to.path
           let fromPath = from.path
-          let count = parseInt(sessionHistory.getItem('count'))
-          // 如果是导航页或者没有初始记录
-          if (Number.isNaN(count)) {
-            count = 1
+          if(toPath.indexOf('/build/vuepage/chat') >= 0){
             this.transitionName = 'forward'
-          } else {
-            count += 1
-            let fromCount = parseInt(sessionHistory.getItem(fromPath))
-            let toCount = parseInt(sessionHistory.getItem(toPath))
-            if (toCount < fromCount && fromCount < count && (!pageUtil.showNav(fromPath))) {
-              this.transitionName = 'backward'
-              count = toCount
-            } else {
-              this.transitionName = 'forward'
-            }
-            if (pageUtil.showNav(toPath)) {
-              count = 1
-            }
+            return
           }
-          sessionHistory.setItem(toPath, count)
-          sessionHistory.setItem('count', count)
+          if(toPath.indexOf('/build/vuepage/session') >= 0 
+            && fromPath.indexOf('/build/vuepage/chat') >= 0){
+              this.transitionName = 'backward'
+              return
+          }
+          this.transitionName = ''
         }
       }
     },
@@ -98,9 +89,15 @@ import pageUtil from './utils/page'
     },
     data() {
       return {
-        menus:{
-          chat: {name:'聊天',path:"/build/vuepage/session"},
-          article: {name:'科普',path:"/build/vuepage/page1"},
+        menus: {
+          chat: {
+            name: '聊天',
+            path: "/build/vuepage/session"
+          },
+          article: {
+            name: '科普',
+            path: "/build/vuepage/page1"
+          },
         },
         transitionName: 'forward'
       }
@@ -130,8 +127,7 @@ import pageUtil from './utils/page'
     font-family: 'vux-demo';
     font-size: 22px;
     color: #888;
-  }
-  // .weui-tabbar.vux-demo-tabbar {
+  } // .weui-tabbar.vux-demo-tabbar {
   //   /** backdrop-filter: blur(10px);
   //   background-color: none;
   //   background: rgba(247, 247, 250, 0.5);**/

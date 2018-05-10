@@ -119,6 +119,7 @@
     &.session-chat {
       padding: 0.6rem 0;
       clear: both;
+      overflow: hidden;
     }
     /* 用户头像 */
     .msg-head {

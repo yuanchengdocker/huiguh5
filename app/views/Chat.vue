@@ -5,12 +5,15 @@
             <a slot="left"></a>
             <div class="m-tab-right" slot="right">
                 <!-- <span class='icon-history' @click='onHistoryClick'></span>
-                <span v-if="scene==='team'" class='icon-team' @click="onTeamManageClick"></span> -->
+                    <span v-if="scene==='team'" class='icon-team' @click="onTeamManageClick"></span> -->
             </div>
         </x-header>
         <div class="m-chat-main">
-            <chat-list 
-            v-touch:swipedown="loadMoreChat" type="session" :msglist="msglist" :canLoadMore="canLoadMore" :userInfos="userInfos" :myInfo="myInfo"></chat-list>
+            <div class="m-chat-list">
+                <div class="chat-wrapper" ref="wrapper">
+                    <chat-list type="session" :msglist="msglist" :canLoadMore="canLoadMore" :userInfos="userInfos" :myInfo="myInfo"></chat-list>
+                </div>
+            </div>
             <chat-editor type="session" :scene="scene" :to="to"></chat-editor>
         </div>
     </div>
@@ -21,11 +24,14 @@
     import ChatList from './components/ChatList'
     import util from '../utils'
     import pageUtil from '../utils/page'
+    import BScroll from 'better-scroll'
     import {
         mapActions,
         mapState
     } from 'vuex'
-import { setTimeout } from 'timers';
+    import {
+        setTimeout
+    } from 'timers';
     export default {
         components: {
             ChatEditor,
@@ -33,32 +39,35 @@ import { setTimeout } from 'timers';
         },
         props: ['id'],
         created() {
-            this.getLocalSessionMsg({sessionId:this.sessionId})
+            this.getLocalSessionMsg({
+                sessionId: this.sessionId
+            })
             this.updateMenuBarShow(false)
-
         },
         // 进入该页面，文档被挂载
         mounted() {
             // 此时设置当前会话
             this.$store.dispatch('setCurrSession', this.sessionId)
-            pageUtil.scrollChatListDown()
-
+            // pageUtil.scrollChatListDown()
             // this.$store.dispatch('resetNoMoreHistoryMsgs')
             // this.getHistoryMsgs()
-            
+            this.gotoDown = true
         },
         updated() {
-            let tempPagePos = pageUtil.getChatListHeight()
-            if(this.canLoadMore){
-                pageUtil.scrollChatListDown(tempPagePos - this.currPagePos)
+            if (this.$refs.wrapper) {
+                let eles = document.getElementById('chat-list').children
+                if(this.chatItemLength != eles.length){
+                    this.initScroll()
+                }
+                if(this.canLoadMore){
+                    this.scroll.scrollToElement(eles[eles.length - this.chatItemLength-1])
+                }
+                this.chatItemLength = eles.length
+                if (this.gotoDown) {
+                    this.scroll.scrollToElement(eles[this.chatItemLength - 1])
+                }
+                this.pullDowning = false
             }
-            this.currPagePos = tempPagePos
-            console.log(this.currPagePos,'this.currPagePos')
-            if(this.gotoDown){
-                pageUtil.scrollChatListDown()
-            }else{
-            }
-            this.gotoDown = true
         },
         // 离开该页面，此时重置当前会话
         destroyed() {
@@ -71,7 +80,9 @@ import { setTimeout } from 'timers';
                     backText: ' ',
                     preventGoBack: true,
                 },
-                gotoDown:true
+                gotoDown: true,
+                chatItemLength: 0,
+                pullDowning:false
             }
         },
         computed: {
@@ -119,39 +130,54 @@ import { setTimeout } from 'timers';
             },
             msglist() {
                 let msgs = this.$store.state.currSessionMsgs
-                if(document.getElementById('chat-list')){
-                    let tempPagePos = pageUtil.getChatListHeight()
-                    this.currPagePos = tempPagePos
-                    console.log(this.currPagePos,'this.msglist')
-                }
                 return msgs
             },
-            canLoadMore(){
+            canLoadMore() {
                 return !this.$store.state.noMoreHistoryMsgs
             }
         },
         methods: {
-            ...mapActions(['updatedLoadingStatus', 'updateMenuBarShow','getLocalSessionMsg']),
+            ...mapActions(['updatedLoadingStatus', 'updateMenuBarShow', 'getLocalSessionMsg']),
             onClickBack() {
                 this.$router.push(`/build/vuepage/session`);
             },
-            loadMoreChat(){
-                if(pageUtil.getChatListScroll() === 0){
-                    console.log('下拉')
-                    this.gotoDown = false
-                    this.getHistoryMsgs()
-                }
+            loadMoreChat() {
+                // if(pageUtil.getChatListScroll() === 0){
+                //     console.log('下拉')
+                //     this.gotoDown = false
+                //     this.getHistoryMsgs()
+                // }
             },
-            // msgsLoaded() {
-            //     console.log('msgsLoaded')
-            //     let tempPagePos = pageUtil.getChatListHeight()
-            //     pageUtil.scrollChatListDown(tempPagePos - this.currPagePos)
-            //     this.currPagePos = tempPagePos
-            //     if(this.gotoDown){
-            //         pageUtil.scrollChatListDown()
-            //     }
-            //     this.gotoDown = true
-            // },
+            initScroll() {
+                this.scroll = new BScroll(this.$refs.wrapper, {
+                    // probeType: 3,    
+                    scrollY: true,
+                    click: true,
+                    // pullUpLoad: {   // 配置上啦加载
+                    //   threshold: -80   //上啦80px的时候加载
+                    // },
+                    openPullDown: true,
+                    pullDownRefresh: {
+                        threshold: 50,
+                        stop: 20
+                    },
+                    mouseWheel: { // pc端同样能滑动
+                        speed: 20,
+                        invert: false
+                    },
+                    useTransition: true, // 防止iphone微信滑动卡顿
+                });
+                this.scroll.on('pullingDown', (pos) => {
+                    // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
+                    if(!this.pullDowning){
+                        console.log(pos)
+                        this.getHistoryMsgs()
+                        this.pullDowning = true
+                        this.gotoDown = false
+                        this.scroll.closePullUp()
+                    }
+                });
+            },
             enterNameCard() {
                 if (/^p2p-/.test(this.sessionId)) {
                     let account = this.sessionId.replace(/^p2p-/, '')
@@ -169,11 +195,12 @@ import { setTimeout } from 'timers';
                     this.$toast('您已退出该群')
                 }
             },
-            getHistoryMsgs () {
-                if (this.canLoadMore) {
+            getHistoryMsgs() {
+                if (this.canLoadMore && !this.pullDowning) {
+                    console.log('getHistoryMsgs')
                     this.$store.dispatch('getHistoryMsgs', {
-                    scene: this.scene,
-                    to: this.to
+                        scene: this.scene,
+                        to: this.to
                     })
                 }
             },
