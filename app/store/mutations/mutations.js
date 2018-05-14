@@ -140,6 +140,23 @@ export default {
         })
         state.sessionUnreadCount = unReadCount
     },
+    updateLocalSession(state, sessions){
+
+    },
+    getLocalSession(lastSessionId){
+        nim.getLocalSessions({
+            // lastSessionId: lastSessionId,
+            limit: 100,
+            done: function(error, obj) {
+              console.log(error);
+              console.log(obj);
+              console.log('获取本地会话列表' + (!error?'成功':'失败'));
+              if (!error) {
+                console.log(obj.sessions);
+              }
+          }
+        });
+    },
     deleteSessions(state, sessionIds) {
         const nim = state.nim
         state.sessionlist = nim.cutSessionsByIds(state.sessionlist, sessionIds)

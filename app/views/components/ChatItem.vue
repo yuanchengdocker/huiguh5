@@ -82,7 +82,8 @@
       return {
         msg: '',
         isFullImgShow: false,
-        currentAudio: null
+        currentAudio: null,
+        customMsg:{}
       }
     },
     computed: {
@@ -124,9 +125,32 @@
         // 标记时间，聊天室中
         item.showTime = util.formatDate(item.time)
       }
-      if (item.type === 'timeTag') {
-        // 标记发送的时间
-        item.showText = item.text
+      
+      if (item.type === 'custom') {
+        let data = JSON.parse(item.content)
+        let content = data.data
+        if (content && content.chatType === 1) { //单聊
+          this.customMsg['avatar'] = content.fromUserAvatarUrl||item.avatar
+          this.customMsg['file'] = {url:content.mediaContent.fileDataUrl}
+
+          switch(content.messageContentType){
+            case 1: this.customMsg['showText'] = content.textContent;this.customMsg['type']='text'; break; //文本
+            case 2: 
+              this.customMsg['audioSrc'] = content.mediaContent.fileDataUrl;
+              this.customMsg['showText'] = Math.round(content.mediaContent.voiceDuration / 1000) + '" 点击播放';
+              this.customMsg['type']='audio'; break; //语音
+            case 3: this.customMsg['originLink'] = content.mediaContent.fileDataUrl;this.customMsg['type']='image'; break; //图片
+            case 9: this.customMsg['type']='video'; break; //图片
+            case 4: this.customMsg['showText'] = content.textContent;this.customMsg['type']='tip'; break; //提示内容
+            case 5: this.customMsg['shareLink'] = content.textContent;this.customMsg['type']='share'; break; //分享内容
+            case 6: this.customMsg['appointLink'] = content.textContent;this.customMsg['type']='appoint'; break; //预约内容
+            case 7: this.customMsg['followLink'] = content.textContent;this.customMsg['type']='follow'; break; //随访内容
+            case 8: 
+              this.customMsg['fileLink'] = content.textContent;
+              this.customMsg['showText'] = content.textContent;
+              this.customMsg['type']='file'; break; //文件
+          }
+        }
       } else if (item.type === 'text') {
         // 文本消息
         item.showText = util.escape(item.text)
@@ -139,93 +163,19 @@
             }
           })
         }
-      } else if (item.type === 'custom') {
-        let content = JSON.parse(item.content)
-        // type 1 为猜拳消息
-        if (content.type === 1) {
-          let data = content.data
-          let resourceUrl = config.resourceUrl
-          // item.showText = `<img class="emoji-middle" src="${resourceUrl}/im/play-${data.value}.png">`
-          item.type = 'custom-type1'
-          item.imgUrl = `${resourceUrl}/im/play-${data.value}.png`
-        // type 3 为贴图表情
-        } else if (content.type === 3) {
-          let data = content.data
-          let emojiCnt = ''
-          if (emojiObj.pinupList[data.catalog]) {
-            emojiCnt = emojiObj.pinupList[data.catalog][data.chartlet]
-            // item.showText = `<img class="emoji-big" src="${emojiCnt.img}">`
-            item.type = 'custom-type3'
-            item.imgUrl = `${emojiCnt.img}`
-          }
-        } else {
-          item.showText = util.parseCustomMsg(item)
-          if (item.showText !== '[自定义消息]') {
-            item.showText += ',请到手机或电脑客户端查看'
-          }
-        }
-      } else if (item.type === 'image') {
-        // 原始图片全屏显示
-        item.originLink = item.file.url
-      } else if (item.type === 'video') {
-        // ...
-      } else if (item.type === 'audio') {
-        item.audioSrc = item.file.mp3Url
-        item.showText = Math.round(item.file.dur / 1000) + '" 点击播放'
-      } else if (item.type === 'file') {
-        item.fileLink = item.file.url
-        item.showText = item.file.name
-      } else if (item.type === 'notification') {
-        if (item.scene === 'team') {
-          item.showText = util.generateTeamSysmMsg(item)
-        } else {
-          //对于系统通知，更新下用户信息的状态
-          item.showText = util.generateChatroomSysMsg(item)
-        }
-      } else if (item.type === 'tip') {
-        //对于系统通知，更新下用户信息的状态
-        item.showText = item.tip
-      } else if (item.type === 'robot') {
-        let content = item.content || {}
-        let message = content.message || []
-        if (!content.msgOut) {
-          // 机器人上行消息
-          item.robotFlow = 'out'
-          item.showText = item.text
-        } else if (content.flag === 'bot') {
-          item.subType = 'bot'
-          message = message.map(item => {
-            if (item.type === 'template') {
-              // 在vuex(store/actions/msgs.js)中已调用sdk方法做了转换
-              return item.content.json
-            } else if (item.type === 'text' || item.type === 'answer') {
-              // 保持跟template结构一致
-              return [{
-                type: 'text',
-                text: item.content
-              }]
-            } else if (item.type === 'image') {
-              // 保持跟template结构一致
-              return [{
-                type: 'image',
-                url: item.content
-              }]
-            }
-          })
-          item.message = message
-        } else if (item.content.flag === 'faq') {
-          item.subType = 'faq'
-          item.query = message.query
-          let match = message.match.sort((a, b) => {
-            // 返回最匹配的答案
-            return b.score - a.score
-          })
-          item.message = match[0]
-        }
       } else {
-        item.showText = `[${util.mapMsgType(item)}],请到手机或电脑客户端查看`
+        this.customMsg['avatar'] = item.avatar
+        this.customMsg['showText'] = `[${util.mapMsgType(item)}],请到手机或电脑客户端查看`
       }
-      this.msg = item
+
+      this.msg = this.customMsg || item
+      this.msg.flow = item.flow
+      if (item.type === 'timeTag') {
+        // 标记发送的时间
+        this.msg.type = item.type
+        this.msg.showText = item.text
+      } 
+
     },
     mounted () {
       let item = this.msg
@@ -247,7 +197,7 @@
           media.className = 'emoji-big'
           media.src = item.imgUrl
         } else if (item.type === 'video') {
-          if (/(mov|mp4|ogg|webm)/i.test(item.file.ext)) {
+          // if (/(mov|mp4|ogg|webm)/i.test(item.file.ext)) {
             media = document.createElement('video')
             media.src = item.file.url
             media.width = 640
@@ -255,13 +205,13 @@
             media.autoStart = false
             media.preload = 'metadata'
             media.controls = 'controls'
-          } else {
-            let aLink = document.createElement('a')
-            aLink.href = item.file.url
-            aLink.target = '_blank'
-            aLink.innerHTML = `<i class="u-icon icon-file"></i>${video.name}`
-            this.$refs.mediaMsg.appendChild(aLink)
-          }
+          // } else {
+          //   let aLink = document.createElement('a')
+          //   aLink.href = item.file.url
+          //   aLink.target = '_blank'
+          //   aLink.innerHTML = `<i class="u-icon icon-file"></i>${video.name}`
+          //   this.$refs.mediaMsg.appendChild(aLink)
+          // }
         }
         if (media) {
           if (this.$refs.mediaMsg) {

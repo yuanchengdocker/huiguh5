@@ -33,7 +33,7 @@ let config = {
       postUrl: 'https://apptest.netease.im'
     },
     online: {
-    //   appkey: 'f192481ccf5d1f3ee1394790a99f221e',
+      // appkey: 'f192481ccf5d1f3ee1394790a99f221e',
     appkey: '45c6af3c98409b18a84451215d0bdd6e',
       postUrl: 'https://app.netease.im'
     }

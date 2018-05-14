@@ -63,6 +63,10 @@ export function onUpdateSession (session) {
   store.commit('updateSessions', sessions)
 }
 
+export function getLocalSession () {
+  store.commit('getLocalSession')
+}
+
 export function deleteSession ({state, commit}, sessionId) {
   const nim = state.nim
   sessionId = sessionId || ''

@@ -1,7 +1,7 @@
 import { initNimSDK } from './initNimSDK'
 import cookie from '../../utils/cookie'
 import {resetSearchResult, searchUsers, searchTeam} from './search'
-import { onSessions, onUpdateSession, setCurrSession, resetCurrSession } from './session.js'
+import { onSessions, onUpdateSession, setCurrSession, resetCurrSession,deleteSession,getLocalSession } from './session.js'
 import { getLocalSessionMsg, sendMsg, sendFileMsg, sendMsgReceipt, sendRobotMsg, revocateMsg, getHistoryMsgs, resetNoMoreHistoryMsgs, continueRobotMsg } from './msgs'
 
 function connectNim({ state, commit, dispatch }, obj) {
@@ -83,6 +83,7 @@ let indexActions = {
     initNimSDK,
     // 设置当前会话
     setCurrSession,
+    deleteSession,
     // 重置当前会话
     resetCurrSession,
     //已读回调
@@ -93,6 +94,7 @@ let indexActions = {
     getHistoryMsgs,
     resetNoMoreHistoryMsgs,
     searchUsers,
+    getLocalSession,
     getLocalSessionMsg
 }
 

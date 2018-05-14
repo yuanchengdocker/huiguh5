@@ -1,11 +1,12 @@
 import axios from 'axios'
+import urls from '../config/urls'
 
-export default (type = 'post', url, data, config) => {
+export default (type = 'post', turl, data, config) => {
     function checkStatus(response) {
         // loading
         // 如果http状态码正常，则直接返回数据
         if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
-            return response
+            return response.data
             // 如果不需要除了data之外的数据，可以直接 return response.data
         }
         // 异常状态下，把错误信息返回去
@@ -20,18 +21,20 @@ export default (type = 'post', url, data, config) => {
         if (res.status === -404) {
             alert(res.msg)
         }
-        if (res.data && (!res.data.success)) {
-            alert(res.data.error_msg)
-        }
+        // if (res.data && (!res.data.success)) {
+        //     alert(res.data.error_msg)
+        // }
         return Promise.resolve(res)
     }
-
+    let url = urls[turl]
+    if(url === null || url === undefined) 
+        url = turl
     return axios({
         method: type,
         url,
         data: data,
-        timeout: 10000,
-        headers: {
+        timeout: 30000,
+        headers: config||{
             'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }

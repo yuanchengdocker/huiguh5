@@ -6,7 +6,7 @@ export default [
     },
     {
         path: '/build/vuepage/page1',
-        component: () => import('../views/page1.vue'),
+        component: () => import('../views/page2.vue'),
         meta: { keepAlive: true }
     },
     {

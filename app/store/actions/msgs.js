@@ -41,6 +41,7 @@ export function onOfflineMsgs (obj) {
 
 export function onMsg (msg) {
   msg = formatMsg(msg)
+  console.log(msg)
   store.commit('putMsg', msg)
   if (msg.sessionId === store.state.currSessionId) {
     store.commit('updateCurrSessionMsgs', {
@@ -150,6 +151,7 @@ export function sendMsg ({state, commit}, obj) {
         to: obj.to,
         pushContent: obj.pushContent,
         content: JSON.stringify(obj.content),
+        data:obj.data,
         done: onSendMsgDone
       })
   }

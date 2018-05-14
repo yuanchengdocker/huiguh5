@@ -23,6 +23,7 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
         account: loginInfo.uid,
         token: loginInfo.sdktoken,
         db: false,
+        needReconnect:true,
         syncSessionUnread: true,
         syncRobots: true,
         autoMarkRead: true, // 默认为true

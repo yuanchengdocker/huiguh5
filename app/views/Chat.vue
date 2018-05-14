@@ -59,7 +59,7 @@
                 if(this.chatItemLength != eles.length){
                     this.initScroll()
                 }
-                if(this.canLoadMore){
+                if(!this.gotoDown&&this.canLoadMore){
                     this.scroll.scrollToElement(eles[eles.length - this.chatItemLength-1])
                 }
                 this.chatItemLength = eles.length
@@ -130,6 +130,7 @@
             },
             msglist() {
                 let msgs = this.$store.state.currSessionMsgs
+                console.log(msgs)
                 return msgs
             },
             canLoadMore() {

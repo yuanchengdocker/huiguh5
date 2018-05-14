@@ -5,7 +5,7 @@
         <img class="img_wrap" :src="imgSrc" alt="" v-show="isImg" />
         <video class="img_wrap" :src="videoSrc" alt="" v-show="!isImg" controls="controls" >video</video>
 
-        <el-button type="primary" @click="postPage">提交</el-button>
+        <button type="primary" @click="postPage">提交</button>
 
         <iframe ref="iframe" src="../../src/pages/index.html"></iframe>
     </div>
