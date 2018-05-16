@@ -55,12 +55,15 @@ export function setCurrSession ({state, commit, dispatch}, sessionId) {
 export function onSessions (sessions) {
   updateSessionAccount(sessions)
   store.commit('updateSessions', sessions)
+  console.log(sessions)
+  store.dispatch('saveData', {obj:sessions,table:'Sessions'})
 }
 
 export function onUpdateSession (session) {
   let sessions = [session]
   updateSessionAccount(sessions)
   store.commit('updateSessions', sessions)
+  store.dispatch('saveData', {obj:sessions,table:'Sessions'})
 }
 
 export function getLocalSession () {

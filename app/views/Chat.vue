@@ -39,9 +39,9 @@
         },
         props: ['id'],
         created() {
-            this.getLocalSessionMsg({
-                sessionId: this.sessionId
-            })
+            // this.getLocalSessionMsg({
+            //     sessionId: this.sessionId
+            // })
             this.updateMenuBarShow(false)
         },
         // 进入该页面，文档被挂载

@@ -73,4 +73,5 @@ export function onUserInfo (users) {
   }
   users = users.map(formatUserInfo)
   store.commit('updateUserInfo', users)
+  store.dispatch('saveData', {obj:users,table:'Users'})
 }

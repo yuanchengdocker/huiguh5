@@ -39,7 +39,8 @@
             }
         },
         created(){
-            this.$store.dispatch('getLocalSession')
+            // this.$store.dispatch('getLocalSession')
+            
         },
         mounted() {
             if (this.$refs.sessionWrapper) {

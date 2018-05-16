@@ -1,4 +1,5 @@
 import {formatUserInfo} from './userInfo'
+import store from '../'
 
 export function resetSearchResult ({state, commit}) {
   commit('updateSearchlist', {
@@ -44,6 +45,7 @@ export function searchUsers ({state, commit}, obj) {
       })
       console.log(users,'updateUsers')
       commit('updateUserInfo', updateUsers)
+      store.dispatch('saveData', {obj:updateUsers,table:'Users'})
       if (done instanceof Function) {
         done(users)
       }

@@ -24,6 +24,7 @@
   import {
     Duplex
   } from 'stream';
+  // import '../../style/test.styl'
   export default {
     props: {
       type: String,
@@ -207,7 +208,8 @@
   }
 </script>
 
-<style <style lang="stylus" scoped>
+<style lang="stylus" scoped>
+@import '../../style/test.styl'
   .robot.m-chat-editor-main {
     /*.u-editor-input {
           padding-right: 4.5rem;
@@ -233,5 +235,4 @@
   }
   .m-chat-editor
     background-color #ffffff
-    padding 30px
 </style>

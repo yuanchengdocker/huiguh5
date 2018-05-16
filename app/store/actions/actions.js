@@ -1,5 +1,6 @@
 import { initNimSDK } from './initNimSDK'
 import cookie from '../../utils/cookie'
+import {openDB,saveData,deleteOneData,searchData} from './indexDBInit'
 import {resetSearchResult, searchUsers, searchTeam} from './search'
 import { onSessions, onUpdateSession, setCurrSession, resetCurrSession,deleteSession,getLocalSession } from './session.js'
 import { getLocalSessionMsg, sendMsg, sendFileMsg, sendMsgReceipt, sendRobotMsg, revocateMsg, getHistoryMsgs, resetNoMoreHistoryMsgs, continueRobotMsg } from './msgs'
@@ -59,7 +60,9 @@ let indexActions = {
     },
     // 连接sdk请求，false表示强制重连
     connect(store, obj) {
+        console.log('connect')
         let { type } = Object.assign({}, obj)
+        openDB()
         // type 可为 nim chatroom
         type = type || 'nim'
         switch (type) {
@@ -95,7 +98,13 @@ let indexActions = {
     resetNoMoreHistoryMsgs,
     searchUsers,
     getLocalSession,
-    getLocalSessionMsg
+    getLocalSessionMsg,
+    saveData(store, {obj,table}){
+        saveData(obj,table)
+    },deleteOneData,
+    searchData(store,{callback,table}){
+        searchData(callback,table)
+    }
 }
 
 export default indexActions

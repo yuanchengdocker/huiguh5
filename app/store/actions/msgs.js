@@ -30,6 +30,7 @@ export function onRoamingMsgs (obj) {
     return formatMsg(msg)
   })
   store.commit('updateMsgs', msgs)
+  store.dispatch('saveData', {obj:msgs,table:'Msgs'})
 }
 
 export function onOfflineMsgs (obj) {
@@ -37,6 +38,7 @@ export function onOfflineMsgs (obj) {
     return formatMsg(msg)
   })
   store.commit('updateMsgs', msgs)
+  store.dispatch('saveData', {obj:msgs,table:'Msgs'})
 }
 
 export function onMsg (msg) {
@@ -54,6 +56,8 @@ export function onMsg (msg) {
   if (msg.scene === 'team' && msg.type ==='notification') {
     store.dispatch('onTeamNotificationMsg', msg)
   }
+
+  store.dispatch('saveData', {obj:msg,table:'Msgs'})
 }
 
 function onSendMsgDone (error, msg) {

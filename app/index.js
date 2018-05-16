@@ -9,6 +9,7 @@ import './style/theme.css'
 // import '../src/common/js/flexible'
 require("babel-core/register");
 require("babel-polyfill");
+// import 'lib-flexible/flexible'
 
 // Vue.use(Vuex)
 Vue.use(VueRouter)

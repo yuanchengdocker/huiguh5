@@ -47,6 +47,10 @@
       ...mapActions(['updatedLoadingStatus'])
     },
     created() {
+      // 提交sdk连接请求
+      this.$store.dispatch('connect')
+      this.$store.dispatch('updateRefreshState')
+      
       this.updatedLoadingStatus({
         status: true
       })
@@ -103,9 +107,9 @@
       }
     },
     updated() {
-      // 提交sdk连接请求
-      this.$store.dispatch('connect')
-      this.$store.dispatch('updateRefreshState')
+      // // 提交sdk连接请求
+      // this.$store.dispatch('connect')
+      // this.$store.dispatch('updateRefreshState')
     }
   }
 </script>
