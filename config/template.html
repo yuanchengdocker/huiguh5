@@ -2,11 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="cache-control" content="none-cache">
+    <meta name="keywords" content="your keywords">
+    <meta name="description" content="your description">
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 <body>
     <div id="root"></div>
+
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script type="text/javascript" id="wxscript"></script>
+    <script type="text/javascript">
+      var star = encodeURIComponent(location.href.split('#')[0]);
+      document.getElementById('wxscript').src='http://hg-weixin.szyyky.com/thirdpartyapi/thirdPartyUser/getSignature?appId=wxf5bdc71fe3151bc4&noncestr=1428560985&timestamp=1428560985&callback=wxInput&url='+ star;
+   
+      function wxInput(obj) {
+        window.cookieObj = obj;
+      }
+    </script>
 </body>
 </html>

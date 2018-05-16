@@ -1,16 +1,49 @@
 <template>
   <div class="m-chat-editor">
-    <div class="m-chat-editor-main" :class="{robot:isRobot}">
-      <span class="u-editor-input">
-            <textarea v-model="msgToSent" @focus='onInputFocus'></textarea>
-          </span>
-      <span class="u-editor-icons">
-            <span class="u-editor-icon" @change="sendFileMsg">
-              <i class="u-icon-img"><img :src="icon2"></i>
-              <input type="file" ref="fileToSent">
-            </span>
-      <span class="u-editor-send" @click="sendTextMsg">发 送</span>
-      </span>
+    <div class="component-dialogue-bar-person">
+      <span class="iconfont icon-dialogue-jianpan" v-show="currentChatWay === 2" v-on:click="currentChatWay=1"></span>
+      <span class="iconfont icon-dialogue-voice" v-show="currentChatWay != 2" v-on:click="currentChatWay=2"></span>
+      <div class="chat-way" v-show="currentChatWay === 2">
+        <div class="chat-say" v-press>
+          <span class="one">按住 说话</span>
+          <span class="two">松开 结束</span>
+        </div>
+      </div>
+      <div class="chat-way" v-show="currentChatWay != 2">
+        <form action="" onsubmit="return false;" value="发送">
+        <input class="chat-txt" v-model="msgToSent" type="text" @focus="focusIpt" @keyup.enter="sendTextMsg()" />
+        </form>
+      </div>
+      <span class="more iconfont icon-dialogue-jia" v-on:click="currentChatWay ===3 ? currentChatWay=1 : currentChatWay =3 "></span>
+      <div class="recording" style="display: none;" id="recording">
+        <div class="recording-voice" style="display: none;" id="recording-voice">
+          <div class="voice-inner">
+            <div class="voice-icon"></div>
+            <div class="voice-volume">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <p>手指上划,取消发送</p>
+        </div>
+        <div class="recording-cancel" style="display: none;">
+          <div class="cancel-inner"></div>
+          <p>松开手指,取消发送</p>
+        </div>
+      </div>
+    </div>
+    <div class="more-send-option" v-show="currentChatWay === 3">
+      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*"/><img src="../../img/album.png" />
+      </section>
+      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" accept="audio/*" capture="microphone" /><img src="../../img/camera.png" />
+      </section>
     </div>
   </div>
 </template>
@@ -21,6 +54,9 @@
   import config from '../../config/nim.config.js'
   import pageUtil from '../../utils/page'
   import axios from '../../service/service'
+  import '../../style/stylus/chat.styl'
+  import "../../style/stylus/dialogue.styl"
+  import wxAudio from '../../utils/wxAudio'
   import {
     Duplex
   } from 'stream';
@@ -63,17 +99,117 @@
         let indexAt = this.msgToSent.indexOf('@')
       }
     },
+    directives: {
+      press: {
+        bind(element, binding) {
+          // var recording = document.querySelector('.recording'),
+          //     recordingVoice = document.querySelector('.recording-voice'),
+          //     recordingCancel = document.querySelector('.recording-cancel'),
+          var startTx, startTy, isCancel
+          var wxAudioObj = wxAudio()
+          element.addEventListener('touchstart', function(e) {
+            // 为什么每次注册监听器,都要重新获取一次 DOM 像上面写就 undefine?
+            var recording = document.querySelector('.recording'),
+              recordingVoice = document.querySelector('.recording-voice')
+            element.className = "chat-say say-active"
+            recording.style.display = recordingVoice.style.display = "block"
+            // console.log('start')
+            if (wxAudioObj.isWx) {
+              console.log('开始语音')
+              wxAudioObj.audio.start()
+            }
+            isCancel = false
+            var touches = e.touches[0]
+            startTx = touches.clientX
+            startTy = touches.clientY
+            e.preventDefault()
+          }, false)
+          element.addEventListener('touchend', function(e) {
+            var recording = document.querySelector('.recording'),
+              recordingVoice = document.querySelector('.recording-voice'),
+              recordingCancel = document.querySelector('.recording-cancel')
+            element.className = "chat-say"
+            recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
+            // console.log('end')
+            if (wxAudioObj.isWx) {
+              if (isCancel) {
+                console.log('取消语音')
+              } else {
+                wxAudioObj.audio.stop()
+              }
+            }
+            e.preventDefault()
+          }, false)
+          element.addEventListener('touchmove', function(e) {
+            var recording = document.querySelector('.recording'),
+              recordingVoice = document.querySelector('.recording-voice'),
+              recordingCancel = document.querySelector('.recording-cancel')
+            var touches = e.changedTouches[0],
+              endTx = touches.clientX,
+              endTy = touches.clientY,
+              distanceX = startTx - endTx,
+              distanceY = startTy - endTy;
+            if (distanceY > 10) {
+              // 控制范围 和谐掉指尖抖动
+              // element.className = "chat-say"
+              recordingVoice.style.display = "none"
+              recordingCancel.style.display = "block"
+              isCancel = true
+            } else {
+              recordingVoice.style.display = "block"
+              recordingCancel.style.display = "none"
+              isCancel = false
+            }
+            // 阻断事件冒泡 防止页面被一同向上滑动
+            e.preventDefault()
+          }, false);
+        }
+      },
+      more: {
+        bind(element, binding) {
+          var startTx, startTy
+          element.addEventListener('touchstart', function(e) {
+            var msgMore = document.getElementById('msg-more'),
+              touches = e.changedTouches[0],
+              startTx = touches.clientX,
+              startTy = touches.clientY
+            // 控制菜单的位置
+            msgMore.style.left = ((startTx - 18) > 180 ? 180 : (startTx - 18)) + 'px'
+            msgMore.style.top = (element.offsetTop - 33) + 'px'
+            msgMore.style.display = "block"
+            e.preventDefault()
+          }, false)
+          element.addEventListener('touchend', function(e) {
+            e.preventDefault()
+          }, false)
+        }
+      }
+    },
     data() {
       return {
         msgToSent: '',
         icon1: `${config.resourceUrl}/im/chat-editor-1.png`,
         icon2: `${config.resourceUrl}/im/chat-editor-2.png`,
         icon3: `${config.resourceUrl}/im/chat-editor-3.png`,
+        currentChatWay: true,
+        currentChatWay: 1 //1文本，2语音，3媒体
       }
     },
     computed: {},
     methods: {
-      sendTextMsg() {
+      goAlbum(e) {
+        var evt = document.createEvent("MouseEvents");
+        evt.initEvent("click", false, false);
+        e.target.previousSibling.dispatchEvent(evt);
+      },
+      // 解决输入法被激活时 底部输入框被遮住问题
+      focusIpt() {
+        this.currentChatWay = 1
+        var interval = setInterval(function() {
+          document.body.scrollTop = document.body.scrollHeight
+        }, 100)
+      },
+      sendTextMsg(e) {
         if (/^\s*$/.test(this.msgToSent)) {
           this.$vux.alert.show({
             title: '请不要发送空消息'
@@ -86,28 +222,13 @@
           return
         }
         this.msgToSent = this.msgToSent.trim()
-        if (this.type === 'session') {
-          let robotAccid = ''
-          let robotText = ''
-          let atUsers = this.msgToSent.match(/@[^\s@$]+/g)
-          if (atUsers) {
-            for (let i = 0; i < atUsers.length; i++) {
-              let item = atUsers[i].replace('@', '')
-              if (this.robotInfosByNick[item]) {
-                robotAccid = this.robotInfosByNick[item].account
-                robotText = (this.msgToSent + '').replace(atUsers[i], '').trim()
-                break
-              }
-            }
-          }
-          this.sendCustomMsg({
-            fileDataLocalPath: '',
-            fileDataUrl: '',
-            voiceDuration: '',
-            messageContentType: 1,
-            textContent: this.msgToSent
-          })
-        }
+        this.sendCustomMsg({
+          fileDataLocalPath: '',
+          fileDataUrl: '',
+          voiceDuration: '',
+          messageContentType: 1,
+          textContent: this.msgToSent
+        })
         this.msgToSent = ''
       },
       getObjectURL(file) {
@@ -152,7 +273,7 @@
             messageContentType: fileType,
             textContent: ''
           })
-        }else{
+        } else {
           this.$vux.alert.show({
             title: msg
           })
@@ -207,15 +328,7 @@
   }
 </script>
 
-<style <style lang="stylus" scoped>
-  .robot.m-chat-editor-main {
-    /*.u-editor-input {
-          padding-right: 4.5rem;
-        }
-        .u-editor-icons {
-          width: 4rem;
-        }*/
-  }
+<style lang="stylus" scoped>
   .m-chat-robot {
     overflow-y: scroll;
     .weui-cells {
@@ -228,10 +341,10 @@
     background-color: #fefefe;
     border: #ccc solid 1px;
     color: black;
-    padding: 0.1rem;
-    margin-left: .1rem;
+    padding: 1.6px;
+    margin-left: 1.6px;
   }
   .m-chat-editor
     background-color #ffffff
-    padding 30px
+    // padding 30px
 </style>

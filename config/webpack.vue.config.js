@@ -22,6 +22,14 @@ const devServer = {
     hot: true,
     historyApiFallback: {
       index: '/build/vuepage/index.html'
+    },
+    proxy: {
+        '/huiguapi/*': { 
+            // target: 'http://10.0.0.167:3156',
+            target: 'http://192.168.27.35:8082',
+            secure: false, // 接受 运行在 https 上的服务
+            changeOrigin: true
+        }
     }
 }
 let config = webpackMerge(webpackBase, {

@@ -1,60 +1,6 @@
 define(['jquery','address','lodash','commons','flexible'],function($) {
     $(document).ready(function() {
-        var dt = new Date();
-        dt.setHours(dt.getHours() + 24);
-        document.cookie = "IDFA=0; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "apiVer=0; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "appSrc=629; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "appType=9; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "appVer=3.0.0; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "cType=1; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "osUUID=7D3C6F27790D94DCBE2754FFD8B94AD1; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "osVer=19; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "token=B763F9FAD0D44EBFB19EBD1742D7C1C2; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "userRole=1; expires=" + dt.toGMTString() + ";path=/";
 
-        // var dt = new Date();
-        // dt.setHours(dt.getHours() + 24);
-        // document.cookie = "IDFA=0ED921EB-9B42-4299-83C7-B7F37738B39F; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "apiVer=3; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "appSrc=910; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "appType=9; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "appVer=3.0.0; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "cType=2; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "osUUID=2DF337D4-64CA-4450-92B2-B55BA21C9B2C; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "osVer=8.3; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "token=7661F5B3241F46FA9824A48B1DFE63AC; expires=" + dt.toGMTString() + ";path=/";
-        // document.cookie = "userRole=1; expires=" + dt.toGMTString() + ";path=/";
-
-        // $(document).ready(function() {
-        //     var dt = new Date();
-        //     dt.setHours(dt.getHours() + 24);
-        //     document.cookie = "IDFA=E012F02A-53D3-4271-9EAC-D380EC9ED3B4; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "apiVer=3; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "appSrc=910; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "appType=9; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "appVer=3.0.0; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "cType=2; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "osUUID=F9D571EF-FF81-4FD7-937F-F12977877DAC; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "osVer=9.3.2; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "token=40B2364BC55A4D2CBBFAA80A06805C67; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "userRole=1; expires=" + dt.toGMTString() + ";path=/";
-        // });
-
-        // $(document).ready(function() {
-        //     var dt = new Date();
-        //     dt.setHours(dt.getHours() + 24);
-        //     document.cookie = "IDFA=F851BB81-4BC7-4FD6-95C4-EDC760FBEA48; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "apiVer=3; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "appSrc=910; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "appType=9; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "appVer=3.0.0; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "cType=2; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "osUUID=BAD50003-08D2-4082-9244-A165C1DD50DE; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "osVer=10.0; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "token=C37E23419A874F098BE3538234E2B2B0; expires=" + dt.toGMTString() + ";path=/";
-        //     document.cookie = "userRole=1; expires=" + dt.toGMTString() + ";path=/";
-        // });
     });
     let utils = {
         showLoading:function(container){

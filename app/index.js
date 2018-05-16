@@ -6,7 +6,7 @@ import store from './store/index'
 import './config/eles.config'
 import app from './app.vue'
 import './style/theme.css'
-// import '../src/common/js/flexible'
+import '../src/common/js/flexible'
 require("babel-core/register");
 require("babel-polyfill");
 

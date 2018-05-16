@@ -238,12 +238,6 @@ select {
     transition: opacity 1s ease-out;
 }
 
-/*数据统计*/
-#cnzz_stat_icon_1263191117{
-  display: none;
-}
-
-
 .g-tip {
   position: fixed;
   top: 0;

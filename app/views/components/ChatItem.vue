@@ -290,8 +290,8 @@
       }
       .msg-link {
         bottom: 0;
-        right: -4rem;
-        font-size: 0.9rem;
+        right: -64px;
+        font-size:14.4px;
       }
     }
   }
@@ -299,15 +299,15 @@
   .msg-unread {
     position: relative;
     float: right;
-    top: 0.3rem;
-    right: 0.5rem;
-    font-size: 0.9rem;
+    top: 4.8px;
+    right: 8px;
+    font-size:14.4px;
     color: #0091e4;
   }
   .msg-video{
-    height: 8rem !important;
+    height: 128px !important;
   }
   .msg-image{
-    height: 8rem !important;
+    height: 128px !important;
   }
 </style>

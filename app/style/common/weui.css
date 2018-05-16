@@ -1,4 +1,4 @@
-/* 重置WEUI样式 */
+/* 重置WEUI样式yuancheng */
 
 .g-window {
   .weui-mask_transparent {
@@ -17,10 +17,10 @@
     background-color: transparent;
   }
   .weui-cell {
-    font-size: 1.08rem;
-    padding: 0.5rem 0.7rem;
+    font-size: 18px;
+    padding: 8px 11.2px;
     .vux-label-desc {
-      font-size: 0.8rem;
+      font-size: 12.8px;
       color: #999;
     }
     &:before {
@@ -29,12 +29,12 @@
   }
   .weui-loadmore{
     margin: 0 auto;
-    height: 1.6em;
-    font-size: .8rem;
+    height: 25.6px;
+    font-size: 12.8px;
   }
   /* 按钮组 */
   .weui-btn {
-    font-size: 1rem;
+    font-size: 16px;
     &:after {
       border: none;
     }
@@ -57,7 +57,7 @@
   }
   /* 输入框组 */
   .weui-input {
-    font-size: 1.08rem;
+    font-size: 17.28px;
   }
   /* switch 元件 */
   .weui-switch:checked, .weui-switch-cp__input:checked ~ .weui-switch-cp__box {
@@ -96,22 +96,22 @@
     }
   }
   .weui-cell__ft {
-    font-size: 0.96rem;
+    font-size: 16px;
     color: inherit;
   }
   .weui-search-bar {
     background-color: transparent;
   }
   .weui-icon-search {
-    line-height: 2rem;
+    line-height: 32px;
   }
   .weui-icon-warn {
     font-size: inherit;
   }
   .weui-search-bar__box {
     .weui-search-bar__input, .weui-icon-search {
-      line-height: 2rem;
-      font-size: 1.08rem;
+      line-height: 32px;
+      font-size: 17.28px;
     }
   }
   .vux-label-desc {

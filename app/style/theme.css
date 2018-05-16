@@ -30,12 +30,12 @@ $color_input_light: #999;
 $color_white: #fff;
 
 /* 顶部导航高度 */
-$height_nav: 3.6rem;
-$height_tab: 3.6rem;
-$height_room_banner: 12rem;
-$height_room_tabs: 3rem;
+$height_nav: 0;
+$height_tab: 57.6px;
+$height_room_banner: 192px;
+$height_room_tabs: 48px;
 
-$height_editor: 4rem;
+$height_editor: 64px;
 
 /* 消息变量 */
 $msg_bg_you: #5cacde;

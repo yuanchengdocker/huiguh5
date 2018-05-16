@@ -101,9 +101,9 @@ import { setTimeout } from 'timers';
   .p-chat-list {
     min-height: 101%;
     .u-icon {
-      width: 1.4rem;
-      height: 1.6rem;
-      margin-right: 0.2rem;
+      width: 22.4px;
+      height: 25.6px;
+      margin-right: 3.2px;
       vertical-align: bottom;
     }
   }

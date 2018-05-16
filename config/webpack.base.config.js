@@ -22,7 +22,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                exclude: [/node-modules/,/NIM_Web_SDK.*\.js/],
+                exclude: [/node-modules/, /NIM_Web_SDK.*\.js/],
             },
             // {
             //     test: /\.css$/,
@@ -68,28 +68,43 @@ module.exports = {
                         loader: 'css-loader',
                         options: { importLoaders: 1 }
                     },
-                    'postcss-loader'
+                    // {
+                    //     loader: 'px2rem-loader',
+                    //     options: {
+                    //       remUnit: 75,
+                    //       remPrecision: 8
+                    //     }
+                    // },
+                    'postcss-loader',
+                    // 'webpack-px2rem-loader',   
+
                 ],
-                include: [resolve('app/style')]
+                // include: [resolve('app/style')],
+                // exclude: /node-modules/,
             },
             {
                 test: /\.styl$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    // MiniCssExtractPlugin.loader,
                     'vue-style-loader',
+                    'css-loader',
                     {
-                        loader: 'css-loader',
+                        loader: 'px2rem-loader',
                         options: {
-                            minimize: true
+                            baseDpr: 2,             // base device pixel ratio (default: 2)
+                            threeVersion: false,    // whether to generate @1x, @2x and @3x version (default: false)
+                            remVersion: true,       // whether to generate rem version (default: true)
+                            remUnit: 75,            // rem unit value (default: 75)
+                            remPrecision: 6  
                         }
                     },
                     {
                         loader: 'postcss-loader',
                         options: {
-                            sourceMap: true
+                          sourceMap: true
                         }
                     },
-                    'stylus-loader'
+                    'stylus-loader',
                 ]
             },
             {
@@ -104,7 +119,7 @@ module.exports = {
                 loader: 'url-loader',
                 query: {
                     // limit for base64 inlining in bytes
-                    limit: 4096,
+                    // limit: 4096,
                     name: 'img/[name].[ext]?[hash]'
                 }
             }
@@ -125,13 +140,13 @@ module.exports = {
             // both options are optional
             filename: "[name].[contenthash:8].css",
             chunkFilename: "[id].[contenthash:8].css"
-          }),
+        }),
         new webpack.LoaderOptionsPlugin({
             options: {
                 postcss: [
-                        require("autoprefixer")({
-                            browsers: ['ie>=8','>1% in CN']
-                        })
+                    require("autoprefixer")({
+                        browsers: ['ie>=8', '>1% in CN']
+                    })
                 ]
             }
         })

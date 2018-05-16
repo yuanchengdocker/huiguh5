@@ -1,13 +1,5 @@
 <template>
     <div class="g-inherit m-article">
-        <x-header class="m-tab" :left-options="leftBtnOptions" @on-click-back="onClickBack">
-            <h1 class="m-tab-top" @click="enterNameCard">{{sessionName}}</h1>
-            <a slot="left"></a>
-            <div class="m-tab-right" slot="right">
-                <!-- <span class='icon-history' @click='onHistoryClick'></span>
-                    <span v-if="scene==='team'" class='icon-team' @click="onTeamManageClick"></span> -->
-            </div>
-        </x-header>
         <div class="m-chat-main">
             <div class="m-chat-list">
                 <div class="chat-wrapper" ref="wrapper">
@@ -210,8 +202,8 @@
 </script>
 <style scoped>
     .g-window .m-tab .m-tab-right {
-        width: 5rem;
-        right: -1rem;
+        width: 80px;
+        right: -16px;
     }
     .m-tab-right {
         display: flex;
@@ -219,21 +211,21 @@
         .icon-history,
         .icon-team {
             display: inline-block;
-            margin-right: .8rem;
-            width: 1.7rem;
-            height: 1.7rem;
+            margin-right: 1.28px;
+            width: 27.2px;
+            height: 27.2px;
             background: url(http://yx-web.nos.netease.com/webdoc/h5/im/icons.png);
-            background-size: 20rem;
-            background-position: -5.8rem -11.3rem;
+            background-size: 320px;
+            background-position: -92.8px -180.8px;
         }
         .icon-team {
-            background-position: -7.9rem -11.3rem;
+            background-position: -126.4px -180.8px;
         }
     }
     .invalidHint {
         width: 100%;
-        height: 2rem;
-        line-height: 2rem;
+        height: 32px;
+        line-height: 32px;
         text-align: center;
         background-color: bisque;
         color: burlywood;
