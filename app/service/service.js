@@ -36,7 +36,7 @@ export default (type = 'post', turl, data, config) => {
         timeout: 30000,
         headers: config||{
             'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            'Content-Type': 'application/json;charset=UTF-8'
         }
     }).then(
         (response) => {

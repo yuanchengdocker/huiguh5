@@ -46,7 +46,7 @@
                 <img src="/build/img/doctorStatus3.png" class="status detail-status3">
                 <% } %>
             </div>
-            <a href="javascript:void(0);" class="detail-add download-btn">+好友</a>
+            <!-- <a href="javascript:void(0);" class="detail-add download-btn">+好友</a> -->
             <div class="detail-header-con">
                 <p class="detail-tit"><span><%= doctorName %></span><%= professionalTitleName %></p>
                 <p class="detail-subtitle"><%= subDepartmentName %>&nbsp;&nbsp;|&nbsp;&nbsp;<%= hospitalName %></p>
@@ -67,7 +67,7 @@
                 <a id="detail-tab-introduce" class="tab-active" onclick="conferenceDetailAction.tabChange('detail-tab-introduce')">简介</a></li>
                 <li class="detail-tab-item">
                 <div class="tab-bar"></div>
-                <a id="detail-tab-team" onclick="conferenceDetailAction.tabChange('detail-tab-team')">团队</a></li>
+                <a id="detail-tab-team" onclick="conferenceDetailAction.tabChange('detail-tab-team')">工作室</a></li>
                 <li class="detail-tab-item">
                 <div class="tab-bar"></div>
                 <a id="detail-tab-opus" onclick="conferenceDetailAction.tabChange('detail-tab-opus')">作品</a></li>
@@ -79,7 +79,16 @@
         <div class="detail-tab-cont">
             <div class="tab-container">
                 <div class="detail-tab-introduce">
-                    <%= userDescribe %>
+                    <div class="detail-tab-con">
+                        <% if(expertise){ %>
+                        <p class="detail-tab-tit">擅长</p>
+                        <p><%= expertise %><p>
+                        <% } %>
+                        <% if(userDescribe){ %>
+                        <p class="detail-tab-tit">简介</p>
+                        <p><%= userDescribe %><p>
+                        <% } %>
+                    </div>
                     <div class="personal-empty">
                       <img src="/build/img/fulp-empty.png" class="emptyImg"><p>暂无记录</p>
                     </div>
@@ -215,7 +224,7 @@
                     <span>手术快约</span>
                     <img src="/build/img/studio_cover1.png" class="tap-main-bg" />
                 </div>
-                <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a>
+                <!-- <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a> -->
             </li>
             <% }else if(item == 2){ %>
             <li data-id="">
@@ -223,7 +232,7 @@
                     <span>预约坐诊</span>
                     <img src="/build/img/studio_cover1.png" class="tap-main-bg" />
                 </div>
-                <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a>
+                <!-- <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a> -->
             </li>
             <% }else if(item == 3){ %>
             <li data-id="">
@@ -231,7 +240,7 @@
                     <span>培训教育</span>
                     <img src="/build/img/studio_cover1.png" class="tap-main-bg" />
                 </div>
-                <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a>
+                <!-- <a href="javascript:void(0);" class="serve-tap-btn download-btn">申请预约</a> -->
             </li>
             <% } %>
         <% }) %>

@@ -11,6 +11,8 @@ export default {
     // 消息列表
     msgs: {}, // 以sessionId作为key
     msgsMap: {}, // 以idClient作为key，诸如消息撤回等的消息查找
+    msgLastTime:0,
+    currSessionLastMsg:null,
     // 会话列表
     sessionlist: [],
     sessionMap: {},

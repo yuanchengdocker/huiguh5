@@ -59,6 +59,7 @@
   .u-list-item {
     min-height: 32px;
     vertical-align: middle;
+    background-color: #ffffff;
     .icon {
       display: inline-block;
       margin-right: 9.6px;
@@ -95,6 +96,7 @@
     position: absolute;
     right: 28.8px;
     top: 17.6px;
+    color: #919dae
   }
   /* 未读数标签 */
   .u-unread {
@@ -130,8 +132,8 @@
       margin-right: 9.6px;
       margin-left: 9.6px;
       padding: 0;
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       vertical-align: top;
       img {
         position: relative;

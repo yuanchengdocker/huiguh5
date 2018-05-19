@@ -13,9 +13,10 @@ function resolve(dir) {
     return path.join(__dirname, '..', dir)
 }
 const devServer = {
-    port: '9999',
+    port: '86',
     host: '0.0.0.0',
     progress: true,
+    disableHostCheck:true,
     overlay: {
     },
     //   errors: true
@@ -25,8 +26,14 @@ const devServer = {
     },
     proxy: {
         '/huiguapi/*': { 
-            // target: 'http://10.0.0.167:3156',
-            target: 'http://192.168.27.35:8082',
+            target: 'http://192.168.0.54:3362',
+            // target: 'http://192.168.27.35:8082',
+            secure: false, // 接受 运行在 https 上的服务
+            changeOrigin: true
+        },
+        '/thirdpartyapi/*': { 
+            target: 'http://192.168.0.54:3362',
+            // target: 'http://10.0.0.167:3362',
             secure: false, // 接受 运行在 https 上的服务
             changeOrigin: true
         }

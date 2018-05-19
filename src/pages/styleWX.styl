@@ -7,10 +7,48 @@ body.index
     background-color:#43547d;
     color:#fff;
     text-align:center;
-    .logo
-      width 250px;
-      height 250px;
-      margin 77px auto;
+    background: url('/build/imgWX/backbg.png') no-repeat top center
+    background-size 100% 100%
+    padding-top 77px
+    // .logo
+    //   width 250px;
+    //   height 250px;
+    //   margin 77px auto;
+    .upload
+      width 200px
+      height 200px
+      line-height 200px
+      border-radius 50%
+      background-color rgba(0,0,0,0)
+      border 0.0267rem solid #fff
+      display block
+      margin 0 auto 77px
+      overflow hidden
+      vertical-align middle
+      text-align -webkit-center
+      position relative
+      #img
+        opacity: 0
+        position absolute
+        left 20%
+        top 40%
+        z-index 10
+      img.photos
+        display block
+        width 86px
+        height 69px
+        position absolute
+        top 50%
+        left 50%
+        margin-top -34.5px
+        margin-left -43px
+      img
+        min-height auto
+        height 100%
+        width 100%
+        min-width auto
+        position absolute
+        top -5px
     div.sign
       display none
       color #fff

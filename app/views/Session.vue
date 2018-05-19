@@ -1,6 +1,6 @@
 <template>
     <div class="g-inherit m-main p-session">
-        <div class="session-wrapper" ref="sessionWrapper">
+        <div class="session-wrapper" ref="sessionWrapper" v-if="sessionlist&&sessionlist.length>0">
             <group class="u-list session-container">
                 <cell v-for="(session) in sessionlist" class="u-list-item" :title="session.name" :inline-desc="session.lastMsgShow" :key="session.id" :userName="session.name" :sessionId="session.id" v-touch:swipeleft="showDelBtn" v-touch:swiperight="hideDelBtn" @click.native="enterChat(session)">
                     <img class="icon u-circle" slot="icon" width="24" :src="session.avatar">
@@ -11,6 +11,12 @@
                     <span class="u-tag-del" :class="{active: delSessionId===session.id}" @click.stop="deleteSession"></span>
                 </cell>
             </group>
+        </div>
+        <div v-else class="session-nochat">
+            <section class="nochat-container">
+                <img class="nochat-img" src="../img/nochat.png" alt=""/>
+                <p class="nochat-title">暂无可咨询医生</p>
+            </section>
         </div>
     </div>
 </template>
@@ -29,6 +35,10 @@
     export default {
         name: 'session',
         components: {},
+        beforeRouteEnter: (to, from, next) => {
+            util.updateChatUserName('咨询医生')
+            next()
+        },
         data() {
             return {
                 delSessionId: null,
@@ -39,14 +49,15 @@
             }
         },
         created(){
-            this.$store.dispatch('getLocalSession')
         },
         mounted() {
+            util.updateChatUserName('咨询医生')
             if (this.$refs.sessionWrapper) {
                 this.initScroll()
             }
         },
         updated() {
+            // util.updateChatUserName('咨询医生')
             if (this.$refs.sessionWrapper) {
                 this.initScroll()
             }
@@ -67,25 +78,17 @@
                         if (item.to !== this.myPhoneId) {
                             userInfo = this.userInfos[item.to]
                         } else {
-                            userInfo = this.myInfo
+                            userInfo = this.userInfos[this.myPhoneId]
                             userInfo.alias = '我的手机'
                             userInfo.avatar = `${config.myPhoneIcon}`
                             return false
                         }
                         if (userInfo) {
-                            item.name = util.getFriendAlias(userInfo)
-                            item.avatar = userInfo.avatar
+                            item.name = userInfo.userName
+                            item.avatar = userInfo.userAvatar
                         }
                     } else if (item.scene === 'team') {
                         return false
-                        let teamInfo = null
-                        if (teamInfo) {
-                            item.name = teamInfo.name
-                            item.avatar = teamInfo.avatar || (teamInfo.type === 'normal' ? this.myGroupIcon : this.myAdvancedIcon)
-                        } else {
-                            item.name = `群${item.to}`
-                            item.avatar = item.avatar
-                        }
                     }
 
                     let lastMsg = item.lastMsg || {}
@@ -98,15 +101,14 @@
 
                         switch(content.messageContentType){
                             case 1: item.lastMsgShow = content.textContent || '';lastMsg['type']='text'; break; //文本
-                            case 2: 
-                            lastMsg['type']='audio'; break; //语音
+                            case 2: lastMsg['type']='audio'; break; //语音
                             case 3: lastMsg['type']='image'; break; //图片
                             case 4: lastMsg['type']='tip'; break; //提示内容
                             case 5: lastMsg['type']='share'; break; //分享内容
-                            case 6: lastMsg['type']='appoint'; break; //预约内容
-                            case 7: lastMsg['type']='follow'; break; //随访内容
-                            case 8: 
-                            lastMsg['type']='file'; break; //文件
+                            case 11: lastMsg['type']='video'; break; //视频
+                            case 12: lastMsg['type']='file'; break; //文件
+                            case 14: lastMsg['type']='article'; break; //患教资料
+                            case 15: lastMsg['type']='question'; break; //问卷
                         }
                         }
                     } 
@@ -139,7 +141,6 @@
             },
             deleteSession(e) {
                 if(!this.isDelClick){
-                    console.log(e)
                     let _this = this
                     setTimeout(() => {
                         this.isDelClick = false
@@ -147,7 +148,12 @@
                             this.$vux.confirm.show({
                                 title: `确定要删除与${_this.delUserName}的对话吗？`,
                                 onConfirm () {
-                                    _this.$store.dispatch('deleteSession', _this.delSessionId)
+                                    _this.$store.dispatch('deleteOneData', {id:_this.delSessionId,table:'Sessions',callback:()=>{
+                                        _this.$store.dispatch('deleteSessions', {sessionId:_this.delSessionId})
+                                        _this.$store.dispatch('deleteDataByKey', {key:_this.delSessionId,table:'Msgs'})
+                                        _this.delSessionId = null
+                                        _this.delUserName = null
+                                    }})
                                 }
                             })
                         }
@@ -179,36 +185,33 @@
                     // probeType: 3,    
                     scrollY: true,
                     click: true,
-                    // pullUpLoad: {   // 配置上啦加载
-                    //   threshold: -80   //上啦80px的时候加载
-                    // },
-                    // openPullDown: true,
-                    // pullDownRefresh: {
-                    //     threshold: 50,
-                    //     stop: 20
-                    // },
                     mouseWheel: { // pc端同样能滑动
                         speed: 20,
                         invert: false
                     },
                     useTransition: true, // 防止iphone微信滑动卡顿
                 });
-                // this.scroll.on('pullingDown', (pos) => {
-                //     // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
-                //     if(!this.pullDowning){
-                //         console.log(pos)
-                //         this.getHistoryMsgs()
-                //         this.pullDowning = true
-                //         this.gotoDown = false
-                //         this.scroll.closePullUp()
-                //     }
-                // });
+               
             },
         }
     }
 </script>
 
-<style type="text/css">
+<style type="text/css" scoped>
+    .session-nochat{
+        height: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .session-nochat .nochat-img{
+        width: 40px
+    }
+    .session-nochat .nochat-title{
+        font-size: 16px;
+        color: #c0c6d0;
+    }
     .p-session {
         .vux-cell-primary {
             max-width: 70%;

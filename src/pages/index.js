@@ -9,15 +9,8 @@ var indexAction={
     indexAction.phoneData = localStorage.getItem('mobilePhone');
     localStorage.setItem('doctorid', $.getUrlParam('doctorid')||"");
 
-    if(indexAction.phoneData != null && indexAction.phoneData != undefined && indexAction.phoneData != "" && indexAction.phoneData != "null"){
-      
-        indexAction.signPhone.html(indexAction.phoneData);
-        setCookie('token',localStorage.getItem('token'));  //设置token
-        indexAction.login.css("display","none");
-        indexAction.sign.css("display","block");
-        indexAction.btnQuit.css("display","block");
-    }else{
-      
+    if(indexAction.phoneData == null || indexAction.phoneData == undefined || indexAction.phoneData == "" || indexAction.phoneData == "null"){
+
       //授权接口
       Authorized(function(data){
         // console.log(data);
@@ -30,31 +23,64 @@ var indexAction={
             indexAction.sign.css("display","block");
             indexAction.btnQuit.css("display","block");
             indexAction.signPhone.html(data.data.mobilePhone);
+            $("#img").show();
+            $('#img').change(function() { 
+              var file = this.files[0]; 
+              var r = new FileReader(); 
+              r.readAsDataURL(file); 
+              $(r).load(function() { 
+                //上传
+                huiguPost(function(data){
+                  if(data.code == 0){
+                    $(".updata").removeClass("photos");
+                    $('.updata').attr("src",data.data.iconUrl); 
+                  }else{
+                    setToast3("您还未登录，需要去登录");
+                    $("#img").hide();
+                  }
+                },huiguPostUrl.getupdateIcon,{'file':this.result})
+
+              })
+                  
+            }) 
           }
         }
         
       },1); 
+      
+    }else{
+      
+      indexAction.signPhone.html(indexAction.phoneData);
+        setCookie('token',localStorage.getItem('token'));  //设置token
+        indexAction.login.css("display","none");
+        indexAction.sign.css("display","block");
+        indexAction.btnQuit.css("display","block");
+
+        $(".upload #img").on("click",function(){
+          setToast3("您还未登录，需要去登录");
+          $("#img").hide();
+        })
       
     }
     
 
   },
   clickbespeak: function(){
-    if(indexAction.phoneData != null && indexAction.phoneData != undefined && indexAction.phoneData != "" && indexAction.phoneData != "null"){
-      window.location.href= dataPath.WXhttpPathch + 'build/pages/patient/orderlist/orderlist.html';
-    }else{
+    if(indexAction.phoneData == null || indexAction.phoneData == undefined || indexAction.phoneData == "" || indexAction.phoneData == "null"){
       setToast3("您还没登录，需要去登录");
+    }else{
+      window.location.href= dataPath.WXhttpPathch + 'build/pages/patient/orderlist/orderlist.html';
     }
   },
   clickquit: function(){
-    if(indexAction.phoneData != null && indexAction.phoneData != undefined && indexAction.phoneData != "" && indexAction.phoneData != "null"){
-      console.log(4);
-      indexAction.quit(); //执行方法
-    }else{
+    if(indexAction.phoneData == null || indexAction.phoneData == undefined || indexAction.phoneData == "" || indexAction.phoneData == "null"){
       setToast3("您还没登录");
       setTimeout(function(){
         window.location.href= dataPath.WXhttpPathch + 'build/pages/login.html';
       },1000);
+    }else{
+      console.log(4);
+      indexAction.quit(); //执行方法
     }
   },
   quit: function(){
@@ -76,6 +102,9 @@ var indexAction={
         indexAction.sign.css("display","none");
         indexAction.login.css("display","block");
         indexAction.btnQuit.css("display","none");
+
+        $(".updata").addClass("photos");
+        $('.updata').attr("src","/build/imgWX/updata.png"); 
 
       }else if(data.indexOf('10016')){
         setToast3("您需要重新登录");

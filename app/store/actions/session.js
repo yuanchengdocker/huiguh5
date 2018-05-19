@@ -4,23 +4,23 @@
 
 import store from '../'
 
-// 如果会话对象不是好友，需要更新好友名片
-function updateSessionAccount (sessions) {
-  let accountsNeedSearch = []
-  sessions.forEach(item => {
-    if (item.scene === 'p2p') { //单点
-      // 如果不存在缓存资料
-      if (!store.state.userInfos[item.to]) {
-        accountsNeedSearch.push(item.to)
-      }
-    }
-  })
-  if (accountsNeedSearch.length > 0) {
-    store.dispatch('searchUsers', {
-      accounts: accountsNeedSearch
-    })
-  }
-}
+// // 如果会话对象不是好友，需要更新好友名片
+// function updateSessionAccount (sessions) {
+//   let accountsNeedSearch = []
+//   sessions.forEach(item => {
+//     if (item.scene === 'p2p') { //单点
+//       // 如果不存在缓存资料
+//       if (!store.state.userInfos[item.to]) {
+//         accountsNeedSearch.push(item.to)
+//       }
+//     }
+//   })
+//   if (accountsNeedSearch.length > 0) {
+//     store.dispatch('searchUsers', {
+//       accounts: accountsNeedSearch
+//     })
+//   }
+// }
 
 export function setCurrSession ({state, commit, dispatch}, sessionId) {
     const nim = state.nim
@@ -53,19 +53,20 @@ export function setCurrSession ({state, commit, dispatch}, sessionId) {
 
 // onSessions只在初始化完成后回调
 export function onSessions (sessions) {
-  updateSessionAccount(sessions)
+  console.log('onSessions')
+  // updateSessionAccount(sessions)
   store.commit('updateSessions', sessions)
+  store.dispatch('saveData', {obj:sessions,table:'Sessions'})
 }
 
 export function onUpdateSession (session) {
+  console.log('onUpdateSession',session)
   let sessions = [session]
-  updateSessionAccount(sessions)
+  // updateSessionAccount(sessions)
   store.commit('updateSessions', sessions)
+  store.dispatch('saveData', {obj:sessions,table:'Sessions'})
 }
 
-export function getLocalSession () {
-  store.commit('getLocalSession')
-}
 
 export function deleteSession ({state, commit}, sessionId) {
   const nim = state.nim

@@ -6,7 +6,6 @@ import config from '../../config/nim.config.js'
 import store from '../'
 import { onSessions, onUpdateSession } from './session.js'
 import { onRoamingMsgs, onOfflineMsgs, onMsg,sendMsg,sendFileMsg } from './msgs'
-import { onMyInfo, onUserInfo } from './userInfo'
 
 const SDK = require('../../sdk/' + config.sdk)
 
@@ -31,6 +30,13 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
             if (loginInfo) {
                 // 连接上以后更新uid
                 commit('updateUserUID', loginInfo)
+                dispatch('saveData', {obj:{
+                    id:loginInfo.id,
+                    userName:loginInfo.userName,
+                    userAccid:loginInfo.userAccid,
+                    userAvatar:loginInfo.userAvatar,
+                    userType:loginInfo.userType
+                },table:'Users'})
             }
         },
         onerror: function onError(event) {
@@ -53,20 +59,19 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
             }
         },
 
-        onsessions: onSessions,
+        // onsessions: onSessions,
         onupdatesession: onUpdateSession,
         onroamingmsgs: onRoamingMsgs,
         onofflinemsgs: onOfflineMsgs,
         onmsg: onMsg,
         // 用户名片 - actions/userInfo
-        onmyinfo: onMyInfo,
-        onupdatemyinfo: onMyInfo,
-        onusers: onUserInfo,
-        onupdateuser: onUserInfo,
+        // onmyinfo: onMyInfo,
+        // onupdatemyinfo: onMyInfo,
+        // onusers: onUserInfo,
+        // onupdateuser: onUserInfo,
         // // 同步完成
         onsyncdone: function onSyncDone() {
             dispatch('updatedLoadingStatus', { status: false })
-            console.log(123456)
             // 说明在聊天列表页
             if (store.state.currSessionId) {
                 dispatch('setCurrSession', store.state.currSessionId)

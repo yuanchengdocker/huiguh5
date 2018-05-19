@@ -60,6 +60,19 @@ Utils.mergeObject = function (dest, src) {
   return dest
 }
 
+Utils.updateChatUserName = function(title){
+  document.title = title;
+  var i = document.createElement('iframe');
+  // i.src = '/favicon.ico';
+  i.style.display = 'none';
+  i.onload = function() {
+      setTimeout(function(){
+          i.remove();
+      }, 9)
+  }
+  document.body.appendChild(i);
+}
+
 Utils.mergeVueObject = function (dest, src) {
   let keys = Object.keys(src)
   keys.forEach(item => {
@@ -69,7 +82,6 @@ Utils.mergeVueObject = function (dest, src) {
   })
   return dest
 }
-
 // 消息类型列表
 Utils.mapMsgType = function (msg) {
   let map = {
@@ -82,7 +94,10 @@ Utils.mapMsgType = function (msg) {
     tip: '提醒消息',
     custom: '自定义消息',
     notification: '系统通知',
-    robot: '机器人消息'
+    robot: '机器人消息',
+    share: '分享内容',
+    article: '患教资料',
+    question: '问卷调查'
   }
   let type = msg.type
   return map[type] || '未知消息类型'

@@ -4,14 +4,14 @@
       <span class="iconfont icon-dialogue-jianpan" v-show="currentChatWay === 2" v-on:click="currentChatWay=1"></span>
       <span class="iconfont icon-dialogue-voice" v-show="currentChatWay != 2" v-on:click="currentChatWay=2"></span>
       <div class="chat-way" v-show="currentChatWay === 2">
-        <div class="chat-say" v-press>
+        <div class="chat-say" v-press="{callback:getAudioFilPath}">
           <span class="one">按住 说话</span>
           <span class="two">松开 结束</span>
         </div>
       </div>
       <div class="chat-way" v-show="currentChatWay != 2">
         <form action="" onsubmit="return false;" value="发送">
-        <input class="chat-txt" v-model="msgToSent" type="text" @focus="focusIpt" @keyup.enter="sendTextMsg()" />
+          <input class="chat-txt" v-model="msgToSent" type="text" @focus="focusIpt" @keyup.enter="sendTextMsg()" />
         </form>
       </div>
       <span class="more iconfont icon-dialogue-jia" v-on:click="currentChatWay ===3 ? currentChatWay=1 : currentChatWay =3 "></span>
@@ -39,10 +39,10 @@
         </div>
       </div>
     </div>
-    <div class="more-send-option" v-show="currentChatWay === 3">
-      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*"/><img src="../../img/album.png" />
+    <div class="more-send-option" v-show="currentChatWay === 3" ref="chatMoreOption">
+      <section class="option-item" @click="goAlbum(1)"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*" /><img src="../../img/album.png" />
       </section>
-      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" accept="audio/*" capture="microphone" /><img src="../../img/camera.png" />
+      <section class="option-item" @click="goAlbum(2)"><input @change="sendFileMsg" v-show="false" type="file" accept="audio/*" capture="microphone" /><img src="../../img/camera.png" />
       </section>
     </div>
   </div>
@@ -54,9 +54,8 @@
   import config from '../../config/nim.config.js'
   import pageUtil from '../../utils/page'
   import axios from '../../service/service'
-  import '../../style/stylus/chat.styl'
   import "../../style/stylus/dialogue.styl"
-  import wxAudio from '../../utils/wxAudio'
+  import wxSdk from '../../utils/wxSdk'
   import {
     Duplex
   } from 'stream';
@@ -85,12 +84,17 @@
       }
     },
     watch: {
-      continueRobotAccid(curVal, oldVal) {
-        if (curVal && this.robotInfos[curVal]) {
-          this.msgToSent = `@${this.robotInfos[curVal].nick} `
+      currentChatWay(curVal){
+        let more = this.$refs.chatMoreOption
+        if(curVal === 3){
+          document.addEventListener("click",this.hideMoreOption);
+          more.addEventListener("click",(event)=>{
+              event=event||window.event;
+              event.stopPropagation();
+          });
+        }else{
+          document.removeEventListener('click',this.hideMoreOption)
         }
-        // 重置
-        this.$store.dispatch('continueRobotMsg', '')
       },
       msgToSent(curVal, oldVal) {
         if (this.isRobot) {
@@ -102,11 +106,7 @@
     directives: {
       press: {
         bind(element, binding) {
-          // var recording = document.querySelector('.recording'),
-          //     recordingVoice = document.querySelector('.recording-voice'),
-          //     recordingCancel = document.querySelector('.recording-cancel'),
           var startTx, startTy, isCancel
-          var wxAudioObj = wxAudio()
           element.addEventListener('touchstart', function(e) {
             // 为什么每次注册监听器,都要重新获取一次 DOM 像上面写就 undefine?
             var recording = document.querySelector('.recording'),
@@ -114,9 +114,9 @@
             element.className = "chat-say say-active"
             recording.style.display = recordingVoice.style.display = "block"
             // console.log('start')
-            if (wxAudioObj.isWx) {
+            if (this.wxSdk.isWx) {
               console.log('开始语音')
-              wxAudioObj.audio.start()
+              this.wxSdk.audio.start()
             }
             isCancel = false
             var touches = e.touches[0]
@@ -131,11 +131,14 @@
             element.className = "chat-say"
             recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
             // console.log('end')
-            if (wxAudioObj.isWx) {
+            if (this.wxSdk.isWx) {
               if (isCancel) {
                 console.log('取消语音')
               } else {
-                wxAudioObj.audio.stop()
+                this.wxSdk.audio.stop().then((res) => {
+                  console.log('录音结束。。。。')
+                  binding.value.callback(res)
+                })
               }
             }
             e.preventDefault()
@@ -192,15 +195,45 @@
         icon2: `${config.resourceUrl}/im/chat-editor-2.png`,
         icon3: `${config.resourceUrl}/im/chat-editor-3.png`,
         currentChatWay: true,
-        currentChatWay: 1 //1文本，2语音，3媒体
+        currentChatWay: 1, //1文本，2语音，3媒体
+        wxSdk: wxSdk()
       }
     },
-    computed: {},
+    computed: {
+      myInfo() {
+        return this.$store.state.myInfo
+      },
+    },
     methods: {
+      hideMoreOption(){
+        this.currentChatWay = 1
+      },
+      async getAudioFilPath(res){
+        let { data,code,msg } = await axios('post', 'getWxMedia', {mediaId:res.serverId})
+        alert(data.detailUrl)
+        if(data && data.detailUrl){
+          this.sendCustomMsg({
+            fileDataLocalPath: '',
+            fileDataUrl: data.detailUrl,
+            voiceDuration: '',
+            messageContentType: 2,
+            textContent: ''
+          })
+        }else{
+          this.$vux.alert.show({
+            title: msg
+          })
+        }
+      },
       goAlbum(e) {
-        var evt = document.createEvent("MouseEvents");
-        evt.initEvent("click", false, false);
-        e.target.previousSibling.dispatchEvent(evt);
+        // var evt = document.createEvent("MouseEvents");
+        // evt.initEvent("click", false, false);
+        // e.target.previousSibling.dispatchEvent(evt);
+        if(e === 1){
+          this.wxSdk.img.choose().then((severIds)=>{
+ 
+          })
+        }
       },
       // 解决输入法被激活时 底部输入框被遮住问题
       focusIpt() {
@@ -299,12 +332,12 @@
             type: 1,
             data: {
               chatType: 1, //1单聊，2群聊
-              fromUserAvatarUrl: "http://fystorage1.szyyky.com/group1/M00/00/0C/CgAAqVl4m1uACVteAAA10I9o_7g402.jpg", //发送者的头像路径
-              fromUserChatID: 'd715622801557426176', //发送者的ACCID
-              fromUserGender: 1, //0男，1女
-              fromUserID: '715622742728118272', //发送者ID
-              fromUserName: "\U6797\U68ee", //发送者姓名
-              fromUserType: 1, //1医生，2患者，4群组，5工作室交流群，6工作室
+              fromUserAvatarUrl: this.myInfo.userAvatar, //发送者的头像路径
+              fromUserChatID: this.myInfo.userAccid, //发送者的ACCID
+              fromUserGender: 0, //0男，1女
+              fromUserID: this.myInfo.id, //发送者ID
+              fromUserName: this.myInfo.userName, //发送者姓名
+              fromUserType: 2, //1医生，2患者，4群组，5工作室交流群，6工作室
               mediaContent: {
                 fileDataLocalPath: option.fileDataLocalPath,
                 fileDataUrl: option.fileDataUrl,
@@ -323,6 +356,7 @@
             }
           }
         })
+        this.$emit('isSendMsg')
       }
     }
   }

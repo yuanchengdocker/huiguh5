@@ -13,13 +13,17 @@
         </keep-alive>
       </transition>
       <tabbar class="vux-demo-tabbar" icon-class="vux-center" v-show="showMenuBar" slot="bottom">
-        <tabbar-item :link="{path:menus.chat.path}" :selected="route.path === menus.chat.path" :badge="sessionUnreadCount">
-          <span class="demo-icon-22 vux-demo-tabbar-icon-home" slot="icon" style="position:relative;top: -2px;">&#xe637;</span>
-          <span slot="label">{{menus.chat.name}}</span>
+        <tabbar-item :link="{path:menus.chat.path}" :class="route.path === menus.chat.path?'hg-icon-select':''" :badge="sessionUnreadCount">
+          <span class="hg-icon-22 hg-icon-chat" slot="icon" style="position:relative;top: -2px;">&#xe637;</span>
+          <span slot="label" class="icon-title">{{menus.chat.name}}</span>
         </tabbar-item>
-        <tabbar-item :link="{path:menus.article.path}" :selected="route.path === menus.article.path">
-          <span class="demo-icon-22" slot="icon">&#xe633;</span>
-          <span slot="label"><span>{{menus.article.name}}</span></span>
+        <tabbar-item :link="{path:menus.article.path}" :class="route.path === menus.article.path?'hg-icon-select':''">
+          <span class="hg-icon-22 hg-icon-article" slot="icon">&#xe633;</span>
+          <span slot="label" class="icon-title">{{menus.article.name}}</span>
+        </tabbar-item>
+        <tabbar-item :link="{path:menus.self.path}" :class="route.path === menus.self.path?'hg-icon-select':''">
+          <span class="hg-icon-22 hg-icon-self" slot="icon">&#xe633;</span>
+          <span slot="label" class="icon-title">{{menus.self.name}}</span>
         </tabbar-item>
       </tabbar>
     </view-box>
@@ -29,6 +33,7 @@
 <script>
   const sessionHistory = window.sessionStorage
   import FullscreenImg from './views/components/FullscreenImg'
+  import './style/stylus/main.styl'
   import {
     setTimeout
   } from 'timers';
@@ -46,13 +51,21 @@
     methods: {
       ...mapActions(['updatedLoadingStatus'])
     },
+    beforeCreate(){
+      this.$store.dispatch('connect')
+      // this.$store.dispatch('updateRefreshState')
+      this.$store.dispatch('openDB')
+    },
     created() {
       this.updatedLoadingStatus({
         status: true
       })
     },
     mounted() {
-      this.handler = () => {}
+      // 提交sdk连接请求
+      // this.$store.dispatch('connect')
+      // // this.$store.dispatch('updateRefreshState')
+      // this.$store.dispatch('openDB')
       this.updatedLoadingStatus({
         status: false
       })
@@ -91,11 +104,15 @@
       return {
         menus: {
           chat: {
-            name: '聊天',
+            name: '咨询医生',
             path: "/build/vuepage/session"
           },
           article: {
-            name: '科普',
+            name: '科普文章',
+            path: "/build/vuepage/page1"
+          },
+          self: {
+            name: '个人中心',
             path: "/build/vuepage/page1"
           },
         },
@@ -103,9 +120,7 @@
       }
     },
     updated() {
-      // 提交sdk连接请求
-      this.$store.dispatch('connect')
-      this.$store.dispatch('updateRefreshState')
+      
     }
   }
 </script>

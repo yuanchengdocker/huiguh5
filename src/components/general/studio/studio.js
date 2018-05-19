@@ -1,4 +1,4 @@
-require(['../../common/common'],function(common){
+require(['../../common/common.js'],function(common){
     require(['utils','Pullload'],function(utils,Pullload) {
         var studio = {
             detailIndex:0, //0简介，1成员，2作品，3服务 

@@ -1,47 +1,42 @@
 import store from '../'
 import config from '../../config/nim.config.js'
+import {getDataByIndex} from './indexDBInit'
 import util from '../../utils'
 
-export function formatMsg (msg) {
-  const nim = store.state.nim
-  if (msg.type === 'robot') {
-    if (msg.content && msg.content.flag === 'bot') {
-      if (msg.content.message) {
-        msg.content.message = msg.content.message.map(item => {
-          switch (item.type) {
-            case 'template':
-              item.content = nim.parseRobotTemplate(item.content)
-              break
-            case 'text':
-            case 'image':
-            case 'answer':
-              break
-          }
-          return item
-        })
-      }
-    }
-  }
-  return msg
-}
-
 export function onRoamingMsgs (obj) {
-  let msgs = obj.msgs.map(msg => {
-    return formatMsg(msg)
-  })
-  store.commit('updateMsgs', msgs)
+  // let msgs = obj.msgs
+  // store.commit('updateMsgs', msgs)
+  // store.dispatch('saveData', {obj:msgs,table:'Msgs'})
 }
 
 export function onOfflineMsgs (obj) {
-  let msgs = obj.msgs.map(msg => {
-    return formatMsg(msg)
-  })
+  let msgs = obj.msgs
+  
+  updateUserInfo(msgs)
   store.commit('updateMsgs', msgs)
+  store.dispatch('saveData', {obj:msgs,table:'Msgs'})
+}
+
+function updateUserInfo(msgs){
+  let users = []
+  msgs.map(msg => {
+    if(msg.flow === 'in'){
+      let msgBody = JSON.parse(msg.content).data
+      users.push({
+        id:msgBody.fromUserID,
+        userName:msgBody.fromUserName,
+        userAccid:msgBody.fromUserChatID,
+        userAvatar:msgBody.fromUserAvatarUrl,
+        userType:msgBody.fromUserType
+      })
+    }
+  })
+  store.commit('updateUserInfo', users)
+  store.dispatch('saveData', {obj:users,table:'Users'})
 }
 
 export function onMsg (msg) {
-  msg = formatMsg(msg)
-  console.log(msg)
+  console.log(msg,'msg')
   store.commit('putMsg', msg)
   if (msg.sessionId === store.state.currSessionId) {
     store.commit('updateCurrSessionMsgs', {
@@ -51,9 +46,15 @@ export function onMsg (msg) {
     // 发送已读回执
     store.dispatch('sendMsgReceipt')
   }
-  if (msg.scene === 'team' && msg.type ==='notification') {
-    store.dispatch('onTeamNotificationMsg', msg)
-  }
+  // if (msg.scene === 'team' && msg.type ==='notification') {
+  //   store.dispatch('onTeamNotificationMsg', msg)
+  // }
+  // let currentSession = store.state.sessionMap[store.state.currSessionId]
+  // currentSession.lastMsg = msg
+  // store.dispatch('updateData', {obj:currentSession,table:'Sessions'})
+  // store.commit('updateSessions',[currentSession])
+  updateUserInfo([msg])
+  store.dispatch('saveData', {obj:msg,table:'Msgs'})
 }
 
 function onSendMsgDone (error, msg) {
@@ -157,85 +158,6 @@ export function sendMsg ({state, commit}, obj) {
   }
 }
 
-// 发送文件消息
-export function sendFileMsg ({state, commit}, obj) {
-  const nim = state.nim
-  let {scene, to, fileInput} = obj
-  let type = 'file'
-  if (/\.(png|jpg|bmp|jpeg|gif)$/i.test(fileInput.value)) {
-    type = 'image'
-  } else if (/\.(mov|mp4|ogg|webm)$/i.test(fileInput.value)) {
-    type = 'video'
-  }
-  store.dispatch('showLoading')
-  nim.sendFile({
-    scene,
-    to,
-    type,
-    fileInput,
-    uploadprogress: function (data) {
-      // console.log(data.percentageText)
-    },
-    uploaderror: function () {
-      console && console.log('上传失败')
-    },
-    uploaddone: function(error, file) {
-      // console.log(error);
-      // console.log(file);
-    },
-    beforesend: function (msg) {
-      // console && console.log('正在发送消息, id=', msg);
-    },
-    done: function (error, msg) {
-      onSendMsgDone (error, msg)
-    }
-  })
-}
-
-// 发送机器人消息
-export function sendRobotMsg ({state, commit}, obj) {
-  const nim = state.nim
-  let {type, scene, to, robotAccid, content, params, target, body} = obj
-  scene = scene || 'p2p'
-  if (type === 'text') {
-    nim.sendRobotMsg({
-      scene,
-      to,
-      robotAccid: robotAccid || to,
-      content: {
-        type: 'text',
-        content,
-      },
-      body,
-      done: onSendMsgDone
-    })
-  } else if (type === 'welcome') {
-    nim.sendRobotMsg({
-      scene,
-      to,
-      robotAccid: robotAccid || to,
-      content: {
-        type: 'welcome',
-      },
-      body,
-      done: onSendMsgDone
-    })
-  } else if (type === 'link') {
-    nim.sendRobotMsg({
-      scene,
-      to,
-      robotAccid: robotAccid || to,
-      content: {
-        type: 'link',
-        params,
-        target
-      },
-      body,
-      done: onSendMsgDone
-    })
-  }
-}
-
 // 发送消息已读回执
 export function sendMsgReceipt ({state, commit}) {
   // 如果有当前会话
@@ -261,63 +183,25 @@ function sendMsgReceiptDone(error, obj) {
     console.log('发送消息已读回执' + (!error?'成功':'失败'), error, obj);
 }
 
-export function getLocalSessionMsg({state, commit}, obj){
-  const nim = state.nim
-  if (nim) {
-    let {sessionId} = obj
-    nim.getLocalMsgs({
-      sessionId: sessionId,
-      limit: 100,
-      done: function(error,obj){
-        console.log('获取本地消息' + (!error?'成功':'失败'), error, obj)
-      }
-    })
-  }
-}
-
-export function getHistoryMsgs ({state, commit}, obj) {
-  const nim = state.nim
-  if (nim) {
-    let {scene, to} = obj
-    let options = {
-      scene,
-      to,
-      reverse: false,
-      asc: true,
-      limit: config.localMsglimit || 20,
-      done: function getHistoryMsgsDone (error, obj) {
-        if (obj.msgs) {
-          if (obj.msgs.length === 0) {
-            commit('setNoMoreHistoryMsgs')
-          } else {
-            let msgs = obj.msgs.map(msg => {
-              return formatMsg(msg)
-            })
-            commit('updateCurrSessionMsgs', {
-              type: 'concat',
-              msgs: msgs
-            })
-          }
-        }
-        store.dispatch('updateChatLoading', false)
+export function getLocalHistoryMsgs({state, commit},id){
+  store.dispatch('updateChatLoading', true)
+  getDataByIndex((data)=>{
+    console.log(data)
+    if (data) {
+      if (data.length === 0) {
+        commit('setNoMoreHistoryMsgs')
+      } else {
+        let msgs = data
+        commit('updateCurrSessionMsgs', {
+          type: 'concat',
+          msgs: msgs
+        })
       }
     }
-    if (state.currSessionLastMsg) {
-      options = Object.assign(options, {
-        lastMsgId: state.currSessionLastMsg.idServer,
-        endTime: state.currSessionLastMsg.time,
-      })
-    }
-    store.dispatch('updateChatLoading', true)
-    nim.getHistoryMsgs(options)
-  }
+    store.dispatch('updateChatLoading', false)
+  },'Msgs',id)
 }
 
 export function resetNoMoreHistoryMsgs ({commit}) {
   commit('resetNoMoreHistoryMsgs')
-}
-
-// 继续与机器人会话交互
-export function continueRobotMsg ({commit}, robotAccid) {
-  commit('continueRobotMsg', robotAccid)
 }

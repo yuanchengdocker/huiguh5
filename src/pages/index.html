@@ -12,7 +12,10 @@
 
 	<body class="index">
 	  <section class="index-top">
-	  	<img src="http://patienth5.szyyky.com/build/imgWX/logo.png" class="logo" />
+      <div class="upload">
+        <input id="img" type="file" accept="image/*">
+        <img src="/build/imgWX/updata.png" class="updata photos" />
+      </div>
 	  	<div class="login">
 	  		<a class="btn-login" href="login.html?source=1">立即登录</a>
 	  	</div>
@@ -22,14 +25,14 @@
 	  	</div>
 	  </section>
 	  <section class="index-bottom">
-	  	<a class="btn-bespeak" href="#" onclick="indexAction.clickbespeak();"><i class="icon"></i>我的预约单<i class="arrow"></i></a>
+	  	<a class="btn-bespeak" href="#" onclick="indexAction.clickbespeak();"><i class="icon"></i>我的预约<i class="arrow"></i></a>
 	  	<!-- <a class="btn-archives" href="#"><i class="icon"></i>家庭成员<i class="arrow"></i></a> -->
 	  	<a class="btn-contact" href="tel:4008215742"><i class="icon"></i>联系客服<i class="arrow"></i></a>
 	  	<a class="btn-quit" href="#" onclick="indexAction.clickquit();"><i class="icon"></i>退出</a>
 	  </section>
 	  <section class="index-layout">
 			<div class="layout-main">
-				<p>退出登录后，将解除当前手机号和该<br>微信账号的绑定，重新登录需要再次绑定手机</p>
+				<p>退出登录后，将解除当前手机号和该微信账号的绑定，重新登录需要再次绑定手机</p>
 				<a class="quit" onclick="indexAction.quitQuit();">退出登录</a><a class="cancel" onclick="indexAction.quitCancel();">保持登录</a>
 			</div>
 		</section>

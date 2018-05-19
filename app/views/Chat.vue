@@ -6,7 +6,7 @@
                     <chat-list type="session" :msglist="msglist" :canLoadMore="canLoadMore" :userInfos="userInfos" :myInfo="myInfo"></chat-list>
                 </div>
             </div>
-            <chat-editor type="session" :scene="scene" :to="to"></chat-editor>
+            <chat-editor type="session" @isSendMsg="isSendMsg" :scene="scene" :to="to"></chat-editor>
         </div>
     </div>
 </template>
@@ -17,6 +17,8 @@
     import util from '../utils'
     import pageUtil from '../utils/page'
     import BScroll from 'better-scroll'
+    import '../style/stylus/chat.styl'
+    import '../style/stylus/public.styl'
     import {
         mapActions,
         mapState
@@ -31,18 +33,16 @@
         },
         props: ['id'],
         created() {
-            this.getLocalSessionMsg({
-                sessionId: this.sessionId
-            })
             this.updateMenuBarShow(false)
         },
         // 进入该页面，文档被挂载
         mounted() {
             // 此时设置当前会话
             this.$store.dispatch('setCurrSession', this.sessionId)
-            // pageUtil.scrollChatListDown()
-            // this.$store.dispatch('resetNoMoreHistoryMsgs')
-            // this.getHistoryMsgs()
+            this.$store.dispatch('getDataByIndex', {callback:(data)=>{
+                this.$store.commit('updateMsgs', data)
+            },table:'Msgs',id:this.sessionId})
+            
             this.gotoDown = true
         },
         updated() {
@@ -105,7 +105,6 @@
                 }
             },
             scene() {
-                console.log(this.sessionId)
                 return util.parseSession(this.sessionId).scene
             },
             to() {
@@ -115,6 +114,13 @@
                 return this.$store.state.myInfo
             },
             userInfos() {
+                let session = this.$store.state.sessionMap[this.sessionId]
+                if(session){
+                    var currUser = this.$store.state.userInfos[session.to]
+                }
+                if(currUser){
+                    util.updateChatUserName(currUser.userName)
+                }
                 return this.$store.state.userInfos
             },
             robotInfos() {
@@ -122,7 +128,6 @@
             },
             msglist() {
                 let msgs = this.$store.state.currSessionMsgs
-                console.log(msgs)
                 return msgs
             },
             canLoadMore() {
@@ -130,16 +135,12 @@
             }
         },
         methods: {
+            isSendMsg(){
+                this.gotoDown = true
+            },
             ...mapActions(['updatedLoadingStatus', 'updateMenuBarShow', 'getLocalSessionMsg']),
             onClickBack() {
                 this.$router.push(`/build/vuepage/session`);
-            },
-            loadMoreChat() {
-                // if(pageUtil.getChatListScroll() === 0){
-                //     console.log('下拉')
-                //     this.gotoDown = false
-                //     this.getHistoryMsgs()
-                // }
             },
             initScroll() {
                 this.scroll = new BScroll(this.$refs.wrapper, {
@@ -190,11 +191,7 @@
             },
             getHistoryMsgs() {
                 if (this.canLoadMore && !this.pullDowning) {
-                    console.log('getHistoryMsgs')
-                    this.$store.dispatch('getHistoryMsgs', {
-                        scene: this.scene,
-                        to: this.to
-                    })
+                    this.$store.dispatch('getLocalHistoryMsgs',this.sessionId)
                 }
             },
         }

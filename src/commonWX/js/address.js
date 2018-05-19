@@ -32,6 +32,9 @@ var huiguPostUrl = {
     getDoctorRelation: basePath + apiPath + '/patientUser/bindDoctorRelation', //新增加
     getthirdPartyLogin: basePath + apiPath + '/patientUser/thirdPartyLogin', //授权登录接口
 
+    //3.2
+    getupdateIcon: basePath + apiPath + '/patientUser/updateIcon', //修改患者头像
+
 }
 
 
