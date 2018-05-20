@@ -52,9 +52,10 @@
       ...mapActions(['updatedLoadingStatus'])
     },
     beforeCreate(){
+      // debugger
+      this.$store.dispatch('openDB')
       this.$store.dispatch('connect')
       // this.$store.dispatch('updateRefreshState')
-      this.$store.dispatch('openDB')
     },
     created() {
       this.updatedLoadingStatus({
@@ -120,7 +121,7 @@
       }
     },
     updated() {
-      
+      this.$store.dispatch('updateMyInfor')
     }
   }
 </script>

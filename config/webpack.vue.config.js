@@ -13,25 +13,25 @@ function resolve(dir) {
     return path.join(__dirname, '..', dir)
 }
 const devServer = {
-    port: '86',
-    host: '0.0.0.0',
-    progress: true,
-    disableHostCheck:true,
+    port: '9999',
+    host: 'localhost',
+    // progress: true,
+    // disableHostCheck: true,
     overlay: {
     },
     //   errors: true
     hot: true,
     historyApiFallback: {
-      index: '/build/vuepage/index.html'
+        index: '/build/vuepage/index.html'
     },
     proxy: {
-        '/huiguapi/*': { 
+        '/huiguapi/*': {
             target: 'http://192.168.0.54:3362',
             // target: 'http://192.168.27.35:8082',
             secure: false, // 接受 运行在 https 上的服务
             changeOrigin: true
         },
-        '/thirdpartyapi/*': { 
+        '/thirdpartyapi/*': {
             target: 'http://192.168.0.54:3362',
             // target: 'http://10.0.0.167:3362',
             secure: false, // 接受 运行在 https 上的服务
@@ -70,23 +70,27 @@ let config = webpackMerge(webpackBase, {
         })
     ]
 })
-if(isDev){
-    config = webpackMerge(config,{
+if (isDev) {
+    config = webpackMerge(config, {
         devServer: devServer,
-        plugins:[
+        plugins: [
             //配合热替换作用
             new webpack.HotModuleReplacementPlugin()
         ]
     })
-}else{
-    config = webpackMerge(config,{
-        optimization: {
-            splitChunks: {
-                chunks: 'all'
-            },
-            runtimeChunk: true,
-            minimize: true
-        },
+} else {
+    config = webpackMerge(config, {
+        plugins: [
+            new webpack.optimize.CommonsChunkPlugin({
+                name: 'vendor',
+                minChunks: Infinity
+            }),
+            new webpack.optimize.CommonsChunkPlugin({
+                name: 'runtime',
+                minChunks: Infinity
+            }),
+            new webpack.optimize.UglifyJsPlugin()
+        ]
     })
 }
 config = vuxLoader.merge(config, {

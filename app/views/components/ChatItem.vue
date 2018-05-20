@@ -128,15 +128,18 @@
         let data = JSON.parse(item.content)
         let content = data.data
         if (content && content.chatType === 1) { //单聊
-          this.customMsg['avatar'] = content.fromUserAvatarUrl || item.avatar
+          let avatar = ''
+          if(content.fromUserChatID && this.userInfos[content.fromUserChatID]){
+            avatar = this.userInfos[content.fromUserChatID].userAvatar
+          }else{
+            avatar = content.fromUserAvatarUrl
+          }
+          this.customMsg['avatar'] = avatar
           let mediaContent = content.mediaContent
           if(mediaContent && typeof mediaContent === 'string'){
             mediaContent = JSON.parse(mediaContent)
           }
           this.customMsg['mediaContent'] = mediaContent
-          // this.customMsg['file'] = {
-          //   url: mediaContent.fileDataUrl
-          // }
           switch (content.messageContentType) {
             case 1:
               this.customMsg['showText'] = content.textContent;

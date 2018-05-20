@@ -20,7 +20,7 @@ export default {
     currSessionMsgs: [],
     showMenuBar: true,
     route: {},
-
+    connectStatus:2, //1未连接，2收取中，0收取完,咨询医生
     // 全屏显示的原图
     isFullscreenImgShow: false,
     fullscreenImgSrc: '',

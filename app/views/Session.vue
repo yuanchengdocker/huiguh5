@@ -18,6 +18,7 @@
                 <p class="nochat-title">暂无可咨询医生</p>
             </section>
         </div>
+        <div v-show="false">{{sessionTitle}}</div>
     </div>
 </template>
 
@@ -51,7 +52,7 @@
         created(){
         },
         mounted() {
-            util.updateChatUserName('咨询医生')
+            util.updateChatUserName(this.sessionTitle)
             if (this.$refs.sessionWrapper) {
                 this.initScroll()
             }
@@ -68,6 +69,18 @@
             },
             myPhoneId() {
                 return this.$store.state.userUID
+            },
+            sessionTitle(){
+                console.log(this.$store.state.connectStatus)
+                let result = '';
+                switch(this.$store.state.connectStatus){
+                    case 0: result = '咨询医生' ;break;
+                    case 1: result = '咨询医生（未连接）' ;break;
+                    case 2: result = '收取中...' ;break;
+                    case 3: result = '重连接中...' ;break;
+                }
+                util.updateChatUserName(result)
+                return result;
             },
             sessionlist() {
                 let sessionlist = this.$store.state.sessionlist.filter(item => {

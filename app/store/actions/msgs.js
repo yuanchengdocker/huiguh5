@@ -31,8 +31,7 @@ function updateUserInfo(msgs){
       })
     }
   })
-  store.commit('updateUserInfo', users)
-  store.dispatch('saveData', {obj:users,table:'Users'})
+  store.dispatch('updateUserInfor',users)
 }
 
 export function onMsg (msg) {

@@ -1,5 +1,6 @@
 import { initNimSDK } from './initNimSDK'
 import cookie from '../../utils/cookie'
+import util from '../../utils'
 import {openDB,saveData,deleteOneData,deleteDataByKey,searchData,getDataByIndex,updateData} from './indexDBInit'
 import { onSessions, onUpdateSession, setCurrSession, resetCurrSession,deleteSession } from './session.js'
 import {getLocalHistoryMsgs, sendMsg, sendMsgReceipt, resetNoMoreHistoryMsgs } from './msgs'
@@ -8,26 +9,82 @@ function connectNim({ state, commit, dispatch }, obj) {
     let { force } = Object.assign({}, obj)
     // 操作为内容页刷新页面，此时无nim实例
     if (!state.nim || force) {
-        let loginInfo = {
-            uid: cookie.readCookie('uid'),
-            sdktoken: cookie.readCookie('sdktoken'),
-            id: cookie.readCookie('id'),
-            userAccid: cookie.readCookie('uid'),
-            userName: cookie.readCookie('userName'),
-            userAvatar: cookie.readCookie('userAvatar'),
-            userType: cookie.readCookie('userType')
-        }
+        let loginInfo = getUserCookieInfo()
         if (!loginInfo.uid) {
             // 无cookie，直接跳转登录页
             console.log('无历史登录记录，请重新登录', 'login')
         } else {
             // 有cookie，重新登录
             dispatch('initNimSDK', loginInfo)
+            dispatch('updateUserInfor', loginInfo)
         }
     }
 }
 
+function getUserCookieInfo(){
+    return {
+        uid: cookie.readCookie('uid'),
+        sdktoken: cookie.readCookie('sdktoken'),
+        id: cookie.readCookie('id'),
+        userAccid: cookie.readCookie('uid'),
+        userName: cookie.readCookie('userName'),
+        userAvatar: cookie.readCookie('userAvatar'),
+        userType: cookie.readCookie('userType')
+    }
+}
+
 let indexActions = {
+    updateMyInfor({ state, commit,dispatch }, loginInfo){
+        if(!loginInfo){
+            loginInfo = getUserCookieInfo()
+        }
+        let userInfo = {
+            id:loginInfo.id,
+            userName:loginInfo.userName,
+            userAccid:loginInfo.userAccid,
+            userAvatar:loginInfo.userAvatar,
+            userType:loginInfo.userType
+        }
+        let myInfo = {
+            id:state.myInfo.id,
+            userName:state.myInfo.userName,
+            userAccid:state.myInfo.userAccid,
+            userAvatar:state.myInfo.userAvatar,
+            userType:state.myInfo.userType
+        }
+        if(util.objCmp(myInfo,userInfo)) return
+        console.log('my不同')
+        commit('updateUserUID', loginInfo)
+        dispatch('updateUserInfor',userInfo)
+    },
+    updateUserInfor({ state, commit,dispatch }, users){
+        let update = false
+        if(users && !Array.isArray(users)) users = [users]
+        for(let i=0;i<users.length;i++){
+            let userInfo = users[i]
+            let userAccid = userInfo.userAccid
+            if(!state.userInfos[userAccid]){
+                update = true
+                break
+            }
+            let userInfoState = {
+                id:state.userInfos[userAccid].id,
+                userName:state.userInfos[userAccid].userName,
+                userAccid:state.userInfos[userAccid].userAccid,
+                userAvatar:state.userInfos[userAccid].userAvatar,
+                userType:state.userInfos[userAccid].userType
+            }
+            if(!util.objCmp(userInfoState,userInfo)){
+                update = true
+                break
+            }
+        }
+        
+        if(!update) return
+        console.log('user不同')
+        commit('updateUserInfo',users)
+        dispatch('saveData', {obj:users,table:'Users'})
+    },
     // 显示原图片
     showFullscreenImg({ state, commit }, obj) {
         if (obj) {
@@ -40,6 +97,9 @@ let indexActions = {
         commit('updateFullscreenImage', {
             type: 'hide'
         })
+    },
+    updateConnectStatus({ state, commit },status){
+        state.connectStatus = status
     },
     updateChatLoading({ state, commit },show){
         commit('updateChatLoading', show)
@@ -75,7 +135,7 @@ let indexActions = {
             console.log('无历史登录记录，请重新登录', 'login')
         } else {
             // 有cookie，重新登录
-            openDB(loginInfo)
+            openDB()
         }
     },
     // 连接sdk请求，false表示强制重连
@@ -133,11 +193,13 @@ let indexActions = {
         updateData(data,table)
     },
     resendMsg(store,{id,msg}){
-        msg.type = 'custom'
-        msg.content = JSON.parse(msg.content)
-        store.dispatch('sendMsg',msg)
+        let msg2 = {}
+        Object.assign(msg2,msg)
+        msg2.type = 'custom'
+        msg2.content = JSON.parse(msg2.content)
+        store.dispatch('sendMsg',msg2)
         deleteOneData(id,'Msgs')
-        store.commit('deleteMsgById',msg)
+        store.commit('deleteMsgById',msg2)
     }
 }
 

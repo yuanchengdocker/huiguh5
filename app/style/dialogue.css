@@ -1,36 +1,7 @@
-.m-chat-editor
-    padding 20px 30px
-    box-sizing: border-box;
-
-.more-send-option
-    width: 100%
-    padding: 20px 0
-    overflow hidden
-    .option-item
-        width: 112px
-        height 160px
-        float left
-        margin-right: 30px
-        img
-            width: 100%
-            height 100%
 .dialogue-section {
     height: 100%;
-    background: url("https://sinacloud.net/vue-wechat/images/bg/night.jpg") center center;
+    /* background: url("https://sinacloud.net/vue-wechat/images/bg/night.jpg") center center; */
     padding: 2%
-}
-
-.icon-dialogue-jianpan{
-    background: url('/app/img/jianpan.png') center no-repeat
-    background-size: 100%
-}
-.icon-dialogue-voice{
-    background: url('/app/img/audio.png') center no-repeat
-    background-size: 100%
-}
-.icon-dialogue-jia{
-    background: url('/app/img/media.png') center no-repeat
-    background-size: 100%
 }
 
 .dialogue-section .row {
@@ -241,8 +212,7 @@
     -webkit-flex-basis: 40px;
     -ms-flex-preferred-size: 40px;
     flex-basis: 40px;
-    width: 65px;
-    height: 65px;
+    width: 40px;
     padding: 0 3px;
     font-size: 30px;
     -webkit-box-flex: 0;
@@ -256,8 +226,8 @@
 
 .chat-way {
     vertical-align: middle;
-    padding: 4px 10px;
-    height: 65px;
+    padding: 4px 0px;
+    height: 100%;
     -webkit-box-flex: 1;
     -webkit-flex-grow: 1;
     -ms-flex-positive: 1;
@@ -266,17 +236,12 @@
     -ms-flex-preferred-size: 200px;
     flex-basis: 200px
 }
-.chat-way form{
-    width: 100%
-    height 100%    
-}
 
 .chat-way .chat-say {
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    margin: 0 auto;
     -webkit-box-pack: center;
     -webkit-justify-content: center;
     -ms-flex-pack: center;
@@ -285,23 +250,23 @@
     -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 6px;
     overflow: hidden;
-    padding: 0 20px;
-    width: 495px;
-    height: 100%;
-    color: #919dae;
-    border: 2px solid #919dae;
-    // -webkit-transform: scale(0.5);
-    // -ms-transform: scale(0.5);
-    // transform: scale(0.5);
+    padding: 0 10px;
+    width: 200%;
+    height: 200%;
+    color: #565656;
+    border: 1px solid #7d7e83;
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
     -webkit-transform-origin: 0 0;
     -ms-transform-origin: 0 0;
     transform-origin: 0 0;
-    font-size: 32px
+    font-size: 30px
 }
 
-.chat-way .say-active {
+.chat-way .chat-say_touched {
     background-color: #c6c7ca
 }
 
@@ -309,31 +274,28 @@
     display: none
 }
 
-.chat-way .say-active .two {
+.chat-way .chat-say_touched .two {
     display: block
 }
 
-.chat-way .say-active .one {
+.chat-way .chat-say_touched .one {
     display: none
 }
 
 .chat-way .chat-txt {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     border-radius: 6px;
     overflow: hidden;
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-bottom: 2px solid #36bac9;
-    // -webkit-transform: scale(0.5);
-    // -ms-transform: scale(0.5);
-    // transform: scale(0.5);
+    padding: 0 10px;
+    width: 200%;
+    height: 200%;
+    border: 1px solid #7d7e83;
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
     -webkit-transform-origin: 0 0;
     -ms-transform-origin: 0 0;
     transform-origin: 0 0;
-    font-size: 32px
+    font-size: 30px
 }
 
 .component-dialogue-bar-public {

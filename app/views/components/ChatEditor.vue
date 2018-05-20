@@ -196,7 +196,7 @@
         icon3: `${config.resourceUrl}/im/chat-editor-3.png`,
         currentChatWay: true,
         currentChatWay: 1, //1文本，2语音，3媒体
-        wxSdk: wxSdk()
+        wxSdk: wxSdk?wxSdk():{}
       }
     },
     computed: {

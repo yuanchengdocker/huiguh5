@@ -1,4 +1,5 @@
 import store2 from '../'
+import cookie from '../../utils/cookie'
 
 var dbName = 'huiguChat',     // 数据库名
     daVer = 59,              // 数据库版本号
@@ -7,17 +8,19 @@ var dbName = 'huiguChat',     // 数据库名
     IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange
 
 // 连接数据库
-export function openDB(loginInfo){
-    dbName = loginInfo.uid
+export function openDB(callback){
+    dbName = cookie.readCookie('uid')
     var request = indexedDB.open(dbName, daVer);
     request.onsuccess = function(e){
         db = e.target.result;
-        console.log(db.version)
+        callback&&callback()
+        console.time('indexdb')
         store2.dispatch('searchData', {callback:(dbData)=>{
             store2.commit('updateSessions',dbData)
         },table:'Sessions'})
         store2.dispatch('searchData', {callback:(dbData)=>{
             store2.commit('updateUserInfo',dbData)
+            console.timeEnd('indexdb')
         },table:'Users'})
     }
     request.onerror = function(){
@@ -57,12 +60,21 @@ export function saveData(data,table){
             saveData(item,table)
         })
     }else{
-        var tx = db.transaction(table,'readwrite');
-        var store = tx.objectStore(table);
-        // if(!data[store.keyPath]) return
-        var req = store.put(data);
-        req.onsuccess = function(){
+        if(!db){
+            openDB(()=>{
+                saveDbData(data,table)
+            })
+        }else{
+            saveDbData(data,table)
         }
+    }
+}
+function saveDbData(data,table){
+    var tx = db.transaction(table,'readwrite');
+    var store = tx.objectStore(table);
+    // if(!data[store.keyPath]) return
+    var req = store.put(data);
+    req.onsuccess = function(e){
     }
 }
 
@@ -121,25 +133,14 @@ export function deleteDataByKey(key,table){
 export function searchData(callback,table){
     var tx = db.transaction(table,'readonly');
     var store = tx.objectStore(table);
-    var range = IDBKeyRange.lowerBound(1);
-    var req = store.openCursor(range,'next');
-    // 每次检索重新清空存放数据数组
-    let dbData = []; 
-    req.onsuccess = function(){
-        var cursor = this.result;
-        if(cursor){
-            // 把检索到的值push到数组中
-            dbData.push(cursor.value);
-            cursor.continue();
-        }else{
-            // 数据检索完成后执行回调函数
-            callback && callback(dbData);
-        }
+    var request = store.getAll(); 
+    request.onsuccess = function(e){
+        callback&&callback(e.target.result)
     }
 }
 
 export function getDataByIndex(callback,storeName,id){
-    var transaction=db.transaction(storeName);
+    var transaction=db.transaction(storeName,'readonly');
     var store=transaction.objectStore(storeName);
     var index = store.index("index");
     var request=index.openCursor(IDBKeyRange.only(id),'prev')

@@ -156,6 +156,7 @@ export default {
             let currMsg = tempMsgs[i]
             if (msg.idClient === currMsg.idClient) {
                 state.msgs[sessionId].splice(i, 1)
+                state.currSessionMsgs.splice(i, 1)
                 break
             }
         }
@@ -172,6 +173,7 @@ export default {
             let currMsg = tempMsgs[i]
             if (id === currMsg.id) {
                 state.msgs[sessionId].splice(i, 1)
+                state.currSessionMsgs.splice(i, 1)
                 break
             }
         }

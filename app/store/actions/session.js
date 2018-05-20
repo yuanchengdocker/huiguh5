@@ -60,7 +60,6 @@ export function onSessions (sessions) {
 }
 
 export function onUpdateSession (session) {
-  console.log('onUpdateSession',session)
   let sessions = [session]
   // updateSessionAccount(sessions)
   store.commit('updateSessions', sessions)

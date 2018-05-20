@@ -15,6 +15,7 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
         state.nim.disconnect()
     }
     dispatch('updatedLoadingStatus', { status: true })
+    dispatch('updateConnectStatus',2)//收取中
     // 初始化SDK
     window.nim = state.nim = SDK.NIM.getInstance({
         // debug: true && { api: 'info', style: 'font-size:12px;color:blue;background-color:rgba(0,0,0,0.1)' },
@@ -29,26 +30,19 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
         onconnect: function onConnect(event) {
             if (loginInfo) {
                 // 连接上以后更新uid
-                commit('updateUserUID', loginInfo)
-                dispatch('saveData', {obj:{
-                    id:loginInfo.id,
-                    userName:loginInfo.userName,
-                    userAccid:loginInfo.userAccid,
-                    userAvatar:loginInfo.userAvatar,
-                    userType:loginInfo.userType
-                },table:'Users'})
+                // dispatch('updateConnectStatus',0)//收取完成
             }
         },
         onerror: function onError(event) {
             // alert(JSON.stringify(event))
-            debugger
-            alert('网络连接状态异常')
             location.href = config.loginUrl
         },
         onwillreconnect: function onWillReconnect() {
-            console.log(event)
+            // console.log(event)
+            dispatch('updateConnectStatus',3)//未连接
         },
         ondisconnect: function onDisconnect(error) {
+            dispatch('updateConnectStatus',1)//未连接
             switch (error.code) {
                 // 账号或者密码错误, 请跳转到登录页面并提示错误
                 case 302:
@@ -72,6 +66,8 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
         // // 同步完成
         onsyncdone: function onSyncDone() {
             dispatch('updatedLoadingStatus', { status: false })
+            dispatch('updateConnectStatus',0)
+            console.log(123)
             // 说明在聊天列表页
             if (store.state.currSessionId) {
                 dispatch('setCurrSession', store.state.currSessionId)
