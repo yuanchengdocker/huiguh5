@@ -2,11 +2,16 @@
 export default [
     {
         path: '/',
-        redirect: '/build/vuepage/page1'
+        redirect: '/build/vuepage/self'
     },
     {
-        path: '/build/vuepage/page1',
-        component: () => import('../views/page2.vue'),
+        path: '/build/vuepage/self',
+        component: () => import('../views/Self.vue'),
+        meta: { keepAlive: true }
+    },
+    {
+        path: '/build/vuepage/article',
+        component: () => import('../views/Article.vue'),
         meta: { keepAlive: true }
     },
     {

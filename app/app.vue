@@ -4,6 +4,7 @@
       <loading v-model="loadingStatus"></loading>
     </div>
     <fullscreen-img></fullscreen-img>
+    <fullscreen-video></fullscreen-video>
     <!-- main content -->
     <view-box ref="viewBox" :body-padding-top="'0'" body-padding-bottom="55px">
       <!-- remember to import BusPlugin in main.js if you use components: x-img and sticky -->
@@ -33,6 +34,7 @@
 <script>
   const sessionHistory = window.sessionStorage
   import FullscreenImg from './views/components/FullscreenImg'
+  import FullscreenVideo from './views/components/FullscreenVideo'
   import './style/stylus/main.styl'
   import {
     setTimeout
@@ -46,7 +48,8 @@
   import pageUtil from './utils/page'
   export default {
     components: {
-      FullscreenImg
+      FullscreenImg,
+      FullscreenVideo
     },
     methods: {
       ...mapActions(['updatedLoadingStatus'])
@@ -91,13 +94,17 @@
           }
           this.transitionName = ''
         }
+      },
+      showToastMsg(curValue){
+        this.$toast(curValue)
       }
     },
     computed: {
       ...mapState({
         loadingStatus: state => state.loadingStatus,
         showMenuBar: state => state.showMenuBar,
-        route: state => state.route
+        route: state => state.route,
+        showToastMsg: state => state.showToastMsg
       }),
       ...mapGetters(['sessionUnreadCount'])
     },
@@ -110,11 +117,11 @@
           },
           article: {
             name: '科普文章',
-            path: "/build/vuepage/page1"
+            path: "/build/vuepage/article"
           },
           self: {
             name: '个人中心',
-            path: "/build/vuepage/page1"
+            path: "/build/vuepage/self"
           },
         },
         transitionName: 'forward'
@@ -167,6 +174,9 @@
   .weui-tabbar__icon+.weui-tabbar__label {
     margin-top: 0!important;
   }
+  .weui-tabbar__item.weui-bar__item_on .weui-tabbar__label .icon-title{
+    color:#999999
+  }
   .vux-demo-header-box {
     z-index: 100;
     position: absolute;
@@ -193,6 +203,7 @@
   }
   .router-view {
     width: 100%;
+    height: 100%;
     top: 46px;
   }
   .vux-pop-out-enter-active,

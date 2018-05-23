@@ -2,10 +2,10 @@
 
     <ul id="chat-list" class="p-chat-list">
       <li class="u-msg item-time" v-if="canLoadMore&&!isLoading">
-        ---- 上拉加载更多 ----
+        上拉加载更多
       </li>
       <li class="u-msg item-time" v-if="!canLoadMore&&!isLoading">
-        ---- 已无更多记录 ----
+        已无更多记录
       </li>
       <load-more v-if="isLoading" :tip="'正在加载'"></load-more>
       <chat-item v-for="(msg,index) in msglist" :type="type" :rawMsg="msg" :isRobot="isRobot" :userInfos="userInfos" :myInfo="myInfo" :key="msg.idClient+'haha'+index" :isHistory='isHistory' @msg-loaded="msgLoaded"></chat-item>
@@ -15,7 +15,7 @@
   import util from '../../utils'
   import config from '../../config/nim.config.js'
   import ChatItem from './ChatItem'
-import { setTimeout } from 'timers';
+  import { setTimeout } from 'timers';
   export default {
     components: {
       ChatItem

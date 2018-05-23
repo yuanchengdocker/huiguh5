@@ -5,8 +5,17 @@ import store from '../'
 import cookie from '../../utils/cookie'
 import util from '../../utils'
 import config from '../../config/nim.config.js'
-import Vue from 'Vue'
+
 export default {
+    updateCurrMsgAudioId(state,id){
+        state.currMsgAudioId = id
+    },
+    loadToad(state,msg){
+        state.showToastMsg = msg
+    },
+    updateCurrDoctorBind(state,isBind){
+        state.currDoctorBind = isBind
+    },
     updateMsgLastTime(state,time){
         state.msgLastTime = time
     },
@@ -36,6 +45,16 @@ export default {
         state.loadingTimer = setTimeout(() => {
             state.isLoading = status
         }, 20)
+    },
+    updateFullscreenVideo(state, obj) {
+        obj = obj || {}
+        if (obj.src && obj.type === 'show') {
+            state.fullscreenVideo = obj
+            state.isFullscreenVideoShow = true
+        } else if (obj.type === 'hide') {
+            state.fullscreenVideo = {}
+            state.isFullscreenVideoShow = false
+        }
     },
     updateFullscreenImage(state, obj) {
         obj = obj || {}
@@ -75,8 +94,10 @@ export default {
             return b.updateTime - a.updateTime
         })
         totalSessions.forEach(item => {
-            state.sessionMap[item.id] = item
-            unReadCount += item.unread
+            if(item.scene === 'p2p'){
+                state.sessionMap[item.id] = item
+                unReadCount += item.unread
+            }
         })
         state.sessionlist = totalSessions
         state.sessionUnreadCount = unReadCount
@@ -96,8 +117,8 @@ export default {
                 state.msgs[sessionId] = []
             }
             // sdk会做消息去重
-            state.msgs[sessionId] = nim.mergeMsgs(state.msgs[sessionId], [msg])
-            // state.msgs[sessionId].push(msg)
+            // state.msgs[sessionId] = nim.mergeMsgs(state.msgs[sessionId], [msg])
+            state.msgs[sessionId].push(msg)
         })
         store.commit('updateMsgByIdClient', msgs)
         for (let sessionId in tempSessionMap) {

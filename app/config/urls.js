@@ -1,5 +1,6 @@
-const baseUri = '/huiguapi'
+const baseUri = '/thirdpartyapi'
 export default {
-    fileUpload: baseUri + '/doctorHomePage/uploadMultipartFile',
-    getWxMedia: '/thirdpartyapi/thirdPartyUser/getMediaUrl',
+    fileUpload: baseUri + '/upload/uploadMultipartFile',
+    getWxMedia: baseUri + '/thirdPartyUser/getMediaUrl',
+    haveBindDoctor: baseUri + '/patientUser/haveBindDoctor',
 }

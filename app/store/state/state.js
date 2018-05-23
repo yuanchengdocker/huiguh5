@@ -18,16 +18,34 @@ export default {
     sessionMap: {},
     currSessionId: null,
     currSessionMsgs: [],
+    currMsgAudioId:null,
+    currDoctorBind:false,
     showMenuBar: true,
     route: {},
-    connectStatus:2, //1未连接，2收取中，0收取完,咨询医生
+    canUpdateConnectStatus:false,
+    connectStatus:2, //1未连接，2收取中，0收取完,咨询医生,3重连中，4未登录
     // 全屏显示的原图
     isFullscreenImgShow: false,
+    isFullscreenVideoShow: false,
     fullscreenImgSrc: '',
+    fullscreenVideo: {},
     // 是否有更多历史消息，用于上拉加载更多
     noMoreHistoryMsgs: false,
     //上拉加载聊天时候显示
     isChatLoading:false,
     //聊天未读数量
-    sessionUnreadCount:0
+    sessionUnreadCount:0,
+
+    showToastMsg:'',
+    msgTypeMap:{
+        1: 'text',
+        2: 'audio',
+        3: 'image',
+        4: 'tip',
+        5: 'share',
+        11: 'video',
+        12: 'file',
+        14: 'article',
+        15: 'question'
+    }
 }

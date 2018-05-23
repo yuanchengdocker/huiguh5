@@ -9,7 +9,11 @@ var dbName = 'huiguChat',     // 数据库名
 
 // 连接数据库
 export function openDB(callback){
-    dbName = cookie.readCookie('uid')
+    dbName = cookie.readLocal('patientAccid')
+    if(!dbName){
+        console.log('无历史登录记录，请重新登录', 'login')
+        return
+    }
     var request = indexedDB.open(dbName, daVer);
     request.onsuccess = function(e){
         db = e.target.result;

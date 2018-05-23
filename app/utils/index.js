@@ -12,6 +12,30 @@ if(!Function.prototype.bind){
 
 let Utils = Object.create(null)
 
+Utils.parseMediaContent = function(msg){
+  let data = JSON.parse(msg.content)
+  let content = data.data
+  let mediaContent = content.mediaContent||{}
+  if(mediaContent && typeof mediaContent === 'string'){
+    mediaContent = JSON.parse(mediaContent)
+  }
+  return mediaContent
+}
+
+Utils.stringMediaContentMsg = function(mediaContent,msg){
+  let data = JSON.parse(msg.content)
+  let content = data.data
+  content.mediaContent = mediaContent
+  msg.content = JSON.stringify(data)
+}
+
+Utils.getMsgType = function(msg){
+  let msgTypeMap = store.state.msgTypeMap
+  let data = JSON.parse(item.content)
+  let content = data.data
+  return msgTypeMap[content.messageContentType]
+}
+
 Utils.encode = function (_map, _content) {
   _content = '' + _content
   if (!_map || !_content) {
@@ -101,6 +125,19 @@ Utils.mapMsgType = function (msg) {
   }
   let type = msg.type
   return map[type] || '未知消息类型'
+}
+
+Utils.getVideoTime = function(time){
+  if(typeof time === 'string'){
+    time = parseInt(time)
+  }
+  if(time >= 60){
+    let minuts = time%60
+    let second = time - minuts*60
+    return minuts+':'+ (second<10 ? ('0'+second) : second)
+  }else{
+    return '0:'+ (time<10 ? ('0'+time) : time)
+  }
 }
 
 Utils.stringifyDate = function (datetime, simple = false) {

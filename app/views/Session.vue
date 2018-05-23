@@ -3,7 +3,7 @@
         <div class="session-wrapper" ref="sessionWrapper" v-if="sessionlist&&sessionlist.length>0">
             <group class="u-list session-container">
                 <cell v-for="(session) in sessionlist" class="u-list-item" :title="session.name" :inline-desc="session.lastMsgShow" :key="session.id" :userName="session.name" :sessionId="session.id" v-touch:swipeleft="showDelBtn" v-touch:swiperight="hideDelBtn" @click.native="enterChat(session)">
-                    <img class="icon u-circle" slot="icon" width="24" :src="session.avatar">
+                    <img class="icon u-circle" onerror='this.src="http://yx-web.nos.netease.com/webdoc/h5/im/default-icon.png"' slot="icon" width="24" :src="session.avatar">
                     <span class='u-session-time'>
                                 {{session.updateTimeShow}}
                             </span>
@@ -37,8 +37,9 @@
         name: 'session',
         components: {},
         beforeRouteEnter: (to, from, next) => {
-            util.updateChatUserName('咨询医生')
-            next()
+            next((v)=>{
+                util.updateChatUserName(v.sessionTitle)
+            })
         },
         data() {
             return {
@@ -52,13 +53,11 @@
         created(){
         },
         mounted() {
-            util.updateChatUserName(this.sessionTitle)
             if (this.$refs.sessionWrapper) {
                 this.initScroll()
             }
         },
         updated() {
-            // util.updateChatUserName('咨询医生')
             if (this.$refs.sessionWrapper) {
                 this.initScroll()
             }
@@ -71,15 +70,18 @@
                 return this.$store.state.userUID
             },
             sessionTitle(){
-                console.log(this.$store.state.connectStatus)
+                console.log(this.$route)
                 let result = '';
                 switch(this.$store.state.connectStatus){
                     case 0: result = '咨询医生' ;break;
                     case 1: result = '咨询医生（未连接）' ;break;
                     case 2: result = '收取中...' ;break;
                     case 3: result = '重连接中...' ;break;
+                    case 4: result = '未登录' ;break;
                 }
-                util.updateChatUserName(result)
+                if(this.$route.path === '/build/vuepage/session'){
+                    util.updateChatUserName(result)
+                }
                 return result;
             },
             sessionlist() {
@@ -98,7 +100,7 @@
                         }
                         if (userInfo) {
                             item.name = userInfo.userName
-                            item.avatar = userInfo.userAvatar
+                            item.avatar = userInfo.userAvatar||'http://yx-web.nos.netease.com/webdoc/h5/im/default-icon.png'
                         }
                     } else if (item.scene === 'team') {
                         return false
@@ -225,10 +227,8 @@
         font-size: 16px;
         color: #c0c6d0;
     }
-    .p-session {
-        .vux-cell-primary {
-            max-width: 70%;
-        }
+    .vux-cell-primary {
+        max-width: 70%;
     }
     .vux-x-icon {
         fill: #F70968;

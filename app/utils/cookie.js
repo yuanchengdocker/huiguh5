@@ -23,7 +23,12 @@ const cookie = {
     if (cval!=null) {
       document.cookie = name + '=' + cval + ';expires=' + (new Date(0)).toGMTString()
     }
-  }  
+  },
+  
+  //localstory
+  readLocal: function(name){
+    return localStorage.getItem(name)
+  }
 }
 
 export default cookie

@@ -4,6 +4,8 @@ import util from '../../utils'
 import {openDB,saveData,deleteOneData,deleteDataByKey,searchData,getDataByIndex,updateData} from './indexDBInit'
 import { onSessions, onUpdateSession, setCurrSession, resetCurrSession,deleteSession } from './session.js'
 import {getLocalHistoryMsgs, sendMsg, sendMsgReceipt, resetNoMoreHistoryMsgs } from './msgs'
+import {checkHaveBindDoctor} from './huiguApi'
+import Vue from 'vue'
 
 function connectNim({ state, commit, dispatch }, obj) {
     let { force } = Object.assign({}, obj)
@@ -13,6 +15,8 @@ function connectNim({ state, commit, dispatch }, obj) {
         if (!loginInfo.uid) {
             // 无cookie，直接跳转登录页
             console.log('无历史登录记录，请重新登录', 'login')
+            dispatch('updateConnectStatus',4)//收取中
+            return
         } else {
             // 有cookie，重新登录
             dispatch('initNimSDK', loginInfo)
@@ -23,13 +27,13 @@ function connectNim({ state, commit, dispatch }, obj) {
 
 function getUserCookieInfo(){
     return {
-        uid: cookie.readCookie('uid'),
-        sdktoken: cookie.readCookie('sdktoken'),
-        id: cookie.readCookie('id'),
-        userAccid: cookie.readCookie('uid'),
-        userName: cookie.readCookie('userName'),
-        userAvatar: cookie.readCookie('userAvatar'),
-        userType: cookie.readCookie('userType')
+        uid: cookie.readLocal('patientAccid'),
+        sdktoken: cookie.readLocal('patientImToken'),
+        id: cookie.readLocal('ofPatientId'),
+        userAccid: cookie.readLocal('patientAccid'),
+        userName: cookie.readLocal('mobilePhone'),
+        userAvatar: cookie.readLocal('iconUrl'),
+        userType: cookie.readLocal('userType')
     }
 }
 
@@ -98,6 +102,22 @@ let indexActions = {
             type: 'hide'
         })
     },
+    // 显示原视频
+    showFullscreenVideo({ state, commit }, obj) {
+        if (obj) {
+            obj.type = 'show'
+            commit('updateFullscreenVideo', obj)
+        }
+    },
+    // 隐藏原视频
+    hideFullscreenVideo({ state, commit }) {
+        commit('updateFullscreenVideo', {
+            type: 'hide'
+        })
+    },
+    updateCurrMsgAudioId({ state, commit },id){
+        commit('updateCurrMsgAudioId', id)
+    },
     updateConnectStatus({ state, commit },status){
         state.connectStatus = status
     },
@@ -126,12 +146,8 @@ let indexActions = {
         store.commit('deleteSessions', [sessionId])
     },
     openDB(store){
-        let loginInfo = {
-            uid: cookie.readCookie('uid'),
-            sdktoken: cookie.readCookie('sdktoken'),
-        }
+        let loginInfo = getUserCookieInfo()
         if (!loginInfo.uid) {
-            // 无cookie，直接跳转登录页
             console.log('无历史登录记录，请重新登录', 'login')
         } else {
             // 有cookie，重新登录
@@ -174,6 +190,7 @@ let indexActions = {
     sendMsg,
     resetNoMoreHistoryMsgs,
     getLocalHistoryMsgs,
+    checkHaveBindDoctor,
     deleteOneData(store, {id,table,callback}){
         deleteOneData(id,table,callback)
     },

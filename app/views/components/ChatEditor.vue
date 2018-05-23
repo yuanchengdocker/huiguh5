@@ -4,7 +4,7 @@
       <span class="iconfont icon-dialogue-jianpan" v-show="currentChatWay === 2" v-on:click="currentChatWay=1"></span>
       <span class="iconfont icon-dialogue-voice" v-show="currentChatWay != 2" v-on:click="currentChatWay=2"></span>
       <div class="chat-way" v-show="currentChatWay === 2">
-        <div class="chat-say" v-press="{callback:getAudioFilPath}">
+        <div class="chat-say" v-press="{callback:getAudioFilPath,wxSdk:wxSdk}">
           <span class="one">按住 说话</span>
           <span class="two">松开 结束</span>
         </div>
@@ -40,9 +40,9 @@
       </div>
     </div>
     <div class="more-send-option" v-show="currentChatWay === 3" ref="chatMoreOption">
-      <section class="option-item" @click="goAlbum(1)"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*" /><img src="../../img/album.png" />
+      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*" /><img src="../../img/album.png" />
       </section>
-      <section class="option-item" @click="goAlbum(2)"><input @change="sendFileMsg" v-show="false" type="file" accept="audio/*" capture="microphone" /><img src="../../img/camera.png" />
+      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" accept="video/*" capture="microphone" /><img src="../../img/camera.png" />
       </section>
     </div>
   </div>
@@ -107,6 +107,7 @@
       press: {
         bind(element, binding) {
           var startTx, startTy, isCancel
+          var wxSdk = binding.value.wxSdk
           element.addEventListener('touchstart', function(e) {
             // 为什么每次注册监听器,都要重新获取一次 DOM 像上面写就 undefine?
             var recording = document.querySelector('.recording'),
@@ -114,9 +115,9 @@
             element.className = "chat-say say-active"
             recording.style.display = recordingVoice.style.display = "block"
             // console.log('start')
-            if (this.wxSdk.isWx) {
+            if (wxSdk.isWx) {
               console.log('开始语音')
-              this.wxSdk.audio.start()
+              wxSdk.audio.start()
             }
             isCancel = false
             var touches = e.touches[0]
@@ -131,11 +132,11 @@
             element.className = "chat-say"
             recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
             // console.log('end')
-            if (this.wxSdk.isWx) {
+            if (wxSdk.isWx) {
               if (isCancel) {
                 console.log('取消语音')
               } else {
-                this.wxSdk.audio.stop().then((res) => {
+                wxSdk.audio.stop().then((res) => {
                   console.log('录音结束。。。。')
                   binding.value.callback(res)
                 })
@@ -203,6 +204,9 @@
       myInfo() {
         return this.$store.state.myInfo
       },
+      currDoctorBind() {
+        return this.$store.state.currDoctorBind
+      },
     },
     methods: {
       hideMoreOption(){
@@ -211,11 +215,15 @@
       async getAudioFilPath(res){
         let { data,code,msg } = await axios('post', 'getWxMedia', {mediaId:res.serverId})
         alert(data.detailUrl)
+        this.msgToSent = res.serverId
         if(data && data.detailUrl){
-          this.sendCustomMsg({
+          let mediaContent = {
             fileDataLocalPath: '',
             fileDataUrl: data.detailUrl,
             voiceDuration: '',
+          }
+          this.sendCustomMsg({
+            mediaContent:mediaContent,
             messageContentType: 2,
             textContent: ''
           })
@@ -226,14 +234,14 @@
         }
       },
       goAlbum(e) {
-        // var evt = document.createEvent("MouseEvents");
-        // evt.initEvent("click", false, false);
-        // e.target.previousSibling.dispatchEvent(evt);
-        if(e === 1){
-          this.wxSdk.img.choose().then((severIds)=>{
- 
-          })
-        }
+        var evt = document.createEvent("MouseEvents");
+        evt.initEvent("click", false, false);
+        e.target.previousSibling.dispatchEvent(evt);
+        // if(e === 1){
+        //   this.wxSdk.img.choose().then((severIds)=>{
+        //     this.msgToSent = severIds
+        //   })
+        // }
       },
       // 解决输入法被激活时 底部输入框被遮住问题
       focusIpt() {
@@ -256,9 +264,7 @@
         }
         this.msgToSent = this.msgToSent.trim()
         this.sendCustomMsg({
-          fileDataLocalPath: '',
-          fileDataUrl: '',
-          voiceDuration: '',
+          mediaContent:'',
           messageContentType: 1,
           textContent: this.msgToSent
         })
@@ -280,16 +286,30 @@
         let target = e.target
         let fileDataLocalPath = this.getObjectURL(target.files[0])
         let targetType = target.files[0].type
+        let uploadFileType = 1
+        let imgWidth = 0;
+        let imgHeight = 0;
+        let vedioName = target.files[0].name
+        vedioName = vedioName.substr(0,vedioName.lastIndexOf('.'))
         if (targetType.indexOf('image/') >= 0) {
+          uploadFileType = 1
           fileType = 3
+          let img = new Image();              //手动创建一个Image对象
+          img.src = fileDataLocalPath//创建Image的对象的url
+          img.onload = function () {
+              imgWidth = this.width
+              imgHeight = this.height
+          }
         } else if (targetType.indexOf('video/') >= 0) {
-          fileType = 9
+          uploadFileType = 3
+          fileType = 11
         } else if (targetType.indexOf('audio/') >= 0) {
+          uploadFileType =2
           fileType = 2
         }
         let dataFile = new FormData()
         dataFile.append('file', target.files[0])
-        dataFile.append('fileType', fileType)
+        dataFile.append('fileType', uploadFileType)
         this.$store.dispatch('showLoading')
         let {
           data,
@@ -299,10 +319,29 @@
           "Content-Type": 'mutipart/form-data'
         })
         if (code === 0) {
+          let mediaContent = {}
+          if(fileType === 3){//图片
+            mediaContent = {
+              fileDataLocalPath:'',
+              fileDataUrl:data.mediumImagePath,
+              originUrl:data.largeImagePath,
+              thumbnailUrl:data.smallImagePath,
+              pHeight:imgHeight,
+              pWidth:imgWidth
+            }
+          }else if(fileType === 11){//视频
+            mediaContent = {
+              fileDataLocalPath:'',
+              fileDataUrl:data.audioPath,
+              coverPath:'',
+              coverSize:'',
+              coverUrl:data.smallImagePath,
+              displayName:vedioName,
+              duration:1
+            }
+          }
           this.sendCustomMsg({
-            fileDataLocalPath: '',
-            fileDataUrl: data.audioPath,
-            voiceDuration: '',
+            mediaContent:mediaContent,
             messageContentType: fileType,
             textContent: ''
           })
@@ -338,11 +377,7 @@
               fromUserID: this.myInfo.id, //发送者ID
               fromUserName: this.myInfo.userName, //发送者姓名
               fromUserType: 2, //1医生，2患者，4群组，5工作室交流群，6工作室
-              mediaContent: {
-                fileDataLocalPath: option.fileDataLocalPath,
-                fileDataUrl: option.fileDataUrl,
-                voiceDuration: option.voiceDuration
-              },
+              mediaContent: option.mediaContent,
               messageContentType: option.messageContentType, //1文本，2语音，3图片，4提示内容，5分享内容，6预约内容，7随访内容
               messageID: "7631E1B8-67F5-4160-B5CD-CCE2C082F75B", //NIM中的messageId 
               remark: "", //消息内容备注

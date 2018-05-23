@@ -35,6 +35,12 @@ function updateUserInfo(msgs){
 }
 
 export function onMsg (msg) {
+  // if(util.getMsgType(msg) === 'audio'){
+    let mediaContent = util.parseMediaContent(msg)
+    mediaContent['hasPlay'] = false
+    util.stringMediaContentMsg(mediaContent,msg)
+    // }
+    
   console.log(msg,'msg')
   store.commit('putMsg', msg)
   if (msg.sessionId === store.state.currSessionId) {
@@ -133,20 +139,27 @@ export function revocateMsg ({state, commit}, msg) {
 export function sendMsg ({state, commit}, obj) {
   const nim = state.nim
   obj = obj || {}
-  let type = obj.type || ''
+  let type = state.currDoctorBind?obj.type:'noBind'
   store.dispatch('showLoading')
-  switch (type) {
-    case 'text':
-      nim.sendText({
-        scene: obj.scene,
-        to: obj.to,
-        text: obj.text,
-        done: onSendMsgDone,
-        needMsgReceipt: obj.needMsgReceipt || false
-      })
-      break
+  switch ('custom') {
+    case 'noBind':
+      let msg = {
+        content:JSON.stringify(obj.content),
+        flow:'out',
+        from:state.userUID,
+        scene:'p2p',
+        to:util.parseSession(state.currSessionId).to,
+        type:'custom',
+        time:(new Date()).getTime(),
+        status:'fail',
+        sessionId:state.currSessionId
+      }
+      onMsg(msg)
+      commit('loadToad','您未和该医生绑定！无法进行对话')
+      store.dispatch('hideLoading')
+      ;break;
     case 'custom':
-      nim.sendCustomMsg({
+      let mm = nim.sendCustomMsg({
         scene: obj.scene,
         to: obj.to,
         pushContent: obj.pushContent,
@@ -154,6 +167,7 @@ export function sendMsg ({state, commit}, obj) {
         data:obj.data,
         done: onSendMsgDone
       })
+      console.log(mm)
   }
 }
 

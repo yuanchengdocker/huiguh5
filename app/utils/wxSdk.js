@@ -51,31 +51,39 @@ export default () => {
         },
         img: {
             choose:function(){
+                let that = this
                 return new Promise((resolve,reject)=>{
-                    alert('kaishi')
                     wx.chooseImage({
-                        count: 1, // 默认9
+                        count: 9, // 默认9
                         sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-                        sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                        sourceType: ['album'], // 可以指定来源是相册还是相机，默认二者都有
                         success: function (res) {
                             var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
-                            var serverIds = []
-                            localIds&&localIds.map((localId,index)=>{
-                                wx.uploadImage({
-                                    localId: localId, // 需要上传的图片的本地ID，由chooseImage接口获得
-                                    isShowProgressTips: 1, // 默认为1，显示进度提示
-                                    success: function (res) {
-                                        serverIds.push(res.serverId); // 返回图片的服务器端ID
-                                        if(index === localIds.length-1){
-                                            alert(serverIds)
-                                            resolve(serverIds)
-                                        }
-                                    }
-                                });
+                            that.pushAllImg(localIds).then((serverIds)=>{
+                                resolve(serverIds)
                             })
                         }
                     });
                 })
+            },
+            pushAllImg(localIds){
+                var serverIds = []
+                let promise = Promise.resolve()
+                localIds.forEach((localId)=>{
+                    promise = promise.then(()=>{
+                        return new Promise((resolve)=>{
+                            wx.uploadImage({
+                                localId: localId, // 需要上传的图片的本地ID，由chooseImage接口获得
+                                isShowProgressTips: 1, // 默认为1，显示进度提示
+                                success: function (res) {
+                                    serverIds.push(res.serverId); // 返回图片的服务器端ID
+                                    resolve(serverIds.toString())
+                                }
+                            });
+                        })
+                    })
+                })
+                return promise
             },
             preview:function(urls){
                 wx.previewImage({

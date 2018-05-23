@@ -32,7 +32,10 @@
             ChatList
         },
         props: ['id'],
+        
         created() {
+            this.$store.dispatch('setCurrSession', this.sessionId)
+            this.$store.dispatch('checkHaveBindDoctor')
             this.updateMenuBarShow(false)
         },
         // 进入该页面，文档被挂载
