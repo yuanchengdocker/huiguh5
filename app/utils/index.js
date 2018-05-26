@@ -12,6 +12,124 @@ if(!Function.prototype.bind){
 
 let Utils = Object.create(null)
 
+Utils.MsgsUpdateOrDelete = function(msgs,msg,isDelete){
+  let result = []
+  if(isDelete){
+    msgs&&msgs.filter((item)=>{
+      if(item.id !== msg.id){
+        result.push(item)
+      }
+    })
+  }else{
+    msgs = msgs&&msgs.map((item)=>{
+      if(item.id === msg.id){
+        result.push(msg)
+      }else{
+        result.push(item)
+      }
+    })
+  }
+  return result
+}
+
+Utils.buildSelfDefinedMsg = function(content,status='sending'){
+  let state = store.state
+  let userInfos = state.userInfos
+  let myInfo = state.myInfo
+  let toInfo = userInfos[this.parseSession(state.currSessionId).to]
+  let msg = {}
+  msg['flow'] = 'out'
+  msg['scene'] = 'p2p'
+  msg['status'] = status
+  msg['time'] = (new Date()).getTime()
+
+  msg['id'] = this.getUuid(), //，只生成uid
+  msg['chatType'] = 1
+  msg['fromUserAccid'] = myInfo.userAccid
+  msg['fromUserGender'] = myInfo.fromUserGender||0
+  msg['fromUserID'] = myInfo.id
+  msg['fromUserName'] = myInfo.userName
+  msg['fromUserAvatarUrl'] = myInfo.userAvatar
+  msg['fromUserType'] = 2
+  msg['remark'] = ''
+  msg['hasRead'] = false
+  msg['toUserId'] = toInfo.id
+  msg['toUserAccid'] = toInfo.userAccid
+  msg['toUserName'] = toInfo.userName
+  msg['sessionType'] = 1
+  msg['sessionId'] = state.currSessionId
+  //实时消息
+  msg['messageContentType'] = content.messageContentType
+  msg['textContent'] = content.textContent
+  msg['mediaContent'] = content.mediaContent
+ 
+  return msg
+}
+Utils.parseMsgToSelfDefined = function(msg){
+  return msg?{
+    content:msg.content,
+    flow:msg.flow,
+    from:msg.from,
+    idClient:msg.idClient,
+    scene:msg.scene,
+    to:msg.to,
+    type:msg.type,
+    time:msg.time,
+    status:msg.status,
+    sessionId:msg.sessionId
+  }:{}
+}
+
+Utils.toNimMsg = function(msg){
+  let obj = {
+    scene: msg.scene,
+    to: msg.toUserAccid,
+    content: {
+      type: 1,
+      data: getContentParams(msg)
+    }
+  }
+  return obj
+}
+
+function getContentParams(data,result={}){
+  result['id'] = data.id||Utils.getUuid(), //若为外来消息，只生成uid
+  result['chatType'] = data.chatType
+  result['fromUserAccid'] = data.fromUserAccid
+  result['fromUserGender'] = data.fromUserGender
+  result['fromUserID'] = data.fromUserID
+  result['fromUserName'] = data.fromUserName
+  result['fromUserAvatarUrl'] = data.fromUserAvatarUrl
+  result['fromUserType'] = data.fromUserType
+  result['remark'] = data.remark
+  result['hasRead'] = data.hasRead
+  result['toUserId'] = data.toUserId
+  result['toUserAccid'] = data.toUserAccid
+  result['toUserName'] = data.toUserName
+  result['sessionType'] = data.sessionType
+  result['messageContentType'] = data.messageContentType
+  result['textContent'] = data.textContent
+  result['mediaContent'] = data.mediaContent&&typeof data.mediaContent === 'string'?JSON.parse(data.mediaContent):data.mediaContent
+  return result
+}
+
+Utils.toMyMsg = function(msg){
+  if(!msg) return {}
+  let result = {
+    scene: msg.scene,
+    flow:msg.flow,
+    status:msg.status,
+    sessionId:msg.sessionId,
+    time: msg.time //消息发送时间
+  }
+  let content = msg.content?JSON.parse(msg.content):{}
+  if(!content.data) return result
+  let data = content.data
+  getContentParams(data,result)
+  result['hasRead'] = false
+  return result
+}
+
 Utils.parseMediaContent = function(msg){
   let data = JSON.parse(msg.content)
   let content = data.data
@@ -31,9 +149,21 @@ Utils.stringMediaContentMsg = function(mediaContent,msg){
 
 Utils.getMsgType = function(msg){
   let msgTypeMap = store.state.msgTypeMap
-  let data = JSON.parse(item.content)
-  let content = data.data
-  return msgTypeMap[content.messageContentType]
+  return msgTypeMap[msg.messageContentType||1]
+}
+
+Utils.getUuid = function(){
+  var s = [];
+    var hexDigits = "0123456789abcdef";
+    for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    }
+    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = "-";
+ 
+    var uuid = s.join("");
+    return uuid;
 }
 
 Utils.encode = function (_map, _content) {

@@ -6,7 +6,7 @@
         'item-tip': msg.type==='tip',
         'session-chat': type==='session'
       }">
-    <div v-if="msg.type==='timeTag'">{{msg.showText}}</div>
+    <div v-if="msgs.type==='timeTag'">{{msg.showText}}</div>
     <div v-else-if="msg.type==='tip'" class="tip">{{msg.showText}}</div>
     <div v-else-if="msg.type==='notification' && msg.scene==='team'" class="notification">{{msg.showText}}</div>
     <div v-else-if="msg.flow==='in' || msg.flow==='out'" :idClient="msg.idClient" :time="msg.time" :flow="msg.flow" :type="msg.type">
@@ -31,20 +31,21 @@
       </span>
       <span v-else-if="msg.type==='image'" class=" msg-image" ref="mediaMsg" @click.stop="showFullImg(msg.fileDataUrl)"></span>
       <span v-else-if="msg.type==='video'" class=" msg-video" ref="mediaMsg" @click.stop="showFullVideo(msg.fileDataUrl,msg.coverUrl)">
-        <section class="msg-video-container" :style="'background:url('+msg.coverUrl+') center no-repeat;background-size: 100%'">
+        <section class="msg-video-container" :style="'background:url('+msg.coverUrl+') center center / 100% no-repeat'">
           <div class="hg-banner-cover"></div>
           <img src="../../img/video-play.png" class="play-flag" alt="">
           <span class="video-duration">{{msg.duration}}</span>
         </section>
       </span>
-      <span v-else-if="msg.type==='audio'" :class="!isAudioPlay?'msg-text':'msg-text active'" :style="'width:'+msg.audioDuration" @click.stop="playAudio(msg.audioSrc)">
+      <span v-else-if="msg.type==='audio'" :class="!isAudioPlay?'msg-text':'msg-text active'" :style="'width:'+msg.audioDuration" @click.stop="playMyAudio(msg.audioSrc,msg.localAudioSrc)">
         <i class="icon-audio"></i>
-        <i class="audio-hasPlay" v-if="!msg.hasPlay"></i>
+        <i class="audio-hasPlay" v-if="msg.flow==='in'&&!msg.hasRead"></i>
         <span class="audio-duration">{{msg.showText}}</span>
       </span>
       <span v-else-if="msg.type==='file'" class="msg-text"><a :href="msg.fileLink" target="_blank"><i class="u-icon icon-file"></i>{{msg.showText}}</a></span>
       <span v-else-if="msg.type==='notification'" class="msg-text notify">{{msg.showText}}</span>
       <span v-else class="msg-text" v-html="msg.showText"></span>
+      <span v-if="msg.status==='sending'" class="msg-failed"><spinner type="android"></spinner></span>
       <span v-if="msg.status==='fail'" class="msg-failed" @click="confirmResend(msg.id)"><i class="weui-icon-warn"></i></span>
       <a v-if="teamMsgUnRead >=0" class='msg-unread' :href='`#/msgReceiptDetail/${msg.to}-${msg.idServer}`'>{{teamMsgUnRead>0 ? `${teamMsgUnRead}人未读`: '全部已读'}}</a>
     </div>
@@ -54,6 +55,7 @@
 <script type="text/javascript">
   import util from '../../utils'
   import config from '../../config/nim.config.js'
+  import wxSdk from '../../utils/wxSdk'
   import emojiObj from '../../config/emoji'
   import '../../style/stylus/public.styl'
   export default {
@@ -96,10 +98,16 @@
         isFullImgShow: false,
         currentAudio: null,
         customMsg: {},
-        msgId:null
+        msgId:null,
+        wxSdk: wxSdk ? wxSdk() : {},
+        currentLocalId:null
       }
     },
     computed: {
+      msgs(){
+        this.msgInitShow()
+        return this.rawMsg
+      },
       robotInfos() {
         return this.$store.state.robotInfos
       },
@@ -116,154 +124,49 @@
           this.startAudio()
           return true
         }else{
-          if(this.currentAudio){
-            this.currentAudio.pause()
+          if(this.currentLocalId){
+            this.wxSdk.audio.stopAudio(this.currentLocalId)
+          }else{
+            if(this.currentAudio){
+              this.currentAudio.pause()
+            }
           }
           return false
         }
       }
     },
     beforeMount() {
-      let item = Object.assign({}, this.rawMsg)
-      this.msgId = item.idClient
-      // 标记用户，区分聊天室、普通消息
-      if (this.type === 'session') {
-        if (item.flow === 'in') {
-          if (item.type === 'robot' && item.content && item.content.msgOut) {
-            // 机器人下行消息
-            let robotAccid = item.content.robotAccid
-            item.avatar = this.robotInfos[robotAccid].avatar
-            item.isRobot = true
-            item.link = `#/namecard/${robotAccid}`
-          } else if (item.from !== this.$store.state.userUID) {
-            item.avatar = (this.userInfos[item.from] && this.userInfos[item.from].avatar) || config.defaultUserIcon
-            item.link = `#/namecard/${item.from}`
-            //todo  如果是未加好友的人发了消息，是否能看到名片
-          } else {
-            item.avatar = this.myInfo.avatar
-          }
-        } else if (item.flow === 'out') {
-          item.avatar = this.myInfo.avatar
-        }
-      } else {
-        // 标记时间，聊天室中
-        item.showTime = util.formatDate(item.time)
-      }
-      if (item.type === 'custom') {
-        let data = JSON.parse(item.content)
-        let content = data.data
-        if (content && content.chatType === 1) { //单聊
-          let avatar = ''
-          if(content.fromUserChatID && this.userInfos[content.fromUserChatID]){
-            avatar = this.userInfos[content.fromUserChatID].userAvatar
-          }else{
-            avatar = content.fromUserAvatarUrl
-          }
-          this.customMsg['avatar'] = avatar || config.defaultUserIcon
-          let mediaContent = content.mediaContent||{}
-          if(mediaContent && typeof mediaContent === 'string'){
-            mediaContent = JSON.parse(mediaContent)
-          }
-          this.customMsg['mediaContent'] = mediaContent
-          switch (content.messageContentType) {
-            case 1:
-              this.customMsg['showText'] = content.textContent;
-              this.customMsg['type'] = 'text';
-              break; //文本
-            case 2:
-              this.customMsg['audioSrc'] = mediaContent.fileDataUrl;
-              let length = mediaContent.voiceDuration>=60?60:mediaContent.voiceDuration
-              let duration = Math.round((length/60)*0.5*100)
-              this.customMsg['audioDuration'] = (duration<=4?4:duration) +'%' ;
-              this.customMsg['hasPlay'] = mediaContent.hasPlay;
-              this.customMsg['showText'] = Math.round(mediaContent.voiceDuration||0)+'\'\'';
-              this.customMsg['type'] = 'audio';
-              break; //语音
-            case 3:
-              this.customMsg['fileDataUrl'] = mediaContent.fileDataUrl;
-              this.customMsg['originLink'] = mediaContent.originLink;
-              this.customMsg['type'] = 'image';
-              break; //图片
-            case 4:
-              this.customMsg['showText'] = content.textContent;
-              this.customMsg['type'] = 'tip';
-              break; //提示内容
-            case 5:
-              this.customMsg['shareLink'] = content.textContent;
-              this.customMsg['type'] = 'share';
-              break; //分享内容
-          
-            case 11:
-              this.customMsg['fileDataUrl'] = mediaContent.fileDataUrl;
-              this.customMsg['coverUrl'] = mediaContent.coverUrl;
-              this.customMsg['duration'] = util.getVideoTime(mediaContent.duration||0);
-              this.customMsg['type'] = 'video';
-              break; //视频
-            case 12:
-              this.customMsg['fileLink'] = content.textContent;
-              this.customMsg['showText'] = content.textContent;
-              this.customMsg['type'] = 'file';
-              break; //文件
-            case 14:
-              this.customMsg['articleLink'] = mediaContent.shareLink;
-              this.customMsg['articleTitle'] = mediaContent.shareTitle;
-              this.customMsg['showText'] = mediaContent.shareBrief;
-              this.customMsg['type'] = 'article';
-              break; //患教资料
-            case 15:
-              this.customMsg['questionLink'] = mediaContent.shareLink;
-              this.customMsg['questionTitle'] = mediaContent.shareTitle;
-              this.customMsg['showText'] = mediaContent.shareBrief;
-              this.customMsg['type'] = 'question';
-              break; //问卷
-          }
-        }
-      } else if (item.type === 'text') {
-        // 文本消息
-        item.showText = util.escape(item.text)
-        if (/\[[^\]]+\]/.test(item.showText)) {
-          let emojiItems = item.showText.match(/\[[^\]]+\]/g)
-          emojiItems.forEach(text => {
-            let emojiCnt = emojiObj.emojiList.emoji
-            if (emojiCnt[text]) {
-              item.showText = item.showText.replace(text, `<img class="emoji-small" src="${emojiCnt[text].img}">`)
-            }
-          })
-        }
-      } else {
-        this.customMsg['avatar'] = item.avatar
-        this.customMsg['showText'] = `[${util.mapMsgType(item)}],请到手机或电脑客户端查看`
-      }
-      this.msg = this.customMsg || item
-      this.msg.flow = item.flow
-      this.msg.status = item.status
-      this.msg.id = item.id
-      if (item.type === 'timeTag') {
-        // 标记发送的时间
-        this.msg.type = item.type
-        this.msg.showText = item.text
-      }
+      this.msgInitShow()
     },
     mounted() {
       let item = this.msg
       // 有时序问题的操作
       this.$nextTick(() => {
         let media = null
+        let hasReload = false
         if (item.type === 'image') {
           // 图片消息缩略图
           media = new Image()
-          media.src = item.mediaContent.thumbnailUrl + '?imageView&thumbnail=180x0&quality=85'
+          console.log(item.mediaContent)
+          media.src = item.flow==='out'?item.mediaContent.fileDataLocalPath:item.mediaContent.thumbnailUrl
+          media.onerror="this.src='"+item.mediaContent.thumbnailUrl+"'"
           media.height = 128
-          media.width = item.mediaContent.pWidth/item.mediaContent.pHeight * 128
+          media.width = item.mediaContent.pWidth?(item.mediaContent.pWidth/item.mediaContent.pHeight * 128):'100%'
         }
         if (media) {
           if (this.$refs.mediaMsg) {
             this.$refs.mediaMsg.appendChild(media)
           }
           media.onload = () => {
+            console.log('seucces-img')
             this.$emit('msg-loaded')
           }
           media.onerror = () => {
+            if(!hasReload){
+              media.src = item.mediaContent.thumbnailUrl
+            }
+            hasReload = true
+            console.log('error-img')
             this.$emit('msg-loaded')
           }
         } else {
@@ -271,8 +174,10 @@
         }
       }) // end this.nextTick
     },
+    beforeUpdate(){
+      this.msgInitShow()
+    },
     updated(){
-
     },
     methods: {
       confirmResend(id) {
@@ -299,28 +204,124 @@
           cover
         })
       },
-      playAudio(src) {
+      playMyAudio(src,localSrc) {
+        if(localSrc){
+          this.currentLocalId = localSrc
+        }
         if(!this.currentAudio){
-          this.currentAudio = new Audio('http://192.168.0.229/group1/M00/0B/8C/wKgA5VsE2TeAK6HyAAAhVJ2x42Y241.aac')
+          this.currentAudio = new Audio(src)
         }
         this.$store.dispatch('updateCurrMsgAudioId',this.msgId)
         
       },
       startAudio(){
-        this.currentAudio.load()
-        this.currentAudio.play()
-
-        //若第一次播放，进行数据库更新，已读
-        if(!msg.hasPlay){
-          
+        if(this.rawMsg.flow==='out'&&this.currentLocalId){
+          this.wxSdk.audio.playAudio(this.currentLocalId)
+          this.wxSdk.audio.onVoicePlayEnd(()=>{
+            debugger
+            alert('tingzhi')
+            this.$store.dispatch('updateCurrMsgAudioId','')
+          })
+        }else{
+          if(!this.currentAudio) return
+          this.currentAudio.load()
+          this.currentAudio.play()
+          this.currentAudio.onended = () => {
+            this.$store.dispatch('updateCurrMsgAudioId','')
+          }
         }
-
-        this.currentAudio.onended = () => {
-          this.$store.dispatch('updateCurrMsgAudioId','')
+        //若第一次播放，进行数据库更新，已读
+        let msg = this.rawMsg
+        if(!msg.hasRead){
+          msg.hasRead = true
+          this.$store.dispatch('updateMsg',msg)
         }
       },
       toMsgUnReadDetail() {
         this.href = '#/msgReceiptDetail/' + this.msg.idServer
+      },
+      msgInitShow(){
+        let msg = Object.assign({}, this.rawMsg)
+        this.msgId = msg.id
+
+        let content = msg
+        let avatar = ''
+        if(content.fromUserAccid && this.userInfos[content.fromUserAccid]){
+          avatar = this.userInfos[content.fromUserAccid].userAvatar
+        }else{
+          avatar = content.fromUserAvatarUrl
+        }
+
+        this.customMsg['avatar'] = avatar || config.defaultUserIcon
+
+        let mediaContent = content.mediaContent||{}
+        if(mediaContent && typeof mediaContent === 'string'){
+          mediaContent = JSON.parse(mediaContent)
+        }
+        this.customMsg['mediaContent'] = mediaContent
+        switch (content.messageContentType) {
+          case 1:
+            this.customMsg['showText'] = content.textContent;
+            this.customMsg['type'] = 'text';
+            break; //文本
+          case 2:
+            this.customMsg['localAudioSrc'] = mediaContent.fileDataLocalPath;
+            this.customMsg['audioSrc'] = mediaContent.fileDataUrl;
+            let length = mediaContent.voiceDuration>=60?60:mediaContent.voiceDuration
+            let duration = Math.round((length/60)*0.5*100)
+            this.customMsg['audioDuration'] = (duration<=4?4:duration) +'%' ;
+            this.customMsg['showText'] = Math.round(mediaContent.voiceDuration||0)+'\'\'';
+            this.customMsg['type'] = 'audio';
+            break; //语音
+          case 3:
+            this.customMsg['fileDataUrl'] = mediaContent.fileDataUrl;
+            this.customMsg['originLink'] = mediaContent.originLink;
+            this.customMsg['type'] = 'image';
+            break; //图片
+          case 4:
+            this.customMsg['showText'] = content.textContent;
+            this.customMsg['type'] = 'tip';
+            break; //提示内容
+          case 5:
+            this.customMsg['shareLink'] = content.textContent;
+            this.customMsg['type'] = 'share';
+            break; //分享内容
+        
+          case 11:
+            this.customMsg['fileDataUrl'] = mediaContent.fileDataUrl;
+            this.customMsg['coverUrl'] = mediaContent.coverUrl;
+            this.customMsg['duration'] = util.getVideoTime(mediaContent.duration||0);
+            this.customMsg['type'] = 'video';
+            break; //视频
+          case 12:
+            this.customMsg['fileLink'] = content.textContent;
+            this.customMsg['showText'] = content.textContent;
+            this.customMsg['type'] = 'file';
+            break; //文件
+          case 14:
+            this.customMsg['articleLink'] = mediaContent.shareLink;
+            this.customMsg['articleTitle'] = mediaContent.shareTitle;
+            this.customMsg['showText'] = mediaContent.shareBrief;
+            this.customMsg['type'] = 'article';
+            break; //患教资料
+          case 15:
+            this.customMsg['questionLink'] = mediaContent.shareLink;
+            this.customMsg['questionTitle'] = mediaContent.shareTitle;
+            this.customMsg['showText'] = mediaContent.shareBrief;
+            this.customMsg['type'] = 'question';
+            break; //问卷
+        }
+        
+        this.msg = this.customMsg || msg
+        this.msg.flow = msg.flow
+        this.msg.status = msg.status
+        this.msg.hasRead = msg.hasRead
+        this.msg.id = msg.id
+        if (msg.type === 'timeTag') {
+          // 标记发送的时间
+          this.msg.type = msg.type
+          this.msg.showText = msg.text
+        }
       }
     }
   }
@@ -367,6 +368,7 @@
       float: right;
     }
     .icon-audio{
+      transform: rotate(180deg);
       width: 14px;
       height: 19.2px;
       display: inherit;
@@ -394,6 +396,15 @@
     background-color: #fb699d;
     right: -20px;
     top: 0;
+  }
+  .item-me{
+    .audio-duration{
+      left: -40px;
+      text-align: right;
+    }
+    .audio-hasPlay{
+      left: -20px;
+    }
   }
   .item-you{
     .msg-video{
@@ -445,5 +456,6 @@
 
   .msg-image {
     height: 128px !important;
+    min-width: 80px;
   }
 </style>

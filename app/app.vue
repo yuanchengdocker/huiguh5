@@ -56,8 +56,9 @@
     },
     beforeCreate(){
       // debugger
-      this.$store.dispatch('openDB')
-      this.$store.dispatch('connect')
+      this.$store.dispatch('openDB',()=>{
+        this.$store.dispatch('connect')
+      })
       // this.$store.dispatch('updateRefreshState')
     },
     created() {

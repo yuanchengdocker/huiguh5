@@ -7,20 +7,53 @@ export default () => {
             timestamp: cookieObj.timestamp, // 必填，生成签名的时间戳
             nonceStr: cookieObj.noncestr, // 必填，生成签名的随机串
             signature: cookieObj.signature,// 必填，签名，见附录1
-            jsApiList: ['startRecord', 'stopRecord','uploadVoice','chooseImage','previewImage','uploadImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            jsApiList: ['startRecord', 'stopRecord','playVoice','stopVoice','onVoicePlayEnd','onVoiceRecordEnd','uploadVoice','chooseImage','previewImage','uploadImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
         });
     }
     return {
         isWx: !!wx,
         audio:{
-            start: function(){
-                wx.startRecord({
-                    success: function(res) {    
-                        // alert('开始录音'+JSON.stringify(res))
-                    },
-                    fail: function(res) {     //录音失败
-                        // alert('开始录音'+JSON.stringify(res))
+            playAudio: function(localId){
+                wx.playVoice({
+                    localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+                });
+            },
+            stopAudio: function(localId){
+                wx.stopVoice({
+                    localId: localId // 需要停止的音频的本地ID，由stopRecord接口获得
+                });
+            },
+            onVoicePlayEnd: function(callback){
+                wx.onVoicePlayEnd({
+                    success: function (res) {
+                        callback&&callback()
                     }
+                });
+            },
+            start: function(){
+                return new Promise((resolve,reject)=>{
+                    wx.startRecord({
+                        success: function(res) {    
+                        },
+                        fail: function(res) {     //录音失败
+                        }
+                    })
+                    wx.onVoiceRecordEnd({
+                        // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+                        complete: function (res) {
+                            var localId = res.localId;
+                            wx.uploadVoice({
+                                localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+                                isShowProgressTips: 1, // 默认为1，显示进度提示
+                                success: function (res) {
+                                    resolve({localId,res})
+                                },
+                                fail: function(res){
+                                    alert('shibai'+JSON.stringify(res))
+                                }
+                            });
+                        }
+                    });
                 })
             },
             stop:function(){
@@ -28,13 +61,12 @@ export default () => {
                     wx.stopRecord({
                         success: function (res) {
                             var localId = res.localId;
-                            console.log(localId)
+                            console.log(arguments)
                             wx.uploadVoice({
                                 localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
                                 isShowProgressTips: 1, // 默认为1，显示进度提示
                                 success: function (res) {
-                                    // alert(JSON.stringify(res))
-                                    resolve(res)
+                                    resolve({localId,res})
                                 },
                                 fail: function(res){
                                     alert('shibai'+JSON.stringify(res))
@@ -43,7 +75,6 @@ export default () => {
                         },
                         fail: function(res) {
                             reject(res)
-                            // alert('结束录音'+JSON.stringify(res))
                         }
                     })
                 })

@@ -1,5 +1,5 @@
 <template>
-    <div class="chat-fullscreen" :class="{active:showImg}"  v-touch:swipedown="hideFullscreenVideo"  @click.stop="test">
+    <div class="chat-fullscreen" :class="{active:showImg}"  v-touch:swipedown="hideFullscreenVideo">
         <div class="chat-mask"></div>
         <div class="chat-video" ref="chatImg">
         </div>
@@ -55,13 +55,6 @@
             }
         },
         methods: {
-            test(){
-                alert(this.video)
-                if(this.video){
-                    alert(89)
-                    video.play()
-                }
-            },
             hideFullscreenVideo() {
                 this.$store.dispatch('hideFullscreenVideo')
             },
@@ -76,7 +69,6 @@
                     jsApiList: []
                 });
                 wx.ready(function() {
-                    alert(123)
                     video.play();  
                 });
             }

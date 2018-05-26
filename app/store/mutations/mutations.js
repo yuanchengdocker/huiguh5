@@ -89,7 +89,7 @@ export default {
     updateSessions(state, sessions) {
         const nim = state.nim
         let unReadCount = 0
-        let totalSessions = nim.mergeSessions(state.sessionlist, sessions)
+        let totalSessions = nim?nim.mergeSessions(state.sessionlist, sessions):sessions
         totalSessions.sort((a, b) => {
             return b.updateTime - a.updateTime
         })
@@ -105,6 +105,9 @@ export default {
     deleteSessions(state, sessionIds) {
         const nim = state.nim
         state.sessionlist = nim.cutSessionsByIds(state.sessionlist, sessionIds)
+        sessionIds&&sessionIds.map((sessionId)=>{
+            delete state.sessionMap[sessionId]
+        })
     },
     // 初始化，收到离线漫游消息时调用
     updateMsgs(state, msgs) {
@@ -172,49 +175,18 @@ export default {
         if (!tempMsgs || tempMsgs.length === 0) {
             return
         }
+        state.msgs[sessionId] = util.MsgsUpdateOrDelete(state.msgs[sessionId],msg,true)
+        state.currSessionMsgs = util.MsgsUpdateOrDelete(state.currSessionMsgs,msg,true)
         let lastMsgIndex = tempMsgs.length - 1
-        for (let i = lastMsgIndex; i >= 0; i--) {
-            let currMsg = tempMsgs[i]
-            if (msg.idClient === currMsg.idClient) {
-                state.msgs[sessionId].splice(i, 1)
-                state.currSessionMsgs.splice(i, 1)
-                break
-            }
-        }
     },
     // 替换消息列表消息，如消息撤回
-    deleteMsgById(state, msg) {
+    replaceMsg(state, msg) {
         let { sessionId, id } = msg
         let tempMsgs = state.msgs[sessionId]
         if (!tempMsgs || tempMsgs.length === 0) {
             return
         }
-        let lastMsgIndex = tempMsgs.length - 1
-        for (let i = lastMsgIndex; i >= 0; i--) {
-            let currMsg = tempMsgs[i]
-            if (id === currMsg.id) {
-                state.msgs[sessionId].splice(i, 1)
-                state.currSessionMsgs.splice(i, 1)
-                break
-            }
-        }
-    },
-    // 替换消息列表消息，如消息撤回
-    replaceMsg(state, obj) {
-        let { sessionId, idClient, msg } = obj
-        let tempMsgs = state.msgs[sessionId]
-        if (!tempMsgs || tempMsgs.length === 0) {
-            return
-        }
-        let lastMsgIndex = tempMsgs.length - 1
-        for (let i = lastMsgIndex; i >= 0; i--) {
-            let currMsg = tempMsgs[i]
-            console.log(idClient, currMsg.idClient, currMsg.text)
-            if (idClient === currMsg.idClient) {
-                state.msgs[sessionId].splice(i, 1, msg)
-                break
-            }
-        }
+        state.msgs[sessionId] = util.MsgsUpdateOrDelete(state.msgs[sessionId],msg)
     },
     // 用idClient 更新消息，目前用于消息撤回
     updateMsgByIdClient(state, msgs) {
@@ -224,8 +196,8 @@ export default {
         let tempTime = (new Date()).getTime()
         msgs.forEach(msg => {
             // 有idClient 且 5分钟以内的消息
-            if (msg.idClient && (tempTime - msg.time < 1000 * 300)) {
-                state.msgsMap[msg.idClient] = msg
+            if (msg.id && (tempTime - msg.time < 1000 * 300)) {
+                state.msgsMap[msg.id] = msg
             }
         })
     },
@@ -320,16 +292,12 @@ export default {
                 state.currSessionLastMsg = obj.msgs[0]
             }
             // store.dispatch('checkTeamMsgReceipt', currSessionMsgs)
-        } else if (type === 'replace') {
+        } else if (type === 'update') {
+            let msg = obj.msg
             let msgLen = state.currSessionMsgs.length
             let lastMsgIndex = msgLen - 1
             if (msgLen > 0) {
-                for (let i = lastMsgIndex; i >= 0; i--) {
-                    if (state.currSessionMsgs[i].idClient === obj.idClient) {
-                        state.currSessionMsgs.splice(i, 1, obj.msg)
-                        break
-                    }
-                }
+                state.currSessionMsgs = util.MsgsUpdateOrDelete(state.currSessionMsgs,msg)
             }
         }
     },

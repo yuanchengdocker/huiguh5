@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import {LoadMore,TransferDom,TabbarItem,Tabbar,Loading,Drawer,Icon,Group, Cell, XHeader, XInput, XTextarea, XButton, XSwitch, Datetime, ViewBox, Search, ButtonTab, ButtonTabItem, Divider, Actionsheet, AlertPlugin, ConfirmPlugin} from 'vux'
+import {Spinner,LoadMore,TransferDom,TabbarItem,Tabbar,Loading,Drawer,Icon,Group, Cell, XHeader, XInput, XTextarea, XButton, XSwitch, Datetime, ViewBox, Search, ButtonTab, ButtonTabItem, Divider, Actionsheet, AlertPlugin, ConfirmPlugin} from 'vux'
 import ToastPlugin from '../plugins/toastPlugin'
 import VueTouch from '../plugins/touchEvent'
 Vue.use(VueTouch)
@@ -24,6 +24,7 @@ Vue.component('icon', Icon)
 Vue.component('Drawer', Drawer)
 Vue.component('Loading', Loading)
 Vue.component('LoadMore',LoadMore)
+Vue.component('Spinner',Spinner)
 
 Vue.component('ViewBox', ViewBox)
 Vue.component('Tabbar', Tabbar)

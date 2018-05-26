@@ -2,7 +2,7 @@ import store2 from '../'
 import cookie from '../../utils/cookie'
 
 var dbName = 'huiguChat',     // 数据库名
-    daVer = 59,              // 数据库版本号
+    daVer = 159,              // 数据库版本号
     db = '',               // 用于数据库对象
     pageSize = 20,
     IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange
@@ -17,15 +17,24 @@ export function openDB(callback){
     var request = indexedDB.open(dbName, daVer);
     request.onsuccess = function(e){
         db = e.target.result;
-        callback&&callback()
         console.time('indexdb')
-        store2.dispatch('searchData', {callback:(dbData)=>{
-            store2.commit('updateSessions',dbData)
-        },table:'Sessions'})
-        store2.dispatch('searchData', {callback:(dbData)=>{
-            store2.commit('updateUserInfo',dbData)
-            console.timeEnd('indexdb')
-        },table:'Users'})
+
+        let promise1 = new Promise((resolve,reject)=>{
+            searchData((dbData)=>{
+                store2.commit('updateSessions',dbData)
+                resolve()
+            },'Sessions')
+        })
+        let promise2 = new Promise((resolve,reject)=>{
+            searchData((dbData)=>{
+                store2.commit('updateUserInfo',dbData)
+                resolve()
+            },'Users')
+        })
+        Promise.all([promise1,promise2]).then(()=>{
+            callback&&callback()
+        })
+        
     }
     request.onerror = function(){
     }
@@ -47,7 +56,7 @@ export function openDB(callback){
             store.createIndex('index','userAccid',{unique:true}); 
         }
         if(!db.objectStoreNames.contains('Msgs')){
-            let store=db.createObjectStore('Msgs',{keyPath: 'id',autoIncrement:true});
+            let store=db.createObjectStore('Msgs',{keyPath: 'id'});
             store.createIndex('index','sessionId',{unique:false}); 
         }
     }
@@ -144,6 +153,15 @@ export function searchData(callback,table){
 }
 
 export function getDataByIndex(callback,storeName,id){
+    if(db){
+        getDBDataByIndex(callback,storeName,id)
+    }else{
+        openDB(()=>{
+            getDBDataByIndex(callback,storeName,id)
+        })
+    }
+}
+function getDBDataByIndex(callback,storeName,id){
     var transaction=db.transaction(storeName,'readonly');
     var store=transaction.objectStore(storeName);
     var index = store.index("index");

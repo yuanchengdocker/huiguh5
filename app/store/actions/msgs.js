@@ -1,65 +1,52 @@
 import store from '../'
 import config from '../../config/nim.config.js'
-import {getDataByIndex} from './indexDBInit'
+import {getDataByIndex,updateData} from './indexDBInit'
 import util from '../../utils'
-
-export function onRoamingMsgs (obj) {
-  // let msgs = obj.msgs
-  // store.commit('updateMsgs', msgs)
-  // store.dispatch('saveData', {obj:msgs,table:'Msgs'})
-}
+import axios from '../../service/service'
 
 export function onOfflineMsgs (obj) {
   let msgs = obj.msgs
-  
+  msgs&&msgs.map((msg)=>{
+    return util.toMyMsg(msg)
+  })
   updateUserInfo(msgs)
   store.commit('updateMsgs', msgs)
-  store.dispatch('saveData', {obj:msgs,table:'Msgs'})
 }
 
 function updateUserInfo(msgs){
   let users = []
   msgs.map(msg => {
     if(msg.flow === 'in'){
-      let msgBody = JSON.parse(msg.content).data
       users.push({
-        id:msgBody.fromUserID,
-        userName:msgBody.fromUserName,
-        userAccid:msgBody.fromUserChatID,
-        userAvatar:msgBody.fromUserAvatarUrl,
-        userType:msgBody.fromUserType
+        id:msg.fromUserID,
+        userName:msg.fromUserName,
+        userAccid:msg.fromUserAccid,
+        userAvatar:msg.fromUserAvatarUrl,
+        userType:msg.fromUserType
       })
     }
   })
   store.dispatch('updateUserInfor',users)
+  store.dispatch('saveData', {obj:msgs,table:'Msgs'})
 }
 
 export function onMsg (msg) {
-  // if(util.getMsgType(msg) === 'audio'){
-    let mediaContent = util.parseMediaContent(msg)
-    mediaContent['hasPlay'] = false
-    util.stringMediaContentMsg(mediaContent,msg)
-    // }
-    
-  console.log(msg,'msg')
-  store.commit('putMsg', msg)
-  if (msg.sessionId === store.state.currSessionId) {
-    store.commit('updateCurrSessionMsgs', {
-      type: 'put',
-      msg
-    })
-    // 发送已读回执
-    store.dispatch('sendMsgReceipt')
+  msg = util.toMyMsg(msg)
+  if(util.getMsgType(msg) === 'audio'){
+    msg['hasRead'] = false
   }
-  // if (msg.scene === 'team' && msg.type ==='notification') {
-  //   store.dispatch('onTeamNotificationMsg', msg)
-  // }
-  // let currentSession = store.state.sessionMap[store.state.currSessionId]
-  // currentSession.lastMsg = msg
-  // store.dispatch('updateData', {obj:currentSession,table:'Sessions'})
-  // store.commit('updateSessions',[currentSession])
-  updateUserInfo([msg])
-  store.dispatch('saveData', {obj:msg,table:'Msgs'})
+  if(msg.flow === 'in'){
+    store.commit('putMsg', msg)
+    if (msg.sessionId === store.state.currSessionId) {
+      store.commit('updateCurrSessionMsgs', {
+        type: 'put',
+        msg
+      })
+    }
+    updateUserInfo([msg])
+  }else{
+    store.dispatch('updateMsg',msg)
+  }
 }
 
 function onSendMsgDone (error, msg) {
@@ -76,124 +63,41 @@ function onSendMsgDone (error, msg) {
   onMsg(msg)
 }
 
-// 消息撤回
-export function onRevocateMsg (error, msg) {
-  const nim = store.state.nim
-  if (error) {
-    if (error.code === 508) {
-      alert('发送时间超过2分钟的消息，不能被撤回')
-    } else {
-      alert(error)
-    }
-    return
-  }
-  let tip = ''
-  if (msg.from === store.state.userUID) {
-    tip = '你撤回了一条消息'
-  } else {
-    let userInfo = store.state.userInfos[msg.from]
-    if (userInfo) {
-      tip = `${util.getFriendAlias(userInfo)}撤回了一条消息`
-    } else {
-      tip = '对方撤回了一条消息'
-    }
-  }
-  nim.sendTipMsg({
-    isLocal: true,
-    scene: msg.scene,
-    to: msg.to,
-    tip,
-    time: msg.time,
-    done: function sendTipMsgDone (error, tipMsg) {
-      let idClient = msg.deletedIdClient || msg.idClient
-      store.commit('replaceMsg', {
-        sessionId: msg.sessionId,
-        idClient,
-        msg: tipMsg
-      })
-      if (msg.sessionId === store.state.currSessionId) {
-        store.commit('updateCurrSessionMsgs', {
-          type: 'replace',
-          idClient,
-          msg: tipMsg
-        })
-      }
-    }
+export function buildAndPutMsg({state, commit},{callback,content,status}){
+  let msg = util.buildSelfDefinedMsg(content,status)
+
+  store.commit('putMsg', msg)
+  store.commit('updateCurrSessionMsgs', {
+    type: 'put',
+    msg
   })
+  store.dispatch('saveData', {obj:msg,table:'Msgs'})
+
+  callback&&callback(msg)
+  return msg
 }
 
-
-export function revocateMsg ({state, commit}, msg) {
-  const nim = state.nim
-  let {idClient} = msg
-  msg = Object.assign(msg, state.msgsMap[idClient])
-  nim.deleteMsg({
-    msg,
-    done: function deleteMsgDone (error) {
-      onRevocateMsg(error, msg)
-    }
+export function updateMsg({state,commit},msg){
+  store.commit('updateCurrSessionMsgs',{
+    type: 'update',
+    msg
   })
+  store.commit('replaceMsg',msg)
+  store.dispatch('saveData', {obj:msg,table:'Msgs'})
 }
 
 // 发送普通消息
-export function sendMsg ({state, commit}, obj) {
+export function sendMsg ({state, commit}, msg) {
   const nim = state.nim
-  obj = obj || {}
-  let type = state.currDoctorBind?obj.type:'noBind'
-  store.dispatch('showLoading')
-  switch ('custom') {
-    case 'noBind':
-      let msg = {
-        content:JSON.stringify(obj.content),
-        flow:'out',
-        from:state.userUID,
-        scene:'p2p',
-        to:util.parseSession(state.currSessionId).to,
-        type:'custom',
-        time:(new Date()).getTime(),
-        status:'fail',
-        sessionId:state.currSessionId
-      }
-      onMsg(msg)
-      commit('loadToad','您未和该医生绑定！无法进行对话')
-      store.dispatch('hideLoading')
-      ;break;
-    case 'custom':
-      let mm = nim.sendCustomMsg({
-        scene: obj.scene,
-        to: obj.to,
-        pushContent: obj.pushContent,
-        content: JSON.stringify(obj.content),
-        data:obj.data,
-        done: onSendMsgDone
-      })
-      console.log(mm)
-  }
-}
-
-// 发送消息已读回执
-export function sendMsgReceipt ({state, commit}) {
-  // 如果有当前会话
-  let currSessionId = store.state.currSessionId
-  if (currSessionId) {
-    // 只有点对点消息才发已读回执
-    if (util.parseSession(currSessionId).scene === 'p2p') {
-      let msgs = store.state.currSessionMsgs
-      const nim = state.nim
-      if (state.sessionMap[currSessionId]) {
-        nim.sendMsgReceipt({
-          msg: state.sessionMap[currSessionId].lastMsg,
-          done: function sendMsgReceiptDone (error, obj) {
-            // do something
-          }
-        })
-      }
-    }
-  }
-}
-
-function sendMsgReceiptDone(error, obj) {
-    console.log('发送消息已读回执' + (!error?'成功':'失败'), error, obj);
+  let obj = util.toNimMsg(msg)
+  
+  //发送
+  let mm = nim.sendCustomMsg({
+    scene: obj.scene,
+    to: obj.to,
+    content: JSON.stringify(obj.content),
+    done: onSendMsgDone
+  })
 }
 
 export function getLocalHistoryMsgs({state, commit},id){
@@ -217,4 +121,77 @@ export function getLocalHistoryMsgs({state, commit},id){
 
 export function resetNoMoreHistoryMsgs ({commit}) {
   commit('resetNoMoreHistoryMsgs')
+}
+
+export function sendAudioMsg({state, commit,dispatch},{serverId,msg}){
+  (async (serverId,msg)=>{
+    let {data,code,error} = await axios('post', 'getWxMedia', {
+      mediaId: serverId,
+      type:1
+    })
+    if (data && data.detailUrl) {
+      alert(data.detailUrl)
+      msg['mediaContent']['fileDataUrl'] = data.detailUrl
+      dispatch('sendMsg',msg)
+    } else {
+      updateFailMsg(code,msg)
+    }
+  })(serverId,msg)
+}
+
+export function sendImgMsg({state, commit,dispatch},{file,msg,imgHeight,imgWidth,fileDataLocalPath}){
+  (async (file,msg,imgHeight,imgWidth,fileDataLocalPath)=>{
+    let dataFile = new FormData()
+    dataFile.append('file', file)
+    dataFile.append('fileType', 1)
+    let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
+      "Content-Type": 'mutipart/form-data'
+    })
+    if (data) {
+      let mediaContent = {
+        fileDataLocalPath: fileDataLocalPath,
+        fileDataUrl: data.mediumImagePath,
+        originUrl: data.largeImagePath,
+        thumbnailUrl: data.smallImagePath,
+        pHeight: imgHeight,
+        pWidth: imgWidth
+      }
+      msg['mediaContent'] = mediaContent
+      dispatch('sendMsg',msg)
+    } else {
+      updateFailMsg(error,msg)
+    }
+  })(file,msg,imgHeight,imgWidth,fileDataLocalPath)
+}
+
+export function sendVideoMsg({state, commit,dispatch},{file,msg}){
+  (async (file,msg)=>{
+    let dataFile = new FormData()
+    dataFile.append('file', file)
+    dataFile.append('fileType', 3)
+    let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
+      "Content-Type": 'mutipart/form-data'
+    })
+    if (data) {
+      let mediaContent = {
+          fileDataLocalPath: '',
+          fileDataUrl: data.audioPath,
+          coverPath: '',
+          coverSize: '',
+          coverUrl: data.smallImagePath,
+          displayName: '',
+          duration: data.voiceDuration
+        }
+      msg['mediaContent'] = mediaContent
+      dispatch('sendMsg',msg)
+    } else {
+      updateFailMsg(error,msg)
+    }
+  })(file,msg)
+}
+
+function updateFailMsg(error,msg){
+  msg.status = 'fail'
+  store.dispatch('updateMsg',msg)
+  store.dispatch('loadToad',error)
 }

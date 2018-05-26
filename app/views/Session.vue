@@ -70,7 +70,6 @@
                 return this.$store.state.userUID
             },
             sessionTitle(){
-                console.log(this.$route)
                 let result = '';
                 switch(this.$store.state.connectStatus){
                     case 0: result = '咨询医生' ;break;

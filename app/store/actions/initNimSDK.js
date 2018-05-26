@@ -14,7 +14,7 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
     if (state.nim) {
         state.nim.disconnect()
     }
-    dispatch('updatedLoadingStatus', { status: true })
+    // dispatch('updatedLoadingStatus', { status: true })
     dispatch('updateConnectStatus',2)//收取中
     // 初始化SDK
     window.nim = state.nim = SDK.NIM.getInstance({
@@ -53,9 +53,9 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
             }
         },
 
-        // onsessions: onSessions,
+        onsessions: onSessions,
         onupdatesession: onUpdateSession,
-        onroamingmsgs: onRoamingMsgs,
+        // onroamingmsgs: onRoamingMsgs,
         onofflinemsgs: onOfflineMsgs,
         onmsg: onMsg,
         // 用户名片 - actions/userInfo
@@ -65,9 +65,8 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
         // onupdateuser: onUserInfo,
         // // 同步完成
         onsyncdone: function onSyncDone() {
-            dispatch('updatedLoadingStatus', { status: false })
+            // dispatch('updatedLoadingStatus', { status: false })
             dispatch('updateConnectStatus',0)
-            console.log(123)
             // 说明在聊天列表页
             if (store.state.currSessionId) {
                 dispatch('setCurrSession', store.state.currSessionId)

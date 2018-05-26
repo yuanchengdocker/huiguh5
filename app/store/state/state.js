@@ -19,11 +19,11 @@ export default {
     currSessionId: null,
     currSessionMsgs: [],
     currMsgAudioId:null,
-    currDoctorBind:false,
+    currDoctorBind:false,//是否与该医生绑定
     showMenuBar: true,
     route: {},
     canUpdateConnectStatus:false,
-    connectStatus:2, //1未连接，2收取中，0收取完,咨询医生,3重连中，4未登录
+    connectStatus:1, //1未连接，2收取中，0收取完,咨询医生,3重连中，4未登录
     // 全屏显示的原图
     isFullscreenImgShow: false,
     isFullscreenVideoShow: false,

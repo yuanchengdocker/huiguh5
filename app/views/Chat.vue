@@ -21,7 +21,8 @@
     import '../style/stylus/public.styl'
     import {
         mapActions,
-        mapState
+        mapState,
+        mapGetters
     } from 'vuex'
     import {
         setTimeout
@@ -81,6 +82,7 @@
             }
         },
         computed: {
+            ...mapGetters({msglist:'msglist'}),
             sessionId() {
                 let sessionId = this.$route.params.sessionId
                 return sessionId
@@ -129,10 +131,10 @@
             robotInfos() {
                 return this.$store.state.robotInfos
             },
-            msglist() {
-                let msgs = this.$store.state.currSessionMsgs
-                return msgs
-            },
+            // msglist() {
+            //     let msgs = this.$store.state.currSessionMsgs
+            //     return msgs
+            // },
             canLoadMore() {
                 return !this.$store.state.noMoreHistoryMsgs
             }

@@ -4,7 +4,7 @@
       <span class="iconfont icon-dialogue-jianpan" v-show="currentChatWay === 2" v-on:click="currentChatWay=1"></span>
       <span class="iconfont icon-dialogue-voice" v-show="currentChatWay != 2" v-on:click="currentChatWay=2"></span>
       <div class="chat-way" v-show="currentChatWay === 2">
-        <div class="chat-say" v-press="{callback:getAudioFilPath,wxSdk:wxSdk}">
+        <div class="chat-say" v-press="{getAudioFilPath:getAudioFilPath,wxSdk:wxSdk}">
           <span class="one">按住 说话</span>
           <span class="two">松开 结束</span>
         </div>
@@ -84,16 +84,16 @@
       }
     },
     watch: {
-      currentChatWay(curVal){
+      currentChatWay(curVal) {
         let more = this.$refs.chatMoreOption
-        if(curVal === 3){
-          document.addEventListener("click",this.hideMoreOption);
-          more.addEventListener("click",(event)=>{
-              event=event||window.event;
-              event.stopPropagation();
+        if (curVal === 3) {
+          document.addEventListener("click", this.hideMoreOption);
+          more.addEventListener("click", (event) => {
+            event = event || window.event;
+            event.stopPropagation();
           });
-        }else{
-          document.removeEventListener('click',this.hideMoreOption)
+        } else {
+          document.removeEventListener('click', this.hideMoreOption)
         }
       },
       msgToSent(curVal, oldVal) {
@@ -108,16 +108,33 @@
         bind(element, binding) {
           var startTx, startTy, isCancel
           var wxSdk = binding.value.wxSdk
+          var recording = document.querySelector('.recording'),
+              recordingVoice = document.querySelector('.recording-voice'),
+              recordingCancel = document.querySelector('.recording-cancel')
+          var timeCount = 1
+          var time = null
           element.addEventListener('touchstart', function(e) {
-            // 为什么每次注册监听器,都要重新获取一次 DOM 像上面写就 undefine?
             var recording = document.querySelector('.recording'),
-              recordingVoice = document.querySelector('.recording-voice')
+              recordingVoice = document.querySelector('.recording-voice'),
+              recordingCancel = document.querySelector('.recording-cancel')
             element.className = "chat-say say-active"
             recording.style.display = recordingVoice.style.display = "block"
             // console.log('start')
             if (wxSdk.isWx) {
               console.log('开始语音')
-              wxSdk.audio.start()
+              timeCount = 1
+              time = setInterval(()=>{
+                timeCount++
+              },1000)
+              wxSdk.audio.start().then(({localId,res}) => {
+                element.className = "chat-say"
+                recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
+                if(time){
+                  clearInterval(time)
+                  time = null
+                }
+                binding.value.getAudioFilPath(timeCount,localId,res,true)
+              })
             }
             isCancel = false
             var touches = e.touches[0]
@@ -131,14 +148,20 @@
               recordingCancel = document.querySelector('.recording-cancel')
             element.className = "chat-say"
             recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
-            // console.log('end')
             if (wxSdk.isWx) {
               if (isCancel) {
                 console.log('取消语音')
+                timeCount = 1
+                clearInterval(time)
+                time = null
               } else {
-                wxSdk.audio.stop().then((res) => {
+                wxSdk.audio.stop().then(({localId,res}) => {
                   console.log('录音结束。。。。')
-                  binding.value.callback(res)
+                  if(time){
+                    clearInterval(time)
+                    time = null
+                  }
+                  binding.value.getAudioFilPath(timeCount,localId,res)
                 })
               }
             }
@@ -153,9 +176,7 @@
               endTy = touches.clientY,
               distanceX = startTx - endTx,
               distanceY = startTy - endTy;
-            if (distanceY > 10) {
-              // 控制范围 和谐掉指尖抖动
-              // element.className = "chat-say"
+            if (distanceY > 50) {
               recordingVoice.style.display = "none"
               recordingCancel.style.display = "block"
               isCancel = true
@@ -164,28 +185,8 @@
               recordingCancel.style.display = "none"
               isCancel = false
             }
-            // 阻断事件冒泡 防止页面被一同向上滑动
             e.preventDefault()
           }, false);
-        }
-      },
-      more: {
-        bind(element, binding) {
-          var startTx, startTy
-          element.addEventListener('touchstart', function(e) {
-            var msgMore = document.getElementById('msg-more'),
-              touches = e.changedTouches[0],
-              startTx = touches.clientX,
-              startTy = touches.clientY
-            // 控制菜单的位置
-            msgMore.style.left = ((startTx - 18) > 180 ? 180 : (startTx - 18)) + 'px'
-            msgMore.style.top = (element.offsetTop - 33) + 'px'
-            msgMore.style.display = "block"
-            e.preventDefault()
-          }, false)
-          element.addEventListener('touchend', function(e) {
-            e.preventDefault()
-          }, false)
         }
       }
     },
@@ -197,7 +198,7 @@
         icon3: `${config.resourceUrl}/im/chat-editor-3.png`,
         currentChatWay: true,
         currentChatWay: 1, //1文本，2语音，3媒体
-        wxSdk: wxSdk?wxSdk():{}
+        wxSdk: wxSdk ? wxSdk() : {}
       }
     },
     computed: {
@@ -209,29 +210,32 @@
       },
     },
     methods: {
-      hideMoreOption(){
+      sendMyBuildMsg(callback,content,status){
+        this.$store.dispatch('buildAndPutMsg',{callback,content,status})
+      },
+      sendNimMsg(msg){
+        this.$store.dispatch('sendMsg',msg)
+      },
+      hideMoreOption() {
         this.currentChatWay = 1
       },
-      async getAudioFilPath(res){
-        let { data,code,msg } = await axios('post', 'getWxMedia', {mediaId:res.serverId})
-        alert(data.detailUrl)
-        this.msgToSent = res.serverId
-        if(data && data.detailUrl){
-          let mediaContent = {
-            fileDataLocalPath: '',
-            fileDataUrl: data.detailUrl,
-            voiceDuration: '',
-          }
-          this.sendCustomMsg({
-            mediaContent:mediaContent,
-            messageContentType: 2,
-            textContent: ''
-          })
-        }else{
-          this.$vux.alert.show({
-            title: msg
-          })
+      getAudioFilPath(time,localId,res,isSelf) {
+        if(isSelf){
+          this.$store.dispatch('loadToad','录音时长最多一分钟')
         }
+        var serverId = res.serverId
+        this.sendMyBuildMsg((msg)=>{
+          //开始发送
+          this.$store.dispatch('sendAudioMsg',{serverId,msg})
+        },{
+          mediaContent:{
+            fileDataLocalPath: localId,
+            fileDataUrl: '',
+            voiceDuration: time
+          },
+          messageContentType: 2,
+          textContent: ''
+        },'success')
       },
       goAlbum(e) {
         var evt = document.createEvent("MouseEvents");
@@ -263,12 +267,16 @@
           return
         }
         this.msgToSent = this.msgToSent.trim()
-        this.sendCustomMsg({
-          mediaContent:'',
+        
+        this.sendMyBuildMsg((msg)=>{
+          this.sendNimMsg(msg)
+          this.msgToSent = ''
+        },{
+          mediaContent: '',
           messageContentType: 1,
           textContent: this.msgToSent
         })
-        this.msgToSent = ''
+
       },
       getObjectURL(file) {
         var url = null;
@@ -281,117 +289,54 @@
         }
         return url;
       },
-      async dataChange(e) {
-        let fileType = 1
+      dataChange(e) {
         let target = e.target
         let fileDataLocalPath = this.getObjectURL(target.files[0])
         let targetType = target.files[0].type
-        let uploadFileType = 1
-        let imgWidth = 0;
-        let imgHeight = 0;
-        let vedioName = target.files[0].name
-        vedioName = vedioName.substr(0,vedioName.lastIndexOf('.'))
         if (targetType.indexOf('image/') >= 0) {
-          uploadFileType = 1
-          fileType = 3
-          let img = new Image();              //手动创建一个Image对象
-          img.src = fileDataLocalPath//创建Image的对象的url
-          img.onload = function () {
-              imgWidth = this.width
-              imgHeight = this.height
+          let img = new Image(); //手动创建一个Image对象
+          img.src = fileDataLocalPath //创建Image的对象的url
+          img.onload = ()=>{
+            let imgWidth = img.width
+            let imgHeight = img.height
+            this.sendMyBuildMsg((msg)=>{
+              //开始发送
+              this.$store.dispatch('sendImgMsg',{file:target.files[0],msg,imgHeight,imgWidth,fileDataLocalPath})
+            },{
+              mediaContent:{//3图片
+                fileDataLocalPath: fileDataLocalPath,
+                fileDataUrl: '',
+                originUrl: '',
+                thumbnailUrl: '',
+                pHeight: imgHeight,
+                pWidth: imgWidth
+              },
+              messageContentType: 3,
+              textContent: ''
+            })
+
           }
         } else if (targetType.indexOf('video/') >= 0) {
-          uploadFileType = 3
-          fileType = 11
-        } else if (targetType.indexOf('audio/') >= 0) {
-          uploadFileType =2
-          fileType = 2
-        }
-        let dataFile = new FormData()
-        dataFile.append('file', target.files[0])
-        dataFile.append('fileType', uploadFileType)
-        this.$store.dispatch('showLoading')
-        let {
-          data,
-          code,
-          msg
-        } = await axios('post', 'fileUpload', dataFile, {
-          "Content-Type": 'mutipart/form-data'
-        })
-        if (code === 0) {
-          let mediaContent = {}
-          if(fileType === 3){//图片
-            mediaContent = {
-              fileDataLocalPath:'',
-              fileDataUrl:data.mediumImagePath,
-              originUrl:data.largeImagePath,
-              thumbnailUrl:data.smallImagePath,
-              pHeight:imgHeight,
-              pWidth:imgWidth
-            }
-          }else if(fileType === 11){//视频
-            mediaContent = {
-              fileDataLocalPath:'',
-              fileDataUrl:data.audioPath,
-              coverPath:'',
-              coverSize:'',
-              coverUrl:data.smallImagePath,
-              displayName:vedioName,
-              duration:1
-            }
-          }
-          this.sendCustomMsg({
-            mediaContent:mediaContent,
-            messageContentType: fileType,
+          this.sendMyBuildMsg((msg)=>{
+            //开始发送
+            this.$store.dispatch('sendVideoMsg',{file:target.files[0],msg})
+          },{
+            mediaContent:{ //视频
+              fileDataLocalPath: '',
+              fileDataUrl: fileDataLocalPath,
+              coverPath: '',
+              coverSize: '',
+              coverUrl: '',
+              displayName: '',
+              duration: 1
+            },
+            messageContentType: 11,
             textContent: ''
           })
-        } else {
-          this.$vux.alert.show({
-            title: msg
-          })
-        }
-        this.$store.dispatch('hideLoading')
+        } 
       },
       sendFileMsg(e) {
         this.dataChange(e)
-      },
-      onInputFocus(e) {
-        setTimeout(() => {
-          // todo fixme 解决iOS输入框被遮挡问题，但会存在空白缝隙
-          e.target.scrollIntoView()
-          pageUtil.scrollChatListDown()
-        }, 200)
-      },
-      sendCustomMsg(option) {
-        this.$store.dispatch('sendMsg', {
-          type: 'custom',
-          scene: this.scene,
-          to: this.to,
-          content: {
-            type: 1,
-            data: {
-              chatType: 1, //1单聊，2群聊
-              fromUserAvatarUrl: this.myInfo.userAvatar, //发送者的头像路径
-              fromUserChatID: this.myInfo.userAccid, //发送者的ACCID
-              fromUserGender: 0, //0男，1女
-              fromUserID: this.myInfo.id, //发送者ID
-              fromUserName: this.myInfo.userName, //发送者姓名
-              fromUserType: 2, //1医生，2患者，4群组，5工作室交流群，6工作室
-              mediaContent: option.mediaContent,
-              messageContentType: option.messageContentType, //1文本，2语音，3图片，4提示内容，5分享内容，6预约内容，7随访内容
-              messageID: "7631E1B8-67F5-4160-B5CD-CCE2C082F75B", //NIM中的messageId 
-              remark: "", //消息内容备注
-              sendPlatform: "iOS 9.3.2", //发送消息的平台信息
-              sendTimestamp: "", //消息发送时间
-              sessionHKID: '713601155233484800', //会话对象在库中的ID
-              sessionID: 'd715376476484014080', //会话对象的ACCID
-              sessionName: "You are", //会话对象的名称
-              sessionType: 1, //1医患，2医生间，4群聊
-              textContent: option.textContent //消息的文本内容
-            }
-          }
-        })
-        this.$emit('isSendMsg')
       }
     }
   }

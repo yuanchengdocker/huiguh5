@@ -3,24 +3,7 @@
  */
 
 import store from '../'
-
-// // 如果会话对象不是好友，需要更新好友名片
-// function updateSessionAccount (sessions) {
-//   let accountsNeedSearch = []
-//   sessions.forEach(item => {
-//     if (item.scene === 'p2p') { //单点
-//       // 如果不存在缓存资料
-//       if (!store.state.userInfos[item.to]) {
-//         accountsNeedSearch.push(item.to)
-//       }
-//     }
-//   })
-//   if (accountsNeedSearch.length > 0) {
-//     store.dispatch('searchUsers', {
-//       accounts: accountsNeedSearch
-//     })
-//   }
-// }
+import util from '../../utils'
 
 export function setCurrSession ({state, commit, dispatch}, sessionId) {
     const nim = state.nim
@@ -37,8 +20,6 @@ export function setCurrSession ({state, commit, dispatch}, sessionId) {
           type: 'init',
           sessionId
         })
-        // 发送已读回执
-        dispatch('sendMsgReceipt')
       }
     }
   }
@@ -53,17 +34,50 @@ export function setCurrSession ({state, commit, dispatch}, sessionId) {
 
 // onSessions只在初始化完成后回调
 export function onSessions (sessions) {
-  console.log('onSessions')
-  // updateSessionAccount(sessions)
+  checkUpdateSession(sessions)
+}
+
+function getUserInfo(session){
+  if(!session) session = {}
+  return {
+      id:session.id,
+      lastMsg: util.parseMsgToSelfDefined(session.lastMsg),
+      scene:session.scene,
+      to:session.to,
+      unread:session.unread,
+      updateTime:session.updateTime
+  }
+}
+
+function checkUpdateSession(sessions){
+  if(!sessions || (!Array.isArray(sessions) && !sessions.id)) return
+  if(!Array.isArray(sessions)) sessions = [sessions]
+  sessions = sessions.filter((session)=>{
+    if(session && session.scene === 'p2p'){
+      return true
+    }
+    return false
+  })
+  let update = false
+  for(let i=0;i<sessions.length;i++){
+    let session = sessions[i]
+    let id = session.id
+    if(!util.objCmp(getUserInfo(store.state.sessionMap[id]),getUserInfo(session))){
+        update = true
+        break
+    }
+  }
+
+  if(!update) return
+  console.log('sessions不同')
+
   store.commit('updateSessions', sessions)
   store.dispatch('saveData', {obj:sessions,table:'Sessions'})
 }
 
 export function onUpdateSession (session) {
   let sessions = [session]
-  // updateSessionAccount(sessions)
-  store.commit('updateSessions', sessions)
-  store.dispatch('saveData', {obj:sessions,table:'Sessions'})
+  checkUpdateSession(sessions)
 }
 
 

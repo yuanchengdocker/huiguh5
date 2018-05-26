@@ -8,14 +8,18 @@
         已无更多记录
       </li>
       <load-more v-if="isLoading" :tip="'正在加载'"></load-more>
-      <chat-item v-for="(msg,index) in msglist" :type="type" :rawMsg="msg" :isRobot="isRobot" :userInfos="userInfos" :myInfo="myInfo" :key="msg.idClient+'haha'+index" :isHistory='isHistory' @msg-loaded="msgLoaded"></chat-item>
+      <chat-item v-for="(msg,index) in msglist" :type="type" :rawMsg="msg" :isRobot="isRobot" :userInfos="userInfos" :myInfo="myInfo" :key="msg.id+'haha'+index" :isHistory='isHistory' @msg-loaded="msgLoaded"></chat-item>
     </ul>
 </template>
 <script type="text/javascript">
   import util from '../../utils'
   import config from '../../config/nim.config.js'
   import ChatItem from './ChatItem'
-  import { setTimeout } from 'timers';
+  import {
+        mapActions,
+        mapState,
+        mapGetters
+    } from 'vuex'
   export default {
     components: {
       ChatItem
@@ -68,6 +72,7 @@
     },
     data() {
       return {
+        msglists:[],
         isFullImgShow: false,
         msgLoadedTimer: null,
         scrollY:0,
