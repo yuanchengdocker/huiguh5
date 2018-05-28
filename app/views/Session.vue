@@ -84,7 +84,8 @@
                 return result;
             },
             sessionlist() {
-                let sessionlist = this.$store.state.sessionlist.filter(item => {
+                let sessionlist = this.$store.state.sessionlist.map(sitem => {
+                    let item = Object.assign({}, sitem)
                     item.name = ''
                     item.avatar = ''
                     if (item.scene === 'p2p') {
@@ -107,25 +108,17 @@
 
                     let lastMsg = item.lastMsg || {}
 
-                    if (lastMsg.type === 'custom') {
-                        let data = JSON.parse(lastMsg.content)
-                        let content = data.data
-                        if (content && content.chatType === 1) { //单聊
-                        // item['avatar'] = content.fromUserAvatarUrl||item.avatar
-
-                        switch(content.messageContentType){
-                            case 1: item.lastMsgShow = content.textContent || '';lastMsg['type']='text'; break; //文本
-                            case 2: lastMsg['type']='audio'; break; //语音
-                            case 3: lastMsg['type']='image'; break; //图片
-                            case 4: lastMsg['type']='tip'; break; //提示内容
-                            case 5: lastMsg['type']='share'; break; //分享内容
-                            case 11: lastMsg['type']='video'; break; //视频
-                            case 12: lastMsg['type']='file'; break; //文件
-                            case 14: lastMsg['type']='article'; break; //患教资料
-                            case 15: lastMsg['type']='question'; break; //问卷
-                        }
-                        }
-                    } 
+                    switch(lastMsg.messageContentType){
+                        case 1: item.lastMsgShow = lastMsg.textContent || '';lastMsg['type']='text'; break; //文本
+                        case 2: lastMsg['type']='audio'; break; //语音
+                        case 3: lastMsg['type']='image'; break; //图片
+                        case 4: lastMsg['type']='tip'; break; //提示内容
+                        case 5: lastMsg['type']='share'; break; //分享内容
+                        case 11: lastMsg['type']='video'; break; //视频
+                        case 12: lastMsg['type']='file'; break; //文件
+                        case 14: lastMsg['type']='article'; break; //患教资料
+                        case 15: lastMsg['type']='question'; break; //问卷
+                    }
 
                     if (lastMsg['type'] != 'text' && util.mapMsgType(lastMsg)) {
                         item.lastMsgShow = `[${util.mapMsgType(lastMsg)}]`
@@ -142,7 +135,6 @@
             ...mapActions(['updatedLoadingStatus']),
             enterChat(session) {
                 if (!this.isClick) {
-                    console.log('enterChat')
                     setTimeout(() => {
                         this.isClick = false
                         if (this.hideDelBtn())
@@ -164,7 +156,6 @@
                                 onConfirm () {
                                     _this.$store.dispatch('deleteOneData', {id:_this.delSessionId,table:'Sessions',callback:()=>{
                                         _this.$store.dispatch('deleteSessions', {sessionId:_this.delSessionId})
-                                        _this.$store.dispatch('deleteDataByKey', {key:_this.delSessionId,table:'Msgs'})
                                         _this.delSessionId = null
                                         _this.delUserName = null
                                     }})

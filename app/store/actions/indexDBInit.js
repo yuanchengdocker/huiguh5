@@ -2,7 +2,7 @@ import store2 from '../'
 import cookie from '../../utils/cookie'
 
 var dbName = 'huiguChat',     // 数据库名
-    daVer = 159,              // 数据库版本号
+    daVer = 160,              // 数据库版本号
     db = '',               // 用于数据库对象
     pageSize = 20,
     IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange
@@ -15,6 +15,8 @@ export function openDB(callback){
         return
     }
     var request = indexedDB.open(dbName, daVer);
+    // indexedDB.deleteDatabase(dbName)
+    // return 
     request.onsuccess = function(e){
         db = e.target.result;
         console.time('indexdb')
@@ -182,5 +184,9 @@ function getDBDataByIndex(callback,storeName,id){
             // 数据检索完成后执行回调函数
             callback && callback(dbData);
         }
+    }
+    request.onerror = function(e){
+        debugger
+        console.log(e)
     }
 }

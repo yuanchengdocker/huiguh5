@@ -46,5 +46,7 @@ export default (type = 'post', turl, data, config) => {
         (res) => {
             return checkCode(res)
         }
-    )
+    ).catch(function (error) {
+        return Promise.resolve(error)
+    });
 }

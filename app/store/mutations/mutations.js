@@ -89,14 +89,28 @@ export default {
     updateSessions(state, sessions) {
         const nim = state.nim
         let unReadCount = 0
-        let totalSessions = nim?nim.mergeSessions(state.sessionlist, sessions):sessions
+        // let totalSessions = nim?nim.mergeSessions(state.sessionlist, sessions):sessions
+        let totalSessions = state.sessionlist
+        sessions&&sessions.forEach(item => {
+            if(item.scene === 'p2p'){
+                if(state.sessionMap[item.id]){
+                    state.sessionMap[item.id]['lastMsg'] = item.lastMsg
+                    state.sessionMap[item.id]['unread'] += item.unread
+                }else{
+                    totalSessions.push(item)
+                }
+            }
+        })
+
         totalSessions.sort((a, b) => {
             return b.updateTime - a.updateTime
         })
         totalSessions.forEach(item => {
             if(item.scene === 'p2p'){
                 state.sessionMap[item.id] = item
-                unReadCount += item.unread
+                if(state.currSessionId !== item.id){
+                    unReadCount += item.unread
+                }
             }
         })
         state.sessionlist = totalSessions
@@ -106,7 +120,9 @@ export default {
         const nim = state.nim
         state.sessionlist = nim.cutSessionsByIds(state.sessionlist, sessionIds)
         sessionIds&&sessionIds.map((sessionId)=>{
+            state.sessionUnreadCount -= state.sessionMap[sessionId].unread
             delete state.sessionMap[sessionId]
+            delete state.msgs[sessionId]
         })
     },
     // 初始化，收到离线漫游消息时调用
@@ -121,7 +137,16 @@ export default {
             }
             // sdk会做消息去重
             // state.msgs[sessionId] = nim.mergeMsgs(state.msgs[sessionId], [msg])
-            state.msgs[sessionId].push(msg)
+            let isAdd = true
+            for(let i =0;i<state.msgs[sessionId].length;i++){
+                let tmsg = state.msgs[sessionId][i]
+                if(tmsg.id === msg.id){
+                    isAdd = false
+                }
+            }
+            if(isAdd){
+                state.msgs[sessionId].push(msg)
+            }
         })
         store.commit('updateMsgByIdClient', msgs)
         for (let sessionId in tempSessionMap) {
@@ -156,7 +181,7 @@ export default {
         let tempMsgs = state.msgs[sessionId]
         let lastMsgIndex = tempMsgs.length - 1
         if (tempMsgs.length === 0 || msg.time >= tempMsgs[lastMsgIndex].time) {
-            state.currSessionLastMsg = msg
+            // state.currSessionLastMsg = msg
             tempMsgs.push(msg)
         } else {
             for (let i = lastMsgIndex; i >= 0; i--) {
@@ -209,6 +234,8 @@ export default {
         } else if (type === 'init') {
             if (obj.sessionId && (obj.sessionId !== state.currSessionId)) {
                 state.currSessionId = obj.sessionId
+                store.commit('updateSessions')
+                
             }
         }
     },

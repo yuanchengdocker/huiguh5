@@ -211,6 +211,7 @@
     },
     methods: {
       sendMyBuildMsg(callback,content,status){
+        this.updateChatStatus()
         this.$store.dispatch('buildAndPutMsg',{callback,content,status})
       },
       sendNimMsg(msg){
@@ -229,6 +230,7 @@
           this.$store.dispatch('sendAudioMsg',{serverId,msg})
         },{
           mediaContent:{
+            serverId: serverId,
             fileDataLocalPath: localId,
             fileDataUrl: '',
             voiceDuration: time
@@ -322,8 +324,8 @@
             this.$store.dispatch('sendVideoMsg',{file:target.files[0],msg})
           },{
             mediaContent:{ //视频
-              fileDataLocalPath: '',
-              fileDataUrl: fileDataLocalPath,
+              fileDataLocalPath: fileDataLocalPath,
+              fileDataUrl: '',
               coverPath: '',
               coverSize: '',
               coverUrl: '',
@@ -337,6 +339,9 @@
       },
       sendFileMsg(e) {
         this.dataChange(e)
+      },
+      updateChatStatus(){
+        this.$emit('isSendMsg')
       }
     }
   }

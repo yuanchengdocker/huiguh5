@@ -147,7 +147,6 @@
         if (item.type === 'image') {
           // 图片消息缩略图
           media = new Image()
-          console.log(item.mediaContent)
           media.src = item.flow==='out'?item.mediaContent.fileDataLocalPath:item.mediaContent.thumbnailUrl
           media.onerror="this.src='"+item.mediaContent.thumbnailUrl+"'"
           media.height = 128
@@ -158,7 +157,6 @@
             this.$refs.mediaMsg.appendChild(media)
           }
           media.onload = () => {
-            console.log('seucces-img')
             this.$emit('msg-loaded')
           }
           media.onerror = () => {
@@ -166,7 +164,6 @@
               media.src = item.mediaContent.thumbnailUrl
             }
             hasReload = true
-            console.log('error-img')
             this.$emit('msg-loaded')
           }
         } else {
@@ -205,6 +202,7 @@
         })
       },
       playMyAudio(src,localSrc) {
+        console.log(src,localSrc)
         if(localSrc){
           this.currentLocalId = localSrc
         }
@@ -215,14 +213,13 @@
         
       },
       startAudio(){
-        if(this.rawMsg.flow==='out'&&this.currentLocalId){
+        if(this.currentLocalId){
           this.wxSdk.audio.playAudio(this.currentLocalId)
           this.wxSdk.audio.onVoicePlayEnd(()=>{
-            debugger
-            alert('tingzhi')
             this.$store.dispatch('updateCurrMsgAudioId','')
           })
         }else{
+          console.log(this.currentAudio)
           if(!this.currentAudio) return
           this.currentAudio.load()
           this.currentAudio.play()
@@ -265,7 +262,7 @@
             this.customMsg['type'] = 'text';
             break; //文本
           case 2:
-            this.customMsg['localAudioSrc'] = mediaContent.fileDataLocalPath;
+            this.customMsg['localAudioSrc'] = msg.flow === 'out'? mediaContent.fileDataLocalPath : '';
             this.customMsg['audioSrc'] = mediaContent.fileDataUrl;
             let length = mediaContent.voiceDuration>=60?60:mediaContent.voiceDuration
             let duration = Math.round((length/60)*0.5*100)

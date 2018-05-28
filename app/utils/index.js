@@ -15,9 +15,16 @@ let Utils = Object.create(null)
 Utils.MsgsUpdateOrDelete = function(msgs,msg,isDelete){
   let result = []
   if(isDelete){
-    msgs&&msgs.filter((item)=>{
+    msgs&&msgs.filter((item,index)=>{
       if(item.id !== msg.id){
         result.push(item)
+      }else{
+        if(result && result[result.length-1] 
+          && result[result.length-1].type === 'timeTag'){
+            if(!msgs[index+1] || (msgs[index+1] && msgs[index+1].type === 'timeTag')){
+              result.pop()
+            }
+        }
       }
     })
   }else{
@@ -81,38 +88,24 @@ Utils.parseMsgToSelfDefined = function(msg){
 }
 
 Utils.toNimMsg = function(msg){
+  let data = getContentParams(msg)
+  data['fromUserChatID'] = msg.fromUserAccid
+  data['sessionHKID'] = msg.toUserId
+  data['sessionID'] = msg.toUserAccid
+  data['sessionName'] = msg.toUserName
+  data['sendPlatform '] = ''
+  data['messageID'] = ''
+  data['mediaContent'] = (typeof msg.mediaContent !== 'string')?JSON.stringify(msg.mediaContent):msg.mediaContent
   let obj = {
     scene: msg.scene,
     to: msg.toUserAccid,
     content: {
       type: 1,
-      data: getContentParams(msg)
+      data: data
     }
   }
   return obj
 }
-
-function getContentParams(data,result={}){
-  result['id'] = data.id||Utils.getUuid(), //若为外来消息，只生成uid
-  result['chatType'] = data.chatType
-  result['fromUserAccid'] = data.fromUserAccid
-  result['fromUserGender'] = data.fromUserGender
-  result['fromUserID'] = data.fromUserID
-  result['fromUserName'] = data.fromUserName
-  result['fromUserAvatarUrl'] = data.fromUserAvatarUrl
-  result['fromUserType'] = data.fromUserType
-  result['remark'] = data.remark
-  result['hasRead'] = data.hasRead
-  result['toUserId'] = data.toUserId
-  result['toUserAccid'] = data.toUserAccid
-  result['toUserName'] = data.toUserName
-  result['sessionType'] = data.sessionType
-  result['messageContentType'] = data.messageContentType
-  result['textContent'] = data.textContent
-  result['mediaContent'] = data.mediaContent&&typeof data.mediaContent === 'string'?JSON.parse(data.mediaContent):data.mediaContent
-  return result
-}
-
 Utils.toMyMsg = function(msg){
   if(!msg) return {}
   let result = {
@@ -126,9 +119,30 @@ Utils.toMyMsg = function(msg){
   if(!content.data) return result
   let data = content.data
   getContentParams(data,result)
+  result['fromUserAccid'] = data.fromUserChatID
+  result['toUserId'] = data.sessionHKID
+  result['toUserAccid'] = data.sessionID
+  result['toUserName'] = data.sessionName
   result['hasRead'] = false
   return result
 }
+function getContentParams(data,result={}){
+  result['id'] = data.id||Utils.getUuid(), //若为外来消息，只生成uid
+  result['chatType'] = data.chatType
+  result['fromUserGender'] = data.fromUserGender
+  result['fromUserID'] = data.fromUserID
+  result['fromUserName'] = data.fromUserName
+  result['fromUserAvatarUrl'] = data.fromUserAvatarUrl
+  result['fromUserType'] = data.fromUserType
+  result['remark'] = data.remark
+  result['hasRead'] = data.hasRead
+  result['sessionType'] = data.sessionType
+  result['messageContentType'] = data.messageContentType
+  result['textContent'] = data.textContent
+  result['mediaContent'] = data.mediaContent&&typeof data.mediaContent === 'string'?JSON.parse(data.mediaContent):data.mediaContent
+  return result
+}
+
 
 Utils.parseMediaContent = function(msg){
   let data = JSON.parse(msg.content)
@@ -162,7 +176,7 @@ Utils.getUuid = function(){
     s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
     s[8] = s[13] = s[18] = s[23] = "-";
  
-    var uuid = s.join("");
+    var uuid = (new Date).getTime() + '-' + s.join("");
     return uuid;
 }
 

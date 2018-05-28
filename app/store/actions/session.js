@@ -12,14 +12,10 @@ export function setCurrSession ({state, commit, dispatch}, sessionId) {
         type: 'init',
         sessionId
       })
-      if (nim) {
-        // 如果在聊天页面刷新，此时还没有nim实例，需要在onSessions里同步
-        nim.setCurrSession(sessionId)
-        commit('resetNoMoreHistoryMsgs')
-        commit('updateCurrSessionMsgs', {
-          type: 'init',
-          sessionId
-        })
+      let currentSession = state.sessionMap[sessionId]
+      if(currentSession.unread > 0){
+        currentSession.unread = 0
+        store.dispatch('saveData', {obj:currentSession,table:'Sessions'})
       }
     }
   }
@@ -75,45 +71,10 @@ function checkUpdateSession(sessions){
   store.dispatch('saveData', {obj:sessions,table:'Sessions'})
 }
 
-export function onUpdateSession (session) {
+export function onUpdateSession ({state, commit},session) {
   let sessions = [session]
   checkUpdateSession(sessions)
 }
 
 
-export function deleteSession ({state, commit}, sessionId) {
-  const nim = state.nim
-  sessionId = sessionId || ''
-  let scene = null
-  let account = null
-  if (/^p2p-/.test(sessionId)) {
-    scene = 'p2p'
-    account = sessionId.replace(/^p2p-/, '')
-  } else if (/^team-/.test(sessionId)) {
-    scene = 'team'
-    account = sessionId.replace(/^team-/, '')
-  }
-  if (account && scene) {
-    nim.deleteSession({
-      scene,
-      to: account,
-      done: function deleteServerSessionDone (error, obj) {
-        if (error) {
-          alert(error)
-          return
-        }
-        nim.deleteLocalSession({
-          id: sessionId,
-          done: function deleteLocalSessionDone (error, obj) {
-            if (error) {
-              alert(error)
-              return
-            }
-            commit('deleteSessions', [sessionId])
-          }
-        })
-      }
-    })
-  }
-}
 

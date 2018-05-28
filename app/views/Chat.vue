@@ -87,28 +87,6 @@
                 let sessionId = this.$route.params.sessionId
                 return sessionId
             },
-            sessionName() {
-                let sessionId = this.sessionId
-                let user = null
-                if (/^p2p-/.test(sessionId)) {
-                    user = sessionId.replace(/^p2p-/, '')
-                    if (user === this.$store.state.userUID) {
-                        return '我的手机'
-                    } else {
-                        let userInfo = this.userInfos[user] || {}
-                        return util.getFriendAlias(userInfo)
-                    }
-                } else if (/^team-/.test(sessionId)) {
-                    if (this.teamInfo) {
-                        // teamInfo中的人数为初始获取的值，在人员增减后不会及时更新，而teamMembers在人员增减后同步维护的人员信息
-                        var members = this.$store.state.teamMembers && this.$store.state.teamMembers[this.teamInfo.teamId]
-                        var memberCount = members && members.length
-                        return this.teamInfo.name + (memberCount ? `(${memberCount})` : '')
-                    } else {
-                        return '群'
-                    }
-                }
-            },
             scene() {
                 return util.parseSession(this.sessionId).scene
             },
@@ -128,13 +106,6 @@
                 }
                 return this.$store.state.userInfos
             },
-            robotInfos() {
-                return this.$store.state.robotInfos
-            },
-            // msglist() {
-            //     let msgs = this.$store.state.currSessionMsgs
-            //     return msgs
-            // },
             canLoadMore() {
                 return !this.$store.state.noMoreHistoryMsgs
             }
@@ -176,23 +147,6 @@
                         this.scroll.closePullUp()
                     }
                 });
-            },
-            enterNameCard() {
-                if (/^p2p-/.test(this.sessionId)) {
-                    let account = this.sessionId.replace(/^p2p-/, '')
-                    if (account === this.$store.state.userUID) {
-                        location.href = `#/general`
-                        return
-                    }
-                    location.href = `#/namecard/${account}`
-                }
-            },
-            onHistoryClick() {
-                if (this.scene !== 'team') {
-                    location.href = `#/chathistory/${this.sessionId}`
-                } else {
-                    this.$toast('您已退出该群')
-                }
             },
             getHistoryMsgs() {
                 if (this.canLoadMore && !this.pullDowning) {

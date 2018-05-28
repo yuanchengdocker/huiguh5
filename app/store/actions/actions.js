@@ -5,7 +5,6 @@ import {openDB,saveData,deleteOneData,deleteDataByKey,searchData,getDataByIndex,
 import { onSessions, onUpdateSession, setCurrSession, resetCurrSession,deleteSession } from './session.js'
 import {getLocalHistoryMsgs, sendMsg,updateMsg, resetNoMoreHistoryMsgs,buildAndPutMsg,sendVideoMsg,sendImgMsg,sendAudioMsg } from './msgs'
 import {checkHaveBindDoctor} from './huiguApi'
-import Vue from 'vue'
 
 function connectNim({ state, commit, dispatch }, obj) {
     let { force } = Object.assign({}, obj)
@@ -141,6 +140,7 @@ let indexActions = {
     },
     deleteSessions(store, { sessionId }) {
         store.commit('deleteSessions', [sessionId])
+        store.dispatch('deleteDataByKey', {key:sessionId,table:'Msgs'})
     },
     openDB(store,callback){
         let loginInfo = getUserCookieInfo()
@@ -178,12 +178,12 @@ let indexActions = {
     initNimSDK,
     // 设置当前会话
     setCurrSession,
-    deleteSession,
     // 重置当前会话
     resetCurrSession,
     //发送普通消息
     buildAndPutMsg,
     sendMsg,
+    onUpdateSession,
     updateMsg,
     sendVideoMsg,
     sendImgMsg,
@@ -210,19 +210,65 @@ let indexActions = {
         updateData(data,table)
     },
     resendMsg(store,{msg}){
-        let msg2 = util.buildSelfDefinedMsg(msg,'fail')
-        store.commit('deleteMsg',msg)
-        deleteOneData(msg.id,'Msgs',()=>{
-            store.commit('putMsg', msg2)
-            store.commit('updateCurrSessionMsgs', {
-                type: 'put',
-                msg: msg2
-            })
-            store.dispatch('saveData', {obj:msg2,table:'Msgs'})
-            store.dispatch('sendMsg',msg2)
-        })
+        let msgTypeMap = store.state.msgTypeMap
+        let msgType = msgTypeMap[msg.messageContentType]
+        switch(msgType){
+            case 'audio': 
+                resendMsgFn(store,msg,(newMsg)=>{
+                    store.dispatch('sendAudioMsg',{serverId:newMsg['mediaContent']['serverId'],msg:newMsg})
+                },'success')
+                ;break;
+            case 'image': 
+                resendMsgFn(store,msg,(newMsg)=>{
+                    urlChangeToBlob(newMsg.mediaContent.fileDataLocalPath).then((blob)=>{
+                        store.dispatch('sendImgMsg',{file:blob,msg:newMsg})
+                    })
 
+                })
+                ;break;
+            case 'video': 
+                resendMsgFn(store,msg,(newMsg)=>{
+                    urlChangeToBlob(newMsg.mediaContent.fileDataLocalPath).then((blob)=>{
+                        store.dispatch('sendVideoMsg',{file:blob,msg:newMsg})
+                    })
+                })
+                ;break;
+            default:
+                resendMsgFn(store,msg,(newMsg)=>{
+                    store.dispatch('sendMsg',newMsg)//普通文本消息
+                })
+                ;break;
+        }
     }
+}
+
+function urlChangeToBlob(url){
+    return new Promise((resolve)=>{
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'blob';
+        xhr.onload = function(e) {
+            if (this.status == 200) {//请求成功
+                var blob = this.response;
+                resolve(blob)
+            }
+        };
+        xhr.send();
+    })
+}
+
+function resendMsgFn(store,msg,callback,status){
+    store.commit('deleteMsg',msg)
+    deleteOneData(msg.id,'Msgs',()=>{
+        store.dispatch('buildAndPutMsg',{callback:(newMsg)=>{
+            //开始发送
+            callback&&callback(newMsg)
+        },content:{
+            mediaContent:msg.mediaContent,
+            messageContentType: msg.messageContentType,
+            textContent: msg.textContent
+        },status})
+    })
 }
 
 export default indexActions

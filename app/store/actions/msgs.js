@@ -47,6 +47,17 @@ export function onMsg (msg) {
   }else{
     store.dispatch('updateMsg',msg)
   }
+
+  let sessionId = 'p2p-'+(msg.flow==='in'?msg.fromUserAccid:msg.toUserAccid)
+  let updateSession = {
+    id: sessionId,
+    lastMsg: msg,
+    scene: msg.scene,
+    to: msg.flow==='in'?msg.fromUserAccid:msg.toUserAccid,
+    unread: sessionId===store.state.currSessionId ? 0 : 1,
+    updateTime:msg.time
+  }
+  store.dispatch('onUpdateSession',updateSession)
 }
 
 function onSendMsgDone (error, msg) {
@@ -125,13 +136,15 @@ export function resetNoMoreHistoryMsgs ({commit}) {
 
 export function sendAudioMsg({state, commit,dispatch},{serverId,msg}){
   (async (serverId,msg)=>{
+    alert('haha'+serverId)
     let {data,code,error} = await axios('post', 'getWxMedia', {
       mediaId: serverId,
       type:1
     })
+    alert('haha')
     if (data && data.detailUrl) {
-      alert(data.detailUrl)
       msg['mediaContent']['fileDataUrl'] = data.detailUrl
+      alert(data.detailUrl)
       dispatch('sendMsg',msg)
     } else {
       updateFailMsg(code,msg)
@@ -139,29 +152,27 @@ export function sendAudioMsg({state, commit,dispatch},{serverId,msg}){
   })(serverId,msg)
 }
 
-export function sendImgMsg({state, commit,dispatch},{file,msg,imgHeight,imgWidth,fileDataLocalPath}){
-  (async (file,msg,imgHeight,imgWidth,fileDataLocalPath)=>{
+export function sendImgMsg({state, commit,dispatch},{file,msg}){
+  (async (file,msg)=>{
     let dataFile = new FormData()
     dataFile.append('file', file)
     dataFile.append('fileType', 1)
-    let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
-      "Content-Type": 'mutipart/form-data'
-    })
-    if (data) {
-      let mediaContent = {
-        fileDataLocalPath: fileDataLocalPath,
-        fileDataUrl: data.mediumImagePath,
-        originUrl: data.largeImagePath,
-        thumbnailUrl: data.smallImagePath,
-        pHeight: imgHeight,
-        pWidth: imgWidth
+    try {
+      let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
+        "Content-Type": 'mutipart/form-data'
+      })
+      if (data) {
+        msg['mediaContent']['fileDataUrl'] = data.mediumImagePath
+        msg['mediaContent']['originUrl'] = data.largeImagePath
+        msg['mediaContent']['thumbnailUrl'] = data.smallImagePath
+        dispatch('sendMsg',msg)
+      } else {
+        updateFailMsg(error,msg)
       }
-      msg['mediaContent'] = mediaContent
-      dispatch('sendMsg',msg)
-    } else {
+    } catch (error) {
       updateFailMsg(error,msg)
     }
-  })(file,msg,imgHeight,imgWidth,fileDataLocalPath)
+  })(file,msg)
 }
 
 export function sendVideoMsg({state, commit,dispatch},{file,msg}){
@@ -169,22 +180,19 @@ export function sendVideoMsg({state, commit,dispatch},{file,msg}){
     let dataFile = new FormData()
     dataFile.append('file', file)
     dataFile.append('fileType', 3)
-    let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
-      "Content-Type": 'mutipart/form-data'
-    })
-    if (data) {
-      let mediaContent = {
-          fileDataLocalPath: '',
-          fileDataUrl: data.audioPath,
-          coverPath: '',
-          coverSize: '',
-          coverUrl: data.smallImagePath,
-          displayName: '',
-          duration: data.voiceDuration
-        }
-      msg['mediaContent'] = mediaContent
-      dispatch('sendMsg',msg)
-    } else {
+    try {
+      let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
+        "Content-Type": 'mutipart/form-data'
+      })
+      if (data) {
+        msg['mediaContent']['fileDataUrl'] = data.audioPath
+        msg['mediaContent']['coverUrl'] = data.smallImagePath
+        msg['mediaContent']['duration'] = data.voiceDuration
+        dispatch('sendMsg',msg)
+      } else {
+        updateFailMsg(error,msg)
+      }
+    } catch (error) {
       updateFailMsg(error,msg)
     }
   })(file,msg)
@@ -193,5 +201,5 @@ export function sendVideoMsg({state, commit,dispatch},{file,msg}){
 function updateFailMsg(error,msg){
   msg.status = 'fail'
   store.dispatch('updateMsg',msg)
-  store.dispatch('loadToad',error)
+  store.dispatch('loadToad','网络异常')
 }

@@ -7,7 +7,7 @@ export default () => {
             timestamp: cookieObj.timestamp, // 必填，生成签名的时间戳
             nonceStr: cookieObj.noncestr, // 必填，生成签名的随机串
             signature: cookieObj.signature,// 必填，签名，见附录1
-            jsApiList: ['startRecord', 'stopRecord','playVoice','stopVoice','onVoicePlayEnd','onVoiceRecordEnd','uploadVoice','chooseImage','previewImage','uploadImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            jsApiList: ['startRecord', 'stopRecord','playVoice','translateVoice','stopVoice','onVoicePlayEnd','onVoiceRecordEnd','uploadVoice','chooseImage','previewImage','uploadImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
         });
     }
     return {
@@ -16,6 +16,12 @@ export default () => {
             playAudio: function(localId){
                 wx.playVoice({
                     localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+                });
+                wx.translateVoice({
+                    localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                    isShowProgressTips: 1, // 默认为1，显示进度提示
+                    success: function (res) {
+                    }
                 });
             },
             stopAudio: function(localId){

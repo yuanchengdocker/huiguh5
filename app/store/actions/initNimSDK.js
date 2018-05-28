@@ -53,8 +53,8 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
             }
         },
 
-        onsessions: onSessions,
-        onupdatesession: onUpdateSession,
+        // onsessions: onSessions,
+        // onupdatesession: onUpdateSession,
         // onroamingmsgs: onRoamingMsgs,
         onofflinemsgs: onOfflineMsgs,
         onmsg: onMsg,
