@@ -70,12 +70,7 @@ export default {
         state.userUID = loginInfo.uid
         state.sdktoken = loginInfo.sdktoken
         state.myInfo = util.mergeObject(state.myInfo, loginInfo)
-        // cookie.setCookie('uid', loginInfo.uid)
-        // cookie.setCookie('sdktoken', loginInfo.sdktoken)
     },
-    // updateMyInfo(state, myInfo) {
-    //     state.myInfo = util.mergeObject(state.myInfo, myInfo)
-    // },
     updateUserInfo(state, users) {
         let userInfos = state.userInfos
         users.forEach(user => {
@@ -136,7 +131,6 @@ export default {
                 state.msgs[sessionId] = []
             }
             // sdk会做消息去重
-            // state.msgs[sessionId] = nim.mergeMsgs(state.msgs[sessionId], [msg])
             let isAdd = true
             for(let i =0;i<state.msgs[sessionId].length;i++){
                 let tmsg = state.msgs[sessionId][i]
@@ -181,7 +175,6 @@ export default {
         let tempMsgs = state.msgs[sessionId]
         let lastMsgIndex = tempMsgs.length - 1
         if (tempMsgs.length === 0 || msg.time >= tempMsgs[lastMsgIndex].time) {
-            // state.currSessionLastMsg = msg
             tempMsgs.push(msg)
         } else {
             for (let i = lastMsgIndex; i >= 0; i--) {
@@ -235,7 +228,6 @@ export default {
             if (obj.sessionId && (obj.sessionId !== state.currSessionId)) {
                 state.currSessionId = obj.sessionId
                 store.commit('updateSessions')
-                
             }
         }
     },
@@ -276,7 +268,6 @@ export default {
                     }
                     state.currSessionMsgs.push(msg)
                 })
-                // store.dispatch('checkTeamMsgReceipt', state.currSessionMsgs)
             }
         } else if (type === 'put') { // 追加一条消息
             let newMsg = obj.msg
@@ -293,7 +284,6 @@ export default {
                     })
                 }
                 state.currSessionMsgs.push(newMsg)
-                // store.dispatch('checkTeamMsgReceipt', [newMsg])
             }
         } else if (type === 'concat') {
             // 一般用于历史消息拼接
@@ -318,14 +308,9 @@ export default {
             if (obj.msgs[0]) {
                 state.currSessionLastMsg = obj.msgs[0]
             }
-            // store.dispatch('checkTeamMsgReceipt', currSessionMsgs)
         } else if (type === 'update') {
             let msg = obj.msg
-            let msgLen = state.currSessionMsgs.length
-            let lastMsgIndex = msgLen - 1
-            if (msgLen > 0) {
-                state.currSessionMsgs = util.MsgsUpdateOrDelete(state.currSessionMsgs,msg)
-            }
+            state.currSessionMsgs = util.MsgsUpdateOrDelete(state.currSessionMsgs,msg)
         }
     },
    

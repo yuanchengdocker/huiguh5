@@ -55,11 +55,11 @@
       ...mapActions(['updatedLoadingStatus'])
     },
     beforeCreate(){
-      // debugger
       this.$store.dispatch('openDB',()=>{
         this.$store.dispatch('connect')
+        this.hasInit = true
+        this.$store.dispatch('updateMyInfor')
       })
-      // this.$store.dispatch('updateRefreshState')
     },
     created() {
       this.updatedLoadingStatus({
@@ -67,10 +67,6 @@
       })
     },
     mounted() {
-      // 提交sdk连接请求
-      // this.$store.dispatch('connect')
-      // // this.$store.dispatch('updateRefreshState')
-      // this.$store.dispatch('openDB')
       this.updatedLoadingStatus({
         status: false
       })
@@ -125,11 +121,12 @@
             path: "/build/vuepage/self"
           },
         },
-        transitionName: 'forward'
+        transitionName: 'forward',
+        hasInit: false
       }
     },
     updated() {
-      this.$store.dispatch('updateMyInfor')
+      this.hasInit&&this.$store.dispatch('updateMyInfor')
     }
   }
 </script>
