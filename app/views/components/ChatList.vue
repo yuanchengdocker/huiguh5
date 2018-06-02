@@ -2,13 +2,13 @@
 
     <ul id="chat-list" class="p-chat-list">
       <li class="u-msg item-time" v-if="canLoadMore&&!isLoading">
-        上拉加载更多
+        下拉加载
       </li>
       <li class="u-msg item-time" v-if="!canLoadMore&&!isLoading">
-        已无更多记录
+        无更多记录
       </li>
       <load-more v-if="isLoading" :tip="'正在加载'"></load-more>
-      <chat-item v-for="(msg,index) in msglist" :type="type" :rawMsg="msg" :isRobot="isRobot" :userInfos="userInfos" :myInfo="myInfo" :key="msg.id+'haha'+index" :isHistory='isHistory' @msg-loaded="msgLoaded"></chat-item>
+      <chat-item v-for="(msg,index) in msglist" :type="type" :myWxSdk="wxSdk" :rawMsg="msg" :isRobot="isRobot" :userInfos="userInfos" :myInfo="myInfo" :key="msg.id+'haha'+index" :isHistory='isHistory' @msg-loaded="msgLoaded"></chat-item>
     </ul>
 </template>
 <script type="text/javascript">
@@ -31,6 +31,12 @@
         type: Boolean,
         default () {
           return false
+        }
+      },
+      wxSdk: {
+        type: Object,
+        default () {
+          return null
         }
       },
       msglist: {

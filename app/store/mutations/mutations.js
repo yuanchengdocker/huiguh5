@@ -7,6 +7,9 @@ import util from '../../utils'
 import config from '../../config/nim.config.js'
 
 export default {
+    updateChatMsgStatus(state,status){
+        state.chatMsgStatus = status
+    },
     updateCurrMsgAudioId(state,id){
         state.currMsgAudioId = id
     },
@@ -70,7 +73,12 @@ export default {
         state.userUID = loginInfo.uid
         state.sdktoken = loginInfo.sdktoken
         state.myInfo = util.mergeObject(state.myInfo, loginInfo)
+        // cookie.setCookie('uid', loginInfo.uid)
+        // cookie.setCookie('sdktoken', loginInfo.sdktoken)
     },
+    // updateMyInfo(state, myInfo) {
+    //     state.myInfo = util.mergeObject(state.myInfo, myInfo)
+    // },
     updateUserInfo(state, users) {
         let userInfos = state.userInfos
         users.forEach(user => {
@@ -91,6 +99,7 @@ export default {
                 if(state.sessionMap[item.id]){
                     state.sessionMap[item.id]['lastMsg'] = item.lastMsg
                     state.sessionMap[item.id]['unread'] += item.unread
+                    state.sessionMap[item.id]['updateTime'] = item.updateTime
                 }else{
                     totalSessions.push(item)
                 }
@@ -108,6 +117,7 @@ export default {
                 }
             }
         })
+        // console.log(state.sessionMap)
         state.sessionlist = totalSessions
         state.sessionUnreadCount = unReadCount
     },
@@ -131,6 +141,7 @@ export default {
                 state.msgs[sessionId] = []
             }
             // sdk会做消息去重
+            // state.msgs[sessionId] = nim.mergeMsgs(state.msgs[sessionId], [msg])
             let isAdd = true
             for(let i =0;i<state.msgs[sessionId].length;i++){
                 let tmsg = state.msgs[sessionId][i]
@@ -144,26 +155,13 @@ export default {
         })
         store.commit('updateMsgByIdClient', msgs)
         for (let sessionId in tempSessionMap) {
-            state.msgs[sessionId].sort((a, b) => {
-                if (a.time === b.time) {
-                    // 机器人消息，回复消息时间和提问消息时间相同，提问在前，回复在后
-                    if (a.type === 'robot' && b.type === 'robot') {
-                        if (a.content && a.content.msgOut) {
-                            return 1
-                        }
-                        if (b.content && b.content.msgOut) {
-                            return -1
-                        }
-                    }
-                }
-                return a.time - b.time
-            })
             if (sessionId === state.currSessionId) {
                 store.commit('updateCurrSessionMsgs', {
                     type: 'init'
                 })
             }
         }
+        state.updateChatMsgStatus = 2 //更新消息
     },
     // 更新追加消息，追加一条消息
     putMsg(state, msg) {
@@ -175,6 +173,7 @@ export default {
         let tempMsgs = state.msgs[sessionId]
         let lastMsgIndex = tempMsgs.length - 1
         if (tempMsgs.length === 0 || msg.time >= tempMsgs[lastMsgIndex].time) {
+            // state.currSessionLastMsg = msg
             tempMsgs.push(msg)
         } else {
             for (let i = lastMsgIndex; i >= 0; i--) {
@@ -205,6 +204,7 @@ export default {
             return
         }
         state.msgs[sessionId] = util.MsgsUpdateOrDelete(state.msgs[sessionId],msg)
+        state.chatMsgStatus = 2 //更新不作调整
     },
     // 用idClient 更新消息，目前用于消息撤回
     updateMsgByIdClient(state, msgs) {
@@ -228,6 +228,7 @@ export default {
             if (obj.sessionId && (obj.sessionId !== state.currSessionId)) {
                 state.currSessionId = obj.sessionId
                 store.commit('updateSessions')
+                
             }
         }
     },
@@ -241,6 +242,8 @@ export default {
             store.commit('updateCurrSessionId', {
                 type: 'destroy'
             })
+            state.chatMsgStatus = 1 //离开页面恢复默认值
+            store.commit('resetNoMoreHistoryMsgs')
         } else if (type === 'init') { // 初始化会话消息列表
             if (state.currSessionId) {
                 let sessionId = state.currSessionId
@@ -268,6 +271,7 @@ export default {
                     }
                     state.currSessionMsgs.push(msg)
                 })
+                state.chatMsgStatus = 1 //初始化进入底部
             }
         } else if (type === 'put') { // 追加一条消息
             let newMsg = obj.msg
@@ -284,12 +288,12 @@ export default {
                     })
                 }
                 state.currSessionMsgs.push(newMsg)
+                state.chatMsgStatus = 1 //添加消息，底部
             }
         } else if (type === 'concat') {
             // 一般用于历史消息拼接
             let currSessionMsgs = []
             let lastMsgTime = 0
-            obj.msgs.reverse()
             obj.msgs.forEach(msg => {
                 if ((msg.time - lastMsgTime) > 1000 * 60 * 5) {
                     lastMsgTime = msg.time
@@ -304,13 +308,18 @@ export default {
             currSessionMsgs.forEach(msg => {
                 state.currSessionMsgs.unshift(msg)
             })
-            console.log(currSessionMsgs)
             if (obj.msgs[0]) {
                 state.currSessionLastMsg = obj.msgs[0]
             }
+            state.chatMsgStatus = 3 //历史记录，查看点
         } else if (type === 'update') {
             let msg = obj.msg
-            state.currSessionMsgs = util.MsgsUpdateOrDelete(state.currSessionMsgs,msg)
+            let msgLen = state.currSessionMsgs.length
+            let lastMsgIndex = msgLen - 1
+            if (msgLen > 0) {
+                state.currSessionMsgs = util.MsgsUpdateOrDelete(state.currSessionMsgs,msg)
+                state.chatMsgStatus = 2 //更新不作调整
+            }
         }
     },
    

@@ -1,10 +1,14 @@
 <template>
   <div class="m-chat-editor">
     <div class="component-dialogue-bar-person">
-      <span class="iconfont icon-dialogue-jianpan" v-show="currentChatWay === 2" v-on:click="currentChatWay=1"></span>
-      <span class="iconfont icon-dialogue-voice" v-show="currentChatWay != 2" v-on:click="currentChatWay=2"></span>
+      <span class="iconfont" v-show="currentChatWay === 2" v-on:click="currentChatWay=1">
+        <img src="../../img/jianpan.png" alt="">
+      </span>
+      <span class="iconfont" v-show="currentChatWay != 2" v-on:click="currentChatWay=2">
+        <img src="../../img/audio.png" alt="">
+      </span>
       <div class="chat-way" v-show="currentChatWay === 2">
-        <div class="chat-say" v-press="{getAudioFilPath:getAudioFilPath,wxSdk:wxSdk}">
+        <div class="chat-say" v-press="{getAudioFilPath:getAudioFilPath,wxSdk:getSdk}">
           <span class="one">按住 说话</span>
           <span class="two">松开 结束</span>
         </div>
@@ -14,7 +18,9 @@
           <input class="chat-txt" v-model="msgToSent" type="text" @focus="focusIpt" @keyup.enter="sendTextMsg()" />
         </form>
       </div>
-      <span class="more iconfont icon-dialogue-jia" v-on:click="currentChatWay ===3 ? currentChatWay=1 : currentChatWay =3 "></span>
+      <span class="more iconfont " v-on:click="currentChatWay ===3 ? currentChatWay=1 : currentChatWay =3 ">
+        <img src="../../img/media.png" alt="">
+      </span>
       <div class="recording" style="display: none;" id="recording">
         <div class="recording-voice" style="display: none;" id="recording-voice">
           <div class="voice-inner">
@@ -52,13 +58,9 @@
   // import ChatEmoji from './ChatEmoji'
   import util from '../../utils'
   import config from '../../config/nim.config.js'
-  import pageUtil from '../../utils/page'
+  import {photoCompress,blobToDataURL} from '../../utils/img'
   import axios from '../../service/service'
   import "../../style/stylus/dialogue.styl"
-  import wxSdk from '../../utils/wxSdk'
-  import {
-    Duplex
-  } from 'stream';
   export default {
     props: {
       type: String,
@@ -68,6 +70,12 @@
         type: Boolean,
         default () {
           return false
+        }
+      },
+      wxSdk: {
+        type: Object,
+        default () {
+          return null
         }
       },
       invalid: {
@@ -82,6 +90,8 @@
         type: Boolean,
         default: false
       }
+    },
+    mounted(){
     },
     watch: {
       currentChatWay(curVal) {
@@ -103,93 +113,6 @@
         let indexAt = this.msgToSent.indexOf('@')
       }
     },
-    directives: {
-      press: {
-        bind(element, binding) {
-          var startTx, startTy, isCancel
-          var wxSdk = binding.value.wxSdk
-          var recording = document.querySelector('.recording'),
-              recordingVoice = document.querySelector('.recording-voice'),
-              recordingCancel = document.querySelector('.recording-cancel')
-          var timeCount = 1
-          var time = null
-          element.addEventListener('touchstart', function(e) {
-            var recording = document.querySelector('.recording'),
-              recordingVoice = document.querySelector('.recording-voice'),
-              recordingCancel = document.querySelector('.recording-cancel')
-            element.className = "chat-say say-active"
-            recording.style.display = recordingVoice.style.display = "block"
-            // console.log('start')
-            if (wxSdk.isWx) {
-              console.log('开始语音')
-              timeCount = 1
-              time = setInterval(()=>{
-                timeCount++
-              },1000)
-              wxSdk.audio.start().then(({localId,res}) => {
-                element.className = "chat-say"
-                recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
-                if(time){
-                  clearInterval(time)
-                  time = null
-                }
-                binding.value.getAudioFilPath(timeCount,localId,res,true)
-              })
-            }
-            isCancel = false
-            var touches = e.touches[0]
-            startTx = touches.clientX
-            startTy = touches.clientY
-            e.preventDefault()
-          }, false)
-          element.addEventListener('touchend', function(e) {
-            var recording = document.querySelector('.recording'),
-              recordingVoice = document.querySelector('.recording-voice'),
-              recordingCancel = document.querySelector('.recording-cancel')
-            element.className = "chat-say"
-            recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
-            if (wxSdk.isWx) {
-              if (isCancel) {
-                console.log('取消语音')
-                timeCount = 1
-                clearInterval(time)
-                time = null
-              } else {
-                wxSdk.audio.stop().then(({localId,res}) => {
-                  console.log('录音结束。。。。')
-                  if(time){
-                    clearInterval(time)
-                    time = null
-                  }
-                  binding.value.getAudioFilPath(timeCount,localId,res)
-                })
-              }
-            }
-            e.preventDefault()
-          }, false)
-          element.addEventListener('touchmove', function(e) {
-            var recording = document.querySelector('.recording'),
-              recordingVoice = document.querySelector('.recording-voice'),
-              recordingCancel = document.querySelector('.recording-cancel')
-            var touches = e.changedTouches[0],
-              endTx = touches.clientX,
-              endTy = touches.clientY,
-              distanceX = startTx - endTx,
-              distanceY = startTy - endTy;
-            if (distanceY > 50) {
-              recordingVoice.style.display = "none"
-              recordingCancel.style.display = "block"
-              isCancel = true
-            } else {
-              recordingVoice.style.display = "block"
-              recordingCancel.style.display = "none"
-              isCancel = false
-            }
-            e.preventDefault()
-          }, false);
-        }
-      }
-    },
     data() {
       return {
         msgToSent: '',
@@ -198,7 +121,6 @@
         icon3: `${config.resourceUrl}/im/chat-editor-3.png`,
         currentChatWay: true,
         currentChatWay: 1, //1文本，2语音，3媒体
-        wxSdk: wxSdk ? wxSdk() : {}
       }
     },
     computed: {
@@ -210,8 +132,10 @@
       },
     },
     methods: {
+      getSdk(){
+        return this.wxSdk
+      },
       sendMyBuildMsg(callback,content,status){
-        this.updateChatStatus()
         this.$store.dispatch('buildAndPutMsg',{callback,content,status})
       },
       sendNimMsg(msg){
@@ -243,11 +167,6 @@
         var evt = document.createEvent("MouseEvents");
         evt.initEvent("click", false, false);
         e.target.previousSibling.dispatchEvent(evt);
-        // if(e === 1){
-        //   this.wxSdk.img.choose().then((severIds)=>{
-        //     this.msgToSent = severIds
-        //   })
-        // }
       },
       // 解决输入法被激活时 底部输入框被遮住问题
       focusIpt() {
@@ -293,9 +212,45 @@
       },
       dataChange(e) {
         let target = e.target
-        let fileDataLocalPath = this.getObjectURL(target.files[0])
-        let targetType = target.files[0].type
-        if (targetType.indexOf('image/') >= 0) {
+        let files = Array.from(target.files)
+        files&&files.forEach((file)=>{
+          let targetType = file.type
+          if (targetType.indexOf('image/') >= 0) {
+            if(file.size/1024 > 1025) {
+              photoCompress(file,{quality: 0.2},(blob)=>{
+                this.sendImg(blob)
+              })
+            }else{
+              this.sendImg(file)
+            }
+          } else if (targetType.indexOf('video/') >= 0) {
+              this.sendVideo(file)
+          } 
+        })
+        
+      },
+      sendVideo(file){
+        let fileDataLocalPath = this.getObjectURL(file)
+        this.sendMyBuildMsg((msg)=>{
+            //开始发送
+            this.$store.dispatch('sendVideoMsg',{file:file,msg})
+          },{
+            mediaContent:{ //视频
+              fileDataLocalPath: fileDataLocalPath,
+              fileDataUrl: '',
+              coverPath: '',
+              coverSize: '',
+              coverUrl: '',
+              displayName: '',
+              duration: 0
+            },
+            messageContentType: 11,
+            textContent: ''
+          })
+      },
+      sendImg(file){
+        blobToDataURL(file).then((localId)=>{
+          let fileDataLocalPath = this.getObjectURL(file)
           let img = new Image(); //手动创建一个Image对象
           img.src = fileDataLocalPath //创建Image的对象的url
           img.onload = ()=>{
@@ -303,10 +258,10 @@
             let imgHeight = img.height
             this.sendMyBuildMsg((msg)=>{
               //开始发送
-              this.$store.dispatch('sendImgMsg',{file:target.files[0],msg,imgHeight,imgWidth,fileDataLocalPath})
+              this.$store.dispatch('sendImgMsg',{file:file,msg})
             },{
               mediaContent:{//3图片
-                fileDataLocalPath: fileDataLocalPath,
+                fileDataLocalPath: localId,
                 fileDataUrl: '',
                 originUrl: '',
                 thumbnailUrl: '',
@@ -316,32 +271,11 @@
               messageContentType: 3,
               textContent: ''
             })
-
           }
-        } else if (targetType.indexOf('video/') >= 0) {
-          this.sendMyBuildMsg((msg)=>{
-            //开始发送
-            this.$store.dispatch('sendVideoMsg',{file:target.files[0],msg})
-          },{
-            mediaContent:{ //视频
-              fileDataLocalPath: fileDataLocalPath,
-              fileDataUrl: '',
-              coverPath: '',
-              coverSize: '',
-              coverUrl: '',
-              displayName: '',
-              duration: 1
-            },
-            messageContentType: 11,
-            textContent: ''
-          })
-        } 
+        })
       },
       sendFileMsg(e) {
         this.dataChange(e)
-      },
-      updateChatStatus(){
-        this.$emit('isSendMsg')
       }
     }
   }

@@ -3,6 +3,7 @@ import config from '../../config/nim.config.js'
 import {getDataByIndex,updateData} from './indexDBInit'
 import util from '../../utils'
 import axios from '../../service/service'
+import cookie from './../../utils/cookie';
 
 export function onOfflineMsgs (obj) {
   let msgs = obj.msgs
@@ -31,47 +32,45 @@ function updateUserInfo(msgs){
 }
 
 export function onMsg (msg) {
-  msg = util.toMyMsg(msg)
-  if(util.getMsgType(msg) === 'audio'){
-    msg['hasRead'] = false
-  }
-  if(msg.flow === 'in'){
-    store.commit('putMsg', msg)
-    if (msg.sessionId === store.state.currSessionId) {
-      store.commit('updateCurrSessionMsgs', {
-        type: 'put',
-        msg
-      })
+  try {
+    msg = util.toMyMsg(msg)
+    if(util.getMsgType(msg) === 'audio'){
+      msg['hasRead'] = false
     }
-    updateUserInfo([msg])
-  }else{
-    store.dispatch('updateMsg',msg)
+    if(msg.flow === 'in'){
+      store.commit('putMsg', msg)
+      if (msg.sessionId === store.state.currSessionId) {
+        store.commit('updateCurrSessionMsgs', {
+          type: 'put',
+          msg
+        })
+      }
+      updateUserInfo([msg])
+    }else{
+      if(util.getMsgType(msg) === 'image'){
+        cookie.delLocal(msg.mediaContent.fileDataLocalPath)
+        msg.mediaContent.fileDataLocalPath = ''
+      }
+      //避免自己消息更新过快
+      store.dispatch('updateMsg',msg)
+    }
+    
+    store.dispatch('onUpdateSession',msg)
+    
+  } catch (error) {
+    alert(JSON.stringify(error))
   }
-
-  let sessionId = 'p2p-'+(msg.flow==='in'?msg.fromUserAccid:msg.toUserAccid)
-  let updateSession = {
-    id: sessionId,
-    lastMsg: msg,
-    scene: msg.scene,
-    to: msg.flow==='in'?msg.fromUserAccid:msg.toUserAccid,
-    unread: sessionId===store.state.currSessionId ? 0 : 1,
-    updateTime:msg.time
-  }
-  store.dispatch('onUpdateSession',updateSession)
+  
 }
 
 function onSendMsgDone (error, msg) {
   store.dispatch('hideLoading')
   if (error) {
-    // 被拉黑
-    if (error.code === 7101) {
-      msg.status = 'success'
-      alert(error.message)
-    } else {
-      alert(error.message)
-    }
+      msg = util.toMyMsg(msg)
+      updateFailMsg(error,msg)
+  }else{
+    onMsg(msg)
   }
-  onMsg(msg)
 }
 
 export function buildAndPutMsg({state, commit},{callback,content,status}){
@@ -83,7 +82,7 @@ export function buildAndPutMsg({state, commit},{callback,content,status}){
     msg
   })
   store.dispatch('saveData', {obj:msg,table:'Msgs'})
-
+  store.dispatch('onUpdateSession',msg)
   callback&&callback(msg)
   return msg
 }
@@ -136,15 +135,12 @@ export function resetNoMoreHistoryMsgs ({commit}) {
 
 export function sendAudioMsg({state, commit,dispatch},{serverId,msg}){
   (async (serverId,msg)=>{
-    alert('haha'+serverId)
     let {data,code,error} = await axios('post', 'getWxMedia', {
       mediaId: serverId,
       type:1
     })
-    alert('haha')
     if (data && data.detailUrl) {
       msg['mediaContent']['fileDataUrl'] = data.detailUrl
-      alert(data.detailUrl)
       dispatch('sendMsg',msg)
     } else {
       updateFailMsg(code,msg)
@@ -155,7 +151,8 @@ export function sendAudioMsg({state, commit,dispatch},{serverId,msg}){
 export function sendImgMsg({state, commit,dispatch},{file,msg}){
   (async (file,msg)=>{
     let dataFile = new FormData()
-    dataFile.append('file', file)
+    let ext = file.type.split('image/')[1]
+    dataFile.append('file', file, "file_"+Date.parse(new Date())+"."+ext)
     dataFile.append('fileType', 1)
     try {
       let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
@@ -178,7 +175,7 @@ export function sendImgMsg({state, commit,dispatch},{file,msg}){
 export function sendVideoMsg({state, commit,dispatch},{file,msg}){
   (async (file,msg)=>{
     let dataFile = new FormData()
-    dataFile.append('file', file)
+    dataFile.append('file', file,"file_"+Date.parse(new Date())+".mp4")
     dataFile.append('fileType', 3)
     try {
       let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
@@ -198,8 +195,8 @@ export function sendVideoMsg({state, commit,dispatch},{file,msg}){
   })(file,msg)
 }
 
-function updateFailMsg(error,msg){
+export function updateFailMsg(error,msg){
   msg.status = 'fail'
   store.dispatch('updateMsg',msg)
-  store.dispatch('loadToad','网络异常')
+  store.dispatch('loadToad','网络异常,稍后重试')
 }

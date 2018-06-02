@@ -39,3 +39,10 @@
   .backward-enter-to {
     transform: translate3d(0, 0, 0);
   }
+
+  .menu-enter-active, .menu-leave-active {
+    transition: all .5s;
+  }
+  .menu-leave-active, .menu-enter {
+    bottom: -50px;
+  }

@@ -9,24 +9,24 @@
     <view-box ref="viewBox" :body-padding-top="'0'" body-padding-bottom="55px">
       <!-- remember to import BusPlugin in main.js if you use components: x-img and sticky -->
       <transition :name="transitionName">
-        <keep-alive :include="/session/">
+        <keep-alive :include="/session|chat/">
           <router-view class="router-view"></router-view>
         </keep-alive>
       </transition>
-      <tabbar class="vux-demo-tabbar" icon-class="vux-center" v-show="showMenuBar" slot="bottom">
-        <tabbar-item :link="{path:menus.chat.path}" :class="route.path === menus.chat.path?'hg-icon-select':''" :badge="sessionUnreadCount">
-          <span class="hg-icon-22 hg-icon-chat" slot="icon" style="position:relative;top: -2px;">&#xe637;</span>
-          <span slot="label" class="icon-title">{{menus.chat.name}}</span>
-        </tabbar-item>
-        <tabbar-item :link="{path:menus.article.path}" :class="route.path === menus.article.path?'hg-icon-select':''">
-          <span class="hg-icon-22 hg-icon-article" slot="icon">&#xe633;</span>
-          <span slot="label" class="icon-title">{{menus.article.name}}</span>
-        </tabbar-item>
-        <tabbar-item :link="{path:menus.self.path}" :class="route.path === menus.self.path?'hg-icon-select':''">
-          <span class="hg-icon-22 hg-icon-self" slot="icon">&#xe633;</span>
-          <span slot="label" class="icon-title">{{menus.self.name}}</span>
-        </tabbar-item>
-      </tabbar>
+        <tabbar class="vux-demo-tabbar" icon-class="vux-center" v-show="showMenuBar" slot="bottom">
+          <tabbar-item :link="{path:menus.chat.path}" :class="route.path === menus.chat.path?'hg-icon-select':''" :badge="sessionUnreadCount">
+            <span class="hg-icon-22 hg-icon-chat" slot="icon" style="position:relative;top: -2px;">&#xe637;</span>
+            <span slot="label" class="icon-title">{{menus.chat.name}}</span>
+          </tabbar-item>
+          <tabbar-item :link="{path:menus.article.path}" :class="route.path === menus.article.path?'hg-icon-select':''">
+            <span class="hg-icon-22 hg-icon-article" slot="icon">&#xe633;</span>
+            <span slot="label" class="icon-title">{{menus.article.name}}</span>
+          </tabbar-item>
+          <tabbar-item :link="{path:menus.self.path}" :class="route.path === menus.self.path?'hg-icon-select':''">
+            <span class="hg-icon-22 hg-icon-self" slot="icon">&#xe633;</span>
+            <span slot="label" class="icon-title">{{menus.self.name}}</span>
+          </tabbar-item>
+        </tabbar>
     </view-box>
   </div>
 </template>
@@ -45,7 +45,6 @@
     mapGetters
   } from 'vuex'
   import cookie from './utils/cookie'
-  import pageUtil from './utils/page'
   export default {
     components: {
       FullscreenImg,
@@ -57,19 +56,11 @@
     beforeCreate(){
       this.$store.dispatch('openDB',()=>{
         this.$store.dispatch('connect')
-        this.hasInit = true
-        this.$store.dispatch('updateMyInfor')
       })
     },
     created() {
-      this.updatedLoadingStatus({
-        status: true
-      })
     },
     mounted() {
-      this.updatedLoadingStatus({
-        status: false
-      })
     },
     beforeDestroy() {
       this.box && this.box.removeEventListener('scroll', this.handler, false)
@@ -80,16 +71,16 @@
         if (to && from) {
           let toPath = to.path
           let fromPath = from.path
-          if(toPath.indexOf('/build/vuepage/chat') >= 0){
+          this.transitionName = ''
+          console.log(fromPath)
+          if(toPath.indexOf('/build/vuepage/chat') >= 0
+            && fromPath.indexOf('/build/vuepage/session') >= 0){
             this.transitionName = 'forward'
-            return
           }
           if(toPath.indexOf('/build/vuepage/session') >= 0 
             && fromPath.indexOf('/build/vuepage/chat') >= 0){
               this.transitionName = 'backward'
-              return
           }
-          this.transitionName = ''
         }
       },
       showToastMsg(curValue){
@@ -121,12 +112,11 @@
             path: "/build/vuepage/self"
           },
         },
-        transitionName: 'forward',
-        hasInit: false
+        transitionName: 'forward'
       }
     },
     updated() {
-      this.hasInit&&this.$store.dispatch('updateMyInfor')
+      this.$store.dispatch('updateMyInfor')
     }
   }
 </script>
@@ -148,11 +138,7 @@
     font-family: 'vux-demo';
     font-size: 22px;
     color: #888;
-  } // .weui-tabbar.vux-demo-tabbar {
-  //   /** backdrop-filter: blur(10px);
-  //   background-color: none;
-  //   background: rgba(247, 247, 250, 0.5);**/
-  // }
+  } 
   .vux-demo-tabbar .weui-bar__item_on .demo-icon-22 {
     color: #F70968;
   }

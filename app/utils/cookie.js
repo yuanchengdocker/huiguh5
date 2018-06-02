@@ -28,6 +28,12 @@ const cookie = {
   //localstory
   readLocal: function(name){
     return localStorage.getItem(name)
+  },
+  delLocal: function(name){
+    return localStorage.removeItem(name)
+  },
+  saveLocal:function(key,source){
+    return localStorage.setItem(key,source)
   }
 }
 

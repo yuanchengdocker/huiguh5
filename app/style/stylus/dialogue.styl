@@ -213,24 +213,24 @@
     background-color: #ffffff
 }
 
-.component-dialogue-bar-person::before {
-    content: "";
-    position: absolute;
-    width: 200%;
-    left: 0;
-    top: 0;
-    -webkit-transform: scale(0.5);
-    -ms-transform: scale(0.5);
-    transform: scale(0.5);
-    -webkit-transform-origin: 0 0;
-    -ms-transform-origin: 0 0;
-    transform-origin: 0 0;
-    -webkit-transform: scale(0.5);
-    -webkit-transform-origin: 0 0;
-    background-color: #b7b7b7;
-    height: 1px;
-    z-index: 2
-}
+// .component-dialogue-bar-person::before {
+//     content: "";
+//     position: absolute;
+//     width: 200%;
+//     left: 0;
+//     top: 0;
+//     -webkit-transform: scale(0.5);
+//     -ms-transform: scale(0.5);
+//     transform: scale(0.5);
+//     -webkit-transform-origin: 0 0;
+//     -ms-transform-origin: 0 0;
+//     transform-origin: 0 0;
+//     -webkit-transform: scale(0.5);
+//     -webkit-transform-origin: 0 0;
+//     background-color: #b7b7b7;
+//     height: 1px;
+//     z-index: 2
+// }
 
 .component-dialogue-bar .component-dialogue-bar-person::before {
     display: none
@@ -238,21 +238,24 @@
 
 .component-dialogue-bar-person .iconfont {
     color: #7d7e83;
-    -webkit-flex-basis: 40px;
+    -webkit-flex-basis: 50px;
     -ms-flex-preferred-size: 40px;
-    flex-basis: 40px;
-    width: 65px;
-    height: 65px;
-    padding: 0 3px;
+    flex-basis: 50px;
+    width: 70px;
+    height: 70px;
     font-size: 30px;
     -webkit-box-flex: 0;
     -webkit-flex-grow: 0;
     -ms-flex-positive: 0;
     flex-grow: 0;
+    display: flex;
     vertical-align: middle;
-    line-height: 40px;
-    padding: 0 4px
+    align-items: center;
 }
+.component-dialogue-bar-person .iconfont img{
+    width: 100%
+    height auto
+} 
 
 .chat-way {
     vertical-align: middle;

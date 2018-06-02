@@ -1,9 +1,10 @@
 import { initNimSDK } from './initNimSDK'
 import cookie from '../../utils/cookie'
 import util from '../../utils'
+import {convertBase64UrlToBlob} from '../../utils/img'
 import {openDB,saveData,deleteOneData,deleteDataByKey,searchData,getDataByIndex,updateData} from './indexDBInit'
 import { onSessions, onUpdateSession, setCurrSession, resetCurrSession,deleteSession } from './session.js'
-import {getLocalHistoryMsgs, sendMsg,updateMsg, resetNoMoreHistoryMsgs,buildAndPutMsg,sendVideoMsg,sendImgMsg,sendAudioMsg } from './msgs'
+import {getLocalHistoryMsgs, sendMsg,updateMsg, resetNoMoreHistoryMsgs,buildAndPutMsg,sendVideoMsg,sendImgMsg,sendAudioMsg,updateFailMsg } from './msgs'
 import {checkHaveBindDoctor} from './huiguApi'
 
 function connectNim({ state, commit, dispatch }, obj) {
@@ -58,6 +59,9 @@ let indexActions = {
     updateMyInfor({ state, commit,dispatch }, loginInfo){
         if(!loginInfo){
             loginInfo = getUserCookieInfo()
+        }
+        if(loginInfo.uid && loginInfo.sdktoken && state.connectStatus !== 0){
+            dispatch('connect')
         }
         if(userInfoCompare(loginInfo,state.myInfo)) return
         console.log('my不同')
@@ -220,16 +224,19 @@ let indexActions = {
                 ;break;
             case 'image': 
                 resendMsgFn(store,msg,(newMsg)=>{
-                    urlChangeToBlob(newMsg.mediaContent.fileDataLocalPath).then((blob)=>{
-                        store.dispatch('sendImgMsg',{file:blob,msg:newMsg})
-                    })
+                    let blob = convertBase64UrlToBlob(cookie.readLocal(newMsg.mediaContent.fileDataLocalPath))
 
+                    store.dispatch('sendImgMsg',{file:blob,msg:newMsg})
                 })
                 ;break;
             case 'video': 
                 resendMsgFn(store,msg,(newMsg)=>{
                     urlChangeToBlob(newMsg.mediaContent.fileDataLocalPath).then((blob)=>{
-                        store.dispatch('sendVideoMsg',{file:blob,msg:newMsg})
+                        if(blob){
+                            store.dispatch('sendVideoMsg',{file:blob,msg:newMsg})
+                        }else{
+                            updateFailMsg(null,newMsg)
+                        }
                     })
                 })
                 ;break;
@@ -253,6 +260,9 @@ function urlChangeToBlob(url){
                 resolve(blob)
             }
         };
+        xhr.onerror = function(e){
+            resolve()
+        }
         xhr.send();
     })
 }

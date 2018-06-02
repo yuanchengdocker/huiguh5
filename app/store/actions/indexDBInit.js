@@ -85,11 +85,15 @@ export function saveData(data,table){
     }
 }
 function saveDbData(data,table){
-    var tx = db.transaction(table,'readwrite');
-    var store = tx.objectStore(table);
-    // if(!data[store.keyPath]) return
-    var req = store.put(data);
-    req.onsuccess = function(e){
+    try {
+        var tx = db.transaction(table,'readwrite');
+        var store = tx.objectStore(table);
+        // if(!data[store.keyPath]) return
+        var req = store.put(data);
+        req.onsuccess = function(e){
+        }
+    } catch (error) {
+        console.log(JSON.stringify(error))
     }
 }
 
@@ -182,11 +186,13 @@ function getDBDataByIndex(callback,storeName,id){
             cursor.continue();
         }else{
             // 数据检索完成后执行回调函数
-            callback && callback(dbData);
+            let smallToLarge = dbData.sort((a,b)=>{
+                return a.time - b.time
+            })
+            callback && callback(smallToLarge);
         }
     }
     request.onerror = function(e){
-        debugger
         console.log(e)
     }
 }

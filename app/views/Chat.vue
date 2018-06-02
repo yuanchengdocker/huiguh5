@@ -3,10 +3,10 @@
         <div class="m-chat-main">
             <div class="m-chat-list">
                 <div class="chat-wrapper" ref="wrapper">
-                    <chat-list type="session" :msglist="msglist" :canLoadMore="canLoadMore" :userInfos="userInfos" :myInfo="myInfo"></chat-list>
+                    <chat-list type="session" :wxSdk="wxSdk" :msglist="msglist" :canLoadMore="canLoadMore" :userInfos="userInfos" :myInfo="myInfo"></chat-list>
                 </div>
             </div>
-            <chat-editor type="session" @isSendMsg="isSendMsg" :scene="scene" :to="to"></chat-editor>
+            <chat-editor type="session" @isSendMsg="isSendMsg" :scene="scene" :wxSdk="wxSdk" :to="to"></chat-editor>
         </div>
     </div>
 </template>
@@ -15,58 +15,82 @@
     import ChatEditor from './components/ChatEditor'
     import ChatList from './components/ChatList'
     import util from '../utils'
-    import pageUtil from '../utils/page'
     import BScroll from 'better-scroll'
     import '../style/stylus/chat.styl'
     import '../style/stylus/public.styl'
+    import wxSdk from '../utils/wxSdk'
     import {
         mapActions,
         mapState,
         mapGetters
     } from 'vuex'
-    import {
-        setTimeout
-    } from 'timers';
+import { setTimeout } from 'timers';
     export default {
         components: {
             ChatEditor,
             ChatList
         },
         props: ['id'],
+        beforeRouteEnter: (to, from, next) => {
+            next((v)=>{
+            })
+        },
         
         created() {
-            this.$store.dispatch('setCurrSession', this.sessionId)
-            this.$store.dispatch('checkHaveBindDoctor')
             this.updateMenuBarShow(false)
         },
         // 进入该页面，文档被挂载
         mounted() {
-            // 此时设置当前会话
-            this.$store.dispatch('setCurrSession', this.sessionId)
-            this.$store.dispatch('getDataByIndex', {callback:(data)=>{
-                this.$store.commit('updateMsgs', data)
-            },table:'Msgs',id:this.sessionId})
-            
-            this.gotoDown = true
+            try {
+                this.updateMenuBarShow(false)
+                this.$nextTick(function () {
+                    setTimeout(()=>{
+                        wxSdk.wxInit().then((sdk)=>{
+                            this.wxSdk = sdk
+                        })
+                    },5000)
+                })
+                // 此时设置当前会话
+                this.$store.dispatch('getDataByIndex', {callback:(data)=>{
+                    this.$store.dispatch('setCurrSession', this.sessionId)
+                    this.$store.dispatch('checkHaveBindDoctor')
+                    this.$store.commit('updateMsgs', data)
+                },table:'Msgs',id:this.sessionId})
+                
+            } catch (error) {
+                alert(JSON.stringify(error))
+            }
         },
         updated() {
             if (this.$refs.wrapper) {
+                console.log(this.chatMsgStatus)
                 let eles = document.getElementById('chat-list').children
-                if(this.chatItemLength != eles.length){
+                if(this.chatMsgStatus !== 2){
                     this.initScroll()
                 }
-                if(!this.gotoDown&&this.canLoadMore){
-                    this.scroll.scrollToElement(eles[eles.length - this.chatItemLength-1])
+                if(this.pullDowning){
+                    if(this.chatMsgStatus === 3){
+                        console.log()
+                        this.scroll.scrollToElement(eles[eles.length - this.chatItemLength + 1 ])
+                    }
+                }else{
+                    if(this.chatMsgStatus === 1){ //初始化
+                        this.scroll.scrollToElement(eles[eles.length - 1])
+                    } 
                 }
                 this.chatItemLength = eles.length
-                if (this.gotoDown) {
-                    this.scroll.scrollToElement(eles[this.chatItemLength - 1])
-                }
+               
                 this.pullDowning = false
             }
         },
         // 离开该页面，此时重置当前会话
         destroyed() {
+            //离开页面关闭语音播放
+            this.$store.dispatch('updateCurrMsgAudioId','')
+            //关闭图片预览
+            this.$store.dispatch('hideFullscreenImg')
+            //关闭视频播放
+            this.$store.dispatch('hideFullscreenVideo')
             this.$store.dispatch('resetCurrSession')
             this.updateMenuBarShow(true)
         },
@@ -76,13 +100,16 @@
                     backText: ' ',
                     preventGoBack: true,
                 },
-                gotoDown: true,
                 chatItemLength: 0,
-                pullDowning:false
+                pullDowning:false,
+                wxSdk:null
             }
         },
         computed: {
             ...mapGetters({msglist:'msglist'}),
+            chatMsgStatus(){
+                return this.$store.state.chatMsgStatus
+            },
             sessionId() {
                 let sessionId = this.$route.params.sessionId
                 return sessionId
@@ -112,46 +139,35 @@
         },
         methods: {
             isSendMsg(){
-                this.gotoDown = true
             },
             ...mapActions(['updatedLoadingStatus', 'updateMenuBarShow', 'getLocalSessionMsg']),
             onClickBack() {
                 this.$router.push(`/build/vuepage/session`);
             },
             initScroll() {
-                this.scroll = new BScroll(this.$refs.wrapper, {
-                    // probeType: 3,    
-                    scrollY: true,
-                    click: true,
-                    // pullUpLoad: {   // 配置上啦加载
-                    //   threshold: -80   //上啦80px的时候加载
-                    // },
-                    openPullDown: true,
-                    pullDownRefresh: {
-                        threshold: 50,
-                        stop: 20
-                    },
-                    mouseWheel: { // pc端同样能滑动
-                        speed: 20,
-                        invert: false
-                    },
-                    useTransition: true, // 防止iphone微信滑动卡顿
-                });
-                this.scroll.on('pullingDown', (pos) => {
-                    // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
-                    if(!this.pullDowning){
-                        console.log(pos)
+                if(!this.scroll){
+                    this.scroll = new BScroll(this.$refs.wrapper, {
+                        probeType: 3,    
+                        scrollY: true,
+                        click: true,
+                        mouseWheel: { // pc端同样能滑动
+                            speed: 20,
+                            invert: false
+                        },
+                        useTransition: true, // 防止iphone微信滑动卡顿
+                    });
+                }else{
+                    this.scroll.refresh();
+                }
+                this.scroll.on('scroll', (pos) => {
+                    if (pos.y >= 60 && this.canLoadMore && !this.pullDowning) {
                         this.getHistoryMsgs()
                         this.pullDowning = true
-                        this.gotoDown = false
-                        this.scroll.closePullUp()
                     }
                 });
             },
             getHistoryMsgs() {
-                if (this.canLoadMore && !this.pullDowning) {
-                    this.$store.dispatch('getLocalHistoryMsgs',this.sessionId)
-                }
+                this.$store.dispatch('getLocalHistoryMsgs',this.sessionId)
             },
         }
     }

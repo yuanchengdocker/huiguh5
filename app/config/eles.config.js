@@ -1,27 +1,29 @@
 import Vue from 'vue';
-import {Spinner,LoadMore,TransferDom,TabbarItem,Tabbar,Loading,Drawer,Icon,Group, Cell, XHeader, XInput, XTextarea, XButton, XSwitch, Datetime, ViewBox, Search, ButtonTab, ButtonTabItem, Divider, Actionsheet, AlertPlugin, ConfirmPlugin} from 'vux'
+import {Spinner,LoadMore,TransferDom,TabbarItem,Tabbar,Loading,Icon,Group, Cell, ViewBox, ConfirmPlugin} from 'vux'
 import ToastPlugin from '../plugins/toastPlugin'
 import VueTouch from '../plugins/touchEvent'
+import VuePress from '../plugins/pressEvent'
 Vue.use(VueTouch)
+Vue.use(VuePress)
 
 Vue.directive('TransferDom',TransferDom)
 
 // 全局注册vux的组件
 Vue.component('Group', Group)
 Vue.component('Cell', Cell)
-Vue.component('Datetime', Datetime)
-Vue.component('ButtonTab', ButtonTab)
-Vue.component('ButtonTabItem', ButtonTabItem)
-Vue.component('Divider', Divider)
-Vue.component('Search', Search)
-Vue.component('XInput', XInput)
-Vue.component('XTextarea', XTextarea)
-Vue.component('XButton', XButton)
-Vue.component('XHeader', XHeader)
-Vue.component('XSwitch', XSwitch)
-Vue.component('actionsheet', Actionsheet)
+// Vue.component('Datetime', Datetime)
+// Vue.component('ButtonTab', ButtonTab)
+// Vue.component('ButtonTabItem', ButtonTabItem)
+// Vue.component('Divider', Divider)
+// Vue.component('Search', Search)
+// Vue.component('XInput', XInput)
+// Vue.component('XTextarea', XTextarea)
+// Vue.component('XButton', XButton)
+// Vue.component('XHeader', XHeader)
+// Vue.component('XSwitch', XSwitch)
+// Vue.component('actionsheet', Actionsheet)
 Vue.component('icon', Icon)
-Vue.component('Drawer', Drawer)
+// Vue.component('Drawer', Drawer)
 Vue.component('Loading', Loading)
 Vue.component('LoadMore',LoadMore)
 Vue.component('Spinner',Spinner)
@@ -30,7 +32,7 @@ Vue.component('ViewBox', ViewBox)
 Vue.component('Tabbar', Tabbar)
 Vue.component('TabbarItem', TabbarItem)
 
-Vue.use(AlertPlugin)
+// Vue.use(AlertPlugin)
 Vue.use(ConfirmPlugin)
 Vue.use(ToastPlugin)
 

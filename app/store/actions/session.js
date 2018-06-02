@@ -71,7 +71,16 @@ function checkUpdateSession(sessions){
   store.dispatch('saveData', {obj:sessions,table:'Sessions'})
 }
 
-export function onUpdateSession ({state, commit},session) {
+export function onUpdateSession ({state, commit},msg) {
+  let sessionId = 'p2p-'+(msg.flow==='in'?msg.fromUserAccid:msg.toUserAccid)
+  let session = {
+    id: sessionId,
+    lastMsg: msg,
+    scene: msg.scene,
+    to: msg.flow==='in'?msg.fromUserAccid:msg.toUserAccid,
+    unread: sessionId===store.state.currSessionId||msg.flow === 'out' ? 0 : 1,
+    updateTime:msg.time
+  }
   let sessions = [session]
   checkUpdateSession(sessions)
 }

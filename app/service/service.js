@@ -33,7 +33,7 @@ export default (type = 'post', turl, data, config) => {
         method: type,
         url,
         data: data,
-        timeout: 60000,
+        timeout: 600000,
         headers: config||{
             'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/json;charset=UTF-8'

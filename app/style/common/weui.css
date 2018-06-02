@@ -19,6 +19,7 @@
   .weui-cell {
     font-size: 18px;
     padding: 15px 20px;
+    padding-right: 70px;
     .vux-label-desc {
       font-size: 12.8px;
       color: #919dae;
@@ -114,11 +115,23 @@
       font-size: 17.28px;
     }
   }
+  .vux-cell-primary{
+    max-width: 90%;
+  }
   .vux-label{
+    max-width: 80%;
     font-size: 20px;
-    color: #4e5e75
+    color: #4e5e75;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    /* autoprefixer: off */  
+    -webkit-box-orient: vertical;  
+    /* autoprefixer: on */  
   }
   .vux-label-desc {
+    margin-top: 6px;
     display: inline-block;
     max-width: 100%;
     overflow: hidden;

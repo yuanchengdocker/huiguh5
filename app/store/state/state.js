@@ -31,11 +31,11 @@ export default {
     fullscreenVideo: {},
     // 是否有更多历史消息，用于上拉加载更多
     noMoreHistoryMsgs: false,
+    chatMsgStatus:1, //1进入底部，2更新不做调整，3下拉历史记录回到查看点
     //上拉加载聊天时候显示
     isChatLoading:false,
     //聊天未读数量
     sessionUnreadCount:0,
-
     showToastMsg:'',
     msgTypeMap:{
         1: 'text',

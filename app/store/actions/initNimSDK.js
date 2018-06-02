@@ -35,11 +35,12 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
         },
         onerror: function onError(event) {
             // alert(JSON.stringify(event))
-            location.href = config.loginUrl
+            dispatch('updateConnectStatus',1)//未连接
+            // location.href = config.loginUrl
         },
         onwillreconnect: function onWillReconnect() {
             // console.log(event)
-            dispatch('updateConnectStatus',3)//未连接
+            dispatch('updateConnectStatus',3)//重连中
         },
         ondisconnect: function onDisconnect(error) {
             dispatch('updateConnectStatus',1)//未连接
