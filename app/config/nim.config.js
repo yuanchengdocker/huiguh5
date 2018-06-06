@@ -1,7 +1,7 @@
 let config = {
     sdk: 'NIM_Web_SDK_v5.0.0',
     // 用户自定义的登录注册地址
-    loginUrl: '/build/vuepage/self',
+    loginUrl: '/build/vuepage/menu/self',
   
     // 资源路径根目录，为了方便用户部署在二级以上URL路径上
     resourceUrl: 'http://yx-web.nos.netease.com/webdoc/h5',

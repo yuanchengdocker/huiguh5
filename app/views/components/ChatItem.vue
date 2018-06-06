@@ -22,12 +22,12 @@
         </a>
         <span class="msg-share-tip">{{'我向您分享的患教资料'}}</span>
       </span>
-      <span v-else-if="msg.type==='question'" class="msg-text" ref="mediaMsg">
-        <a :href="msg.questionLink" class="msg-share-container" target="_blank">
+      <span v-else-if="msg.type==='question'" :class="msg.flow==='out'?'msg-text my-question-msg':'msg-text'" ref="mediaMsg">
+        <router-link :to="{path: msg.questionLink}" class="msg-share-container">
           <p class="msg-share-title hg-word-clamp hg-word-clamp-1">{{msg.questionTitle}}</p>
           <section class="msg-share-content hg-word-clamp hg-word-clamp-2">{{msg.showText}}</section>
-        </a>
-        <span class="msg-share-tip">{{'我向您发送随访问卷'}}</span>
+        </router-link>
+        <span class="msg-share-tip">{{msg.flow==='in'?'我向您发送随访问卷':'我填写了您的随访问卷'}}</span>
       </span>
       <span v-else-if="msg.type==='image'" class=" msg-image" ref="mediaMsg" @click.stop="showFullImg(msg.fileDataUrl||msg.fileDataLocalPath)"></span>
       <span v-else-if="msg.type==='video'" class=" msg-video" ref="mediaMsg" @click.stop="showFullVideo(msg.fileDataUrl,msg.coverUrl)">
@@ -47,7 +47,6 @@
       <span v-else class="msg-text" v-html="msg.showText"></span>
       <span v-if="msg.status==='sending'" class="msg-failed"><spinner type="android"></spinner></span>
       <span v-if="msg.status==='fail'" class="msg-failed" @click="confirmResend(msg.id)"><i class="weui-icon-warn"></i></span>
-      <a v-if="teamMsgUnRead >=0" class='msg-unread' :href='`#/msgReceiptDetail/${msg.to}-${msg.idServer}`'>{{teamMsgUnRead>0 ? `${teamMsgUnRead}人未读`: '全部已读'}}</a>
     </div>
   </li>
 </template>
@@ -84,12 +83,6 @@
           return {}
         }
       },
-      isRobot: {
-        type: Boolean,
-        default () {
-          return false
-        }
-      },
       isHistory: {
         type: Boolean,
         default () {
@@ -112,15 +105,8 @@
         this.msgInitShow()
         return this.rawMsg
       },
-      robotInfos() {
-        return this.$store.state.robotInfos
-      },
-      teamMsgUnRead() {
-        var obj = !this.isHistory &&
-          this.msg.needMsgReceipt &&
-          this.msg.flow === 'out' &&
-          this.$store.state.teamMsgReads.find(item => item.idServer === this.msg.idServer)
-        return obj ? parseInt(obj.unread) : -1
+      sessionId(){
+        return this.$store.state.currSessionId
       },
       currMsgAudioId(){
         return this.$store.state.currMsgAudioId
@@ -139,6 +125,15 @@
             }
           }
           return false
+        }
+      }
+    },
+    destroyed(){
+      if(this.myWxSdk && this.currentLocalId){
+        this.myWxSdk.audio.stopAudio(this.currentLocalId)
+      }else{
+        if(this.currentAudio){
+          this.currentAudio.pause()
         }
       }
     },
@@ -213,10 +208,10 @@
           this.$store.dispatch('updateCurrMsgAudioId','')
           return
         }
-        if(localSrc){
+        if(!src && localSrc){
           this.currentLocalId = localSrc
         }
-        if(!this.currentAudio){
+        if(!this.currentAudio && src){
           this.currentAudio = new Audio(src)
         }
         this.$store.dispatch('updateCurrMsgAudioId',this.msgId)
@@ -224,11 +219,12 @@
       startAudio(){
         try { 
           if(this.currentLocalId){
-            if(!this.myWxSdk)
+            if(this.myWxSdk){
               this.myWxSdk.audio.playAudio(this.currentLocalId)
               this.myWxSdk.audio.onVoicePlayEnd(()=>{
                 this.$store.dispatch('updateCurrMsgAudioId','')
               })
+            }
           }else{
             if(!this.currentAudio) return
             this.currentAudio.load()
@@ -320,7 +316,7 @@
             this.customMsg['type'] = 'article';
             break; //患教资料
           case 15:
-            this.customMsg['questionLink'] = `/build/pages/chat/share.html?followupQuestionnaireId=${mediaContent.questionnaireId}&ofPatientId=${this.myInfo.id}`;
+            this.customMsg['questionLink'] = `/build/vuepage/question/${this.sessionId}/${mediaContent.questionnaireId}/${this.myInfo.id}`;
             this.customMsg['questionTitle'] = mediaContent.shareTitle;
             this.customMsg['showText'] = mediaContent.shareBrief;
             this.customMsg['type'] = 'question';
@@ -471,5 +467,12 @@
   .msg-image {
     height: 128px !important;
     min-width: 80px;
+  }
+  .my-question-msg{
+    background-color: #fff !important;
+    color: #4e5e75 !important;
+  }
+  .my-question-msg::after{
+    border-left: 6.4px solid #fff !important;
   }
 </style>

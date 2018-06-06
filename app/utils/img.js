@@ -11,7 +11,7 @@ export function photoCompress(file,w,objDiv){
 }
 function canvasDataURL(path, obj, callback){
     var img = new Image();
-    img.src = path;
+    img.src = utils.judgeAndroidOrIos()==='Android'?'data:image/jpeg;base64,'+path:path;
     img.onreadystatechange=function(){
         if (img.readyState=="complete"){
             alert(["图片大小是:",img.width,img.height]);
@@ -54,12 +54,16 @@ function canvasDataURL(path, obj, callback){
  *            用url方式表示的base64图片数据
  */
 export function convertBase64UrlToBlob(urlData){
-    var arr = urlData.split(','), mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    var arr = urlData.split(','), mime = arr[0].match(/:(.*?);/)[1]
+    var bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
     while(n--){
         u8arr[n] = bstr.charCodeAt(n);
     }
     return new Blob([u8arr], {type:mime});
+}
+
+export function base64Compress(urlData,obj,callback){
+    canvasDataURL(urlData,obj,callback)
 }
 
 export function blobToDataURL(blob) {

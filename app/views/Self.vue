@@ -1,5 +1,5 @@
 <template>
-    <div style="background-color: #f3f3f3;width: 100%;height: 100%;">
+    <div class="vue-chat-iframe">
         <iframe ref="iframe" frameborder="0" scrolling="no" style="height:100%;width:100%" src="/build/pages/index.html"></iframe>
     </div>
 </template>
@@ -9,7 +9,7 @@
     export default {
         name: 'self',
         beforeRouteEnter: (to, from, next) => {
-            util.updateChatUserName('慧骨患者端')
+            util.updateChatUserName('个人中心')
             next()
         }
     }

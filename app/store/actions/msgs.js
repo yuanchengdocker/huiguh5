@@ -4,14 +4,25 @@ import {getDataByIndex,updateData} from './indexDBInit'
 import util from '../../utils'
 import axios from '../../service/service'
 import cookie from './../../utils/cookie';
+import { uploadFile } from './../../utils/qiniuSdk';
 
+//离线接受消息，区分在聊天界面时候put消息，在列表界面只存储消息，更新回话
 export function onOfflineMsgs (obj) {
   let msgs = obj.msgs
-  msgs&&msgs.map((msg)=>{
-    return util.toMyMsg(msg)
+  let putMsg = []
+  msgs = msgs&&msgs.map((msg)=>{
+    msg = util.toMyMsg(msg)
+    store.dispatch('onUpdateSession',msg)
+    let sessionId = msg.sessionId
+    if(store.state.msgs[sessionId]){
+      putMsg.push(msg)
+    }
+    return msg
   })
+  if(putMsg && putMsg.length > 0){
+    store.commit('updateMsgs',putMsg)
+  }
   updateUserInfo(msgs)
-  store.commit('updateMsgs', msgs)
 }
 
 function updateUserInfo(msgs){
@@ -51,7 +62,6 @@ export function onMsg (msg) {
         cookie.delLocal(msg.mediaContent.fileDataLocalPath)
         msg.mediaContent.fileDataLocalPath = ''
       }
-      //避免自己消息更新过快
       store.dispatch('updateMsg',msg)
     }
     
@@ -75,7 +85,6 @@ function onSendMsgDone (error, msg) {
 
 export function buildAndPutMsg({state, commit},{callback,content,status}){
   let msg = util.buildSelfDefinedMsg(content,status)
-
   store.commit('putMsg', msg)
   store.commit('updateCurrSessionMsgs', {
     type: 'put',
@@ -100,7 +109,7 @@ export function updateMsg({state,commit},msg){
 export function sendMsg ({state, commit}, msg) {
   const nim = state.nim
   let obj = util.toNimMsg(msg)
-  
+
   //发送
   let mm = nim.sendCustomMsg({
     scene: obj.scene,
@@ -113,7 +122,6 @@ export function sendMsg ({state, commit}, msg) {
 export function getLocalHistoryMsgs({state, commit},id){
   store.dispatch('updateChatLoading', true)
   getDataByIndex((data)=>{
-    console.log(data)
     if (data) {
       if (data.length === 0) {
         commit('setNoMoreHistoryMsgs')
@@ -174,17 +182,18 @@ export function sendImgMsg({state, commit,dispatch},{file,msg}){
 
 export function sendVideoMsg({state, commit,dispatch},{file,msg}){
   (async (file,msg)=>{
-    let dataFile = new FormData()
-    dataFile.append('file', file,"file_"+Date.parse(new Date())+".mp4")
-    dataFile.append('fileType', 3)
+    // let dataFile = new FormData()
+    // dataFile.append('file', file,"file_"+Date.parse(new Date())+".mp4")
+    // dataFile.append('fileType', 3)
     try {
-      let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
-        "Content-Type": 'mutipart/form-data'
-      })
-      if (data) {
-        msg['mediaContent']['fileDataUrl'] = data.audioPath
-        msg['mediaContent']['coverUrl'] = data.smallImagePath
-        msg['mediaContent']['duration'] = data.voiceDuration
+      // let {data,code,error} = await axios('post', 'fileUpload', dataFile, {
+      //   "Content-Type": 'mutipart/form-data'
+      // })
+      let {duration,cover,qiniuDownUrl} = await uploadFile(file)
+      if (qiniuDownUrl) {
+        msg['mediaContent']['fileDataUrl'] = qiniuDownUrl
+        msg['mediaContent']['coverUrl'] = cover
+        msg['mediaContent']['duration'] = parseInt(duration)
         dispatch('sendMsg',msg)
       } else {
         updateFailMsg(error,msg)

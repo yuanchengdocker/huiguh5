@@ -20,7 +20,6 @@ export default {
     currSessionMsgs: [],
     currMsgAudioId:null,
     currDoctorBind:false,//是否与该医生绑定
-    showMenuBar: true,
     route: {},
     canUpdateConnectStatus:false,
     connectStatus:1, //1未连接，2收取中，0收取完,咨询医生,3重连中，4未登录
@@ -37,6 +36,7 @@ export default {
     //聊天未读数量
     sessionUnreadCount:0,
     showToastMsg:'',
+    wxSdkUrl:'',
     msgTypeMap:{
         1: 'text',
         2: 'audio',

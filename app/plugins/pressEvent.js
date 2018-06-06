@@ -20,11 +20,9 @@ PressEventPlugin.install = function (Vue) {
           recordingCancel = document.querySelector('.recording-cancel')
         element.className = "chat-say say-active"
         recording.style.display = recordingVoice.style.display = "block"
-        // console.log('start')
         if(!myWxSdk)
           myWxSdk = wxSdk()
         if (myWxSdk.isWx) {
-          console.log('开始语音')
           timeCount = 1
           time = setInterval(()=>{
             timeCount++
@@ -53,14 +51,12 @@ PressEventPlugin.install = function (Vue) {
         recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
         if (myWxSdk&&myWxSdk.isWx) {
           if (isCancel) {
-            console.log('取消语音')
             timeCount = 1
             clearInterval(time)
             time = null
             myWxSdk.audio.stop()
           } else {
             myWxSdk.audio.stop().then(({localId,res}) => {
-              console.log('录音结束。。。。')
               if(time){
                 clearInterval(time)
                 time = null

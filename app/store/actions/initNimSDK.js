@@ -39,19 +39,10 @@ export function initNimSDK({ state, commit, dispatch }, loginInfo) {
             // location.href = config.loginUrl
         },
         onwillreconnect: function onWillReconnect() {
-            // console.log(event)
             dispatch('updateConnectStatus',3)//重连中
         },
         ondisconnect: function onDisconnect(error) {
             dispatch('updateConnectStatus',1)//未连接
-            switch (error.code) {
-                // 账号或者密码错误, 请跳转到登录页面并提示错误
-                case 302:
-                    console.log('帐号或密码错误', 'login')
-                    break
-                default:
-                    break
-            }
         },
 
         // onsessions: onSessions,

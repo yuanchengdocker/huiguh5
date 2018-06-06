@@ -161,4 +161,7 @@
     width: 23px;
     height: 23px;
   }
+  .weui-tab__panel{
+    /* padding-bottom: 48px !important; */
+  }
 }

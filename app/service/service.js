@@ -9,6 +9,9 @@ export default (type = 'post', turl, data, config) => {
             return response.data
             // 如果不需要除了data之外的数据，可以直接 return response.data
         }
+        if(response.status === 10016){
+            alert('登录时间超时，请重新登录！')
+        }
         // 异常状态下，把错误信息返回去
         return {
             status: -404,
@@ -27,7 +30,7 @@ export default (type = 'post', turl, data, config) => {
         return Promise.resolve(res)
     }
     let url = urls[turl]
-    if(url === null || url === undefined) 
+    if(url === '' || url === null || url === undefined) 
         url = turl
     return axios({
         method: type,
@@ -46,7 +49,5 @@ export default (type = 'post', turl, data, config) => {
         (res) => {
             return checkCode(res)
         }
-    ).catch(function (error) {
-        return Promise.resolve(error)
-    });
+    )
 }

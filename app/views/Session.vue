@@ -78,7 +78,7 @@
                     case 3: result = '重连接中...' ;break;
                     case 4: result = '未登录' ;break;
                 }
-                if(this.$route.path === '/build/vuepage/session'){
+                if(this.$route.path === '/build/vuepage/menu/session'){
                     util.updateChatUserName(result)
                 }
                 return result;

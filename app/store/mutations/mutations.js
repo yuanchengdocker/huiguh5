@@ -34,9 +34,6 @@ export default {
     setCurrRoute(state, route){
         state.route = route
     },
-    updateMenuBarShow(state, isShow) {
-        state.showMenuBar = isShow
-    },
     updateLoadingStatus(state, { status }) {
         state.loadingStatus = status
     },
@@ -329,4 +326,7 @@ export default {
     resetNoMoreHistoryMsgs(state) {
         state.noMoreHistoryMsgs = false
     },
+    setWxSdkUrl(state,url){
+        state.wxSdkUrl = url
+    }
 }

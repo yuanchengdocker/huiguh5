@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import store from '../store'
 
-if(!Function.prototype.bind){
-  Function.prototype.bind = function(){
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function () {
     var fn = this, args = Array.prototype.slice.call(arguments), object = args.shift();
-    return function(){
+    return function () {
       return fn.apply(object, args.concat(Array.prototype.slice.call(arguments)));
     }
   }
@@ -12,26 +12,34 @@ if(!Function.prototype.bind){
 
 let Utils = Object.create(null)
 
-Utils.MsgsUpdateOrDelete = function(msgs,msg,isDelete){
+Utils.judgeAndroidOrIos = function () {
+  var UA = window.navigator.userAgent;
+  if (/Android|HTC/i.test(UA) || !!(window.navigator['platform'] + '').match(/Linux/i)) UA = 'Android';
+  else if (/iPad/i.test(UA) || /iPod|iPhone/i.test(UA)) UA = 'iOS';
+  else UA = 'other';
+  return UA
+}
+
+Utils.MsgsUpdateOrDelete = function (msgs, msg, isDelete) {
   let result = []
-  if(isDelete){
-    msgs&&msgs.filter((item,index)=>{
-      if(item.id !== msg.id){
+  if (isDelete) {
+    msgs && msgs.filter((item, index) => {
+      if (item.id !== msg.id) {
         result.push(item)
-      }else{
-        if(result && result[result.length-1] 
-          && result[result.length-1].type === 'timeTag'){
-            if(!msgs[index+1] || (msgs[index+1] && msgs[index+1].type === 'timeTag')){
-              result.pop()
-            }
+      } else {
+        if (result && result[result.length - 1]
+          && result[result.length - 1].type === 'timeTag') {
+          if (!msgs[index + 1] || (msgs[index + 1] && msgs[index + 1].type === 'timeTag')) {
+            result.pop()
+          }
         }
       }
     })
-  }else{
-    msgs = msgs&&msgs.map((item)=>{
-      if(item.id === msg.id){
+  } else {
+    msgs = msgs && msgs.map((item) => {
+      if (item.id === msg.id) {
         result.push(msg)
-      }else{
+      } else {
         result.push(item)
       }
     })
@@ -39,7 +47,7 @@ Utils.MsgsUpdateOrDelete = function(msgs,msg,isDelete){
   return result
 }
 
-Utils.buildSelfDefinedMsg = function(content,status='sending'){
+Utils.buildSelfDefinedMsg = function (content, status = 'sending') {
   let state = store.state
   let userInfos = state.userInfos
   let myInfo = state.myInfo
@@ -51,9 +59,9 @@ Utils.buildSelfDefinedMsg = function(content,status='sending'){
   msg['time'] = (new Date()).getTime()
 
   msg['id'] = this.getUuid(), //，只生成uid
-  msg['chatType'] = 1
+    msg['chatType'] = 1
   msg['fromUserAccid'] = myInfo.userAccid
-  msg['fromUserGender'] = myInfo.fromUserGender||0
+  msg['fromUserGender'] = myInfo.fromUserGender || 0
   msg['fromUserID'] = myInfo.id
   msg['fromUserName'] = myInfo.userName
   msg['fromUserAvatarUrl'] = myInfo.userAvatar
@@ -69,25 +77,25 @@ Utils.buildSelfDefinedMsg = function(content,status='sending'){
   msg['messageContentType'] = content.messageContentType
   msg['textContent'] = content.textContent
   msg['mediaContent'] = content.mediaContent
- 
+
   return msg
 }
-Utils.parseMsgToSelfDefined = function(msg){
-  return msg?{
-    content:msg.content,
-    flow:msg.flow,
-    from:msg.from,
-    idClient:msg.idClient,
-    scene:msg.scene,
-    to:msg.to,
-    type:msg.type,
-    time:msg.time,
-    status:msg.status,
-    sessionId:msg.sessionId
-  }:{}
+Utils.parseMsgToSelfDefined = function (msg) {
+  return msg ? {
+    content: msg.content,
+    flow: msg.flow,
+    from: msg.from,
+    idClient: msg.idClient,
+    scene: msg.scene,
+    to: msg.to,
+    type: msg.type,
+    time: msg.time,
+    status: msg.status,
+    sessionId: msg.sessionId
+  } : {}
 }
 
-Utils.toNimMsg = function(msg){
+Utils.toNimMsg = function (msg) {
   let data = getContentParams(msg)
   data['fromUserChatID'] = msg.fromUserAccid
   data['sessionHKID'] = msg.toUserId
@@ -95,7 +103,7 @@ Utils.toNimMsg = function(msg){
   data['sessionName'] = msg.toUserName
   data['sendPlatform '] = ''
   data['messageID'] = ''
-  data['mediaContent'] = (typeof msg.mediaContent !== 'string')?JSON.stringify(msg.mediaContent):msg.mediaContent
+  data['mediaContent'] = (typeof msg.mediaContent !== 'string') ? JSON.stringify(msg.mediaContent) : msg.mediaContent
   let obj = {
     scene: msg.scene,
     to: msg.toUserAccid,
@@ -106,19 +114,19 @@ Utils.toNimMsg = function(msg){
   }
   return obj
 }
-Utils.toMyMsg = function(msg){
-  if(!msg) return {}
+Utils.toMyMsg = function (msg) {
+  if (!msg) return {}
   let result = {
     scene: msg.scene,
-    flow:msg.flow,
-    status:msg.status,
-    sessionId:msg.sessionId,
+    flow: msg.flow,
+    status: msg.status,
+    sessionId: msg.sessionId,
     time: msg.time //消息发送时间
   }
-  let content = msg.content?JSON.parse(msg.content):{}
-  if(!content.data) return result
+  let content = msg.content ? JSON.parse(msg.content) : {}
+  if (!content.data) return result
   let data = content.data
-  getContentParams(data,result)
+  getContentParams(data, result)
   result['fromUserAccid'] = data.fromUserChatID
   result['toUserId'] = data.sessionHKID
   result['toUserAccid'] = data.sessionID
@@ -126,9 +134,9 @@ Utils.toMyMsg = function(msg){
   result['hasRead'] = false
   return result
 }
-function getContentParams(data,result={}){
-  result['id'] = data.id||Utils.getUuid(), //若为外来消息，只生成uid
-  result['chatType'] = data.chatType
+function getContentParams(data, result = {}) {
+  result['id'] = data.id || Utils.getUuid(), //若为外来消息，只生成uid
+    result['chatType'] = data.chatType
   result['fromUserGender'] = data.fromUserGender
   result['fromUserID'] = data.fromUserID
   result['fromUserName'] = data.fromUserName
@@ -139,51 +147,51 @@ function getContentParams(data,result={}){
   result['sessionType'] = data.sessionType
   result['messageContentType'] = data.messageContentType
   result['textContent'] = data.textContent
-  result['mediaContent'] = data.mediaContent&&typeof data.mediaContent === 'string'?JSON.parse(data.mediaContent):data.mediaContent
+  result['mediaContent'] = data.mediaContent && typeof data.mediaContent === 'string' ? JSON.parse(data.mediaContent) : data.mediaContent
   return result
 }
 
 
-Utils.parseMediaContent = function(msg){
+Utils.parseMediaContent = function (msg) {
   let data = JSON.parse(msg.content)
   let content = data.data
-  let mediaContent = content.mediaContent||{}
-  if(mediaContent && typeof mediaContent === 'string'){
+  let mediaContent = content.mediaContent || {}
+  if (mediaContent && typeof mediaContent === 'string') {
     mediaContent = JSON.parse(mediaContent)
   }
   return mediaContent
 }
 
-Utils.stringMediaContentMsg = function(mediaContent,msg){
+Utils.stringMediaContentMsg = function (mediaContent, msg) {
   let data = JSON.parse(msg.content)
   let content = data.data
   content.mediaContent = mediaContent
   msg.content = JSON.stringify(data)
 }
 
-Utils.getMsgType = function(msg){
+Utils.getMsgType = function (msg) {
   let msgTypeMap = store.state.msgTypeMap
-  return msgTypeMap[msg.messageContentType||1]
+  return msgTypeMap[msg.messageContentType || 1]
 }
 
-Utils.getUuid = function(){
+Utils.getUuid = function () {
   var s = [];
-    var hexDigits = "0123456789abcdef";
-    for (var i = 0; i < 36; i++) {
-        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-    }
-    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-    s[8] = s[13] = s[18] = s[23] = "-";
- 
-    var uuid = (new Date).getTime() + '-' + s.join("");
-    return uuid;
+  var hexDigits = "0123456789abcdef";
+  for (var i = 0; i < 36; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+  }
+  s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23] = "-";
+
+  var uuid = (new Date).getTime() + '-' + s.join("");
+  return uuid;
 }
 
 Utils.encode = function (_map, _content) {
   _content = '' + _content
   if (!_map || !_content) {
-    return _content||''
+    return _content || ''
   }
   return _content.replace(_map.r, function ($1) {
     var _result = _map[!_map.i ? $1.toLowerCase() : $1]
@@ -194,17 +202,17 @@ Utils.encode = function (_map, _content) {
 Utils.escape = (function () {
   let _reg = /<br\/?>$/
   let _map = {
-    r:/\<|\>|\&|\r|\n|\s|\'|\"/g,
-    '<':'&lt;',
-    '>':'&gt;',
-    '&':'&amp;',
-    ' ':'&nbsp;',
-    '"':'&quot;',
-    "'":'&#39;',
-    '\n':'<br/>',
-    '\r':''
+    r: /\<|\>|\&|\r|\n|\s|\'|\"/g,
+    '<': '&lt;',
+    '>': '&gt;',
+    '&': '&amp;',
+    ' ': '&nbsp;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '\n': '<br/>',
+    '\r': ''
   }
-  return function(_content){
+  return function (_content) {
     _content = Utils.encode(_map, _content)
     return _content.replace(_reg, '<br/>');
   };
@@ -228,15 +236,15 @@ Utils.mergeObject = function (dest, src) {
   return dest
 }
 
-Utils.updateChatUserName = function(title){
+Utils.updateChatUserName = function (title) {
   document.title = title;
   var i = document.createElement('iframe');
   // i.src = '/favicon.ico';
   i.style.display = 'none';
-  i.onload = function() {
-      setTimeout(function(){
-          i.remove();
-      }, 9)
+  i.onload = function () {
+    setTimeout(function () {
+      i.remove();
+    }, 9)
   }
   document.body.appendChild(i);
 }
@@ -271,16 +279,16 @@ Utils.mapMsgType = function (msg) {
   return map[type] || '未知消息类型'
 }
 
-Utils.getVideoTime = function(time){
-  if(typeof time === 'string'){
+Utils.getVideoTime = function (time) {
+  if (typeof time === 'string') {
     time = parseInt(time)
   }
-  if(time >= 60){
-    let minuts = time%60
-    let second = time - minuts*60
-    return minuts+':'+ (second<10 ? ('0'+second) : second)
-  }else{
-    return '0:'+ (time<10 ? ('0'+time) : time)
+  if (time >= 60) {
+    let minuts = parseInt(time / 60)
+    let second = time - minuts * 60
+    return minuts + ':' + (second < 10 ? ('0' + second) : second)
+  } else {
+    return '0:' + (time < 10 ? ('0' + time) : time)
   }
 }
 
@@ -335,7 +343,7 @@ Utils.formatDate = function (datetime, simple = false) {
   } else if (deltaTime < 3600 * 24 * 2) {
     return result.withLastDay
   } else if (deltaTime < 3600 * 24 * 7) {
-    return result.withDay
+    return result.withMonth
   } else if (deltaTime < 3600 * 24 * 30) {
     return result.withMonth
   } else {
@@ -371,7 +379,7 @@ Utils.parseCustomMsg = function (msg) {
         case 4:
           return '[白板消息]'
       }
-    } catch (e) {}
+    } catch (e) { }
     return '[自定义消息]'
   }
   return ''
@@ -380,58 +388,6 @@ Utils.parseCustomMsg = function (msg) {
 Utils.getFriendAlias = function (userInfo) {
   userInfo.alias = userInfo.alias ? userInfo.alias.trim() : ''
   return userInfo.alias || userInfo.nick || userInfo.account
-}
-
-Utils.generateChatroomSysMsg = function (data) {
-  let text
-  switch (data.attach.type) {
-    case 'memberEnter':
-      text = `欢迎${data.attach.fromNick}进入直播间`
-      break
-    case 'memberExit':
-      text = `${data.attach.fromNick}离开了直播间`
-      break
-    case 'blackMember':
-      text = `${(data.attach.toNick[0] || data.attach.to[0])}被管理员拉入黑名单`
-      break
-    case 'unblackMember':
-      text = `${(data.attach.toNick[0]||data.attach.to[0])}被管理员解除拉黑`
-      break
-    case 'gagMember':
-      text = `${(data.attach.toNick[0]||data.attach.to[0])}被管理员禁言`
-      break
-    case 'ungagMember':
-      text = `${(data.attach.toNick[0]||data.attach.to[0])}被管理员解除禁言`
-      break
-    case 'addManager':
-      text = `${(data.attach.toNick[0]||data.attach.to[0])}被任命管理员身份`
-      break
-    case 'removeManager':
-      text = `${(data.attach.toNick[0]||data.attach.to[0])}被解除管理员身份`
-      break;
-    case 'addTempMute':
-      text = `${(data.attach.toNick[0]||data.attach.to[0])}被管理员临时禁言`
-      break;
-    case 'removeTempMute':
-      text = `${(data.attach.toNick[0]||data.attach.to[0])}被管理员解除临时禁言`
-      break;
-    case 'addCommon':
-      text = `管理员添加普通成员`
-      break
-    case 'removeCommon':
-      text = `管理员删除普通成员`
-      break
-    case 'kickMember':
-      text = `${data.attach.toNick[0]}被管理员踢出房间`
-      break;
-    // case 'xxx':
-    // 直播公告已更新
-    // break;
-    default:
-      text = '通知消息'
-      break
-  }
-  return text
 }
 
 Utils.generateTeamSysmMsg = function (data) {
@@ -457,7 +413,7 @@ Utils.generateTeamSysmMsg = function (data) {
     }
     case 'passTeamApply': {
       let op = nicks.shift()
-      if (nicks.length===1 && op===nicks[0]) {
+      if (nicks.length === 1 && op === nicks[0]) {
         // 此情况为高级群设置不需要验证，用户申请入群后，收到的群消息提示
         text = `${op}加入群`
       } else {
@@ -492,7 +448,7 @@ Utils.generateTeamSysmMsg = function (data) {
       text = `${op}转让群主给${nicks}`
       break;
     }
-    case 'updateTeamMute':{
+    case 'updateTeamMute': {
       let nicks = this.getNickNames(data.attach.users)
       let op = nicks.shift()
       text = `${nicks}被管理员${data.attach.mute ? '禁言' : '解除禁言'}`
@@ -505,20 +461,20 @@ Utils.generateTeamSysmMsg = function (data) {
 }
 
 // todo 写成私有成员方法
-Utils.getNickNames = function(users) {
+Utils.getNickNames = function (users) {
   return users.map(user => {
-    return user.account === store.state.userUID? '你' : user.nick
+    return user.account === store.state.userUID ? '你' : user.nick
   })
 }
 
 // todo 写成私有成员方法
-Utils.getTeamUpdateInfo = function(msg) {
+Utils.getTeamUpdateInfo = function (msg) {
   let text, team = msg.attach.team, op = this.getNickNames(msg.attach.users).pop()
   if (team['name']) {
     text = `${op}修改群名为${team['name']}`
   } else if (team['intro']) {
     text = `${op}修改群介绍为${team['intro']}`
-  } 
+  }
   // 由于群公告的交互与 Android iOS 不一致，现版本不适配群公告
   // else if (team['announcement']) {
   //   text = `${op}修改群公告为${team['announcement']}`
@@ -561,38 +517,38 @@ Utils.teamConfigMap = {
   }
 }
 
-Utils.objCmp=function( x, y ) { 
-  if ( x === y ) { 
-      return true; 
-  } 
-  if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) { 
-      return false; 
-  } 
-  if ( x.constructor !== y.constructor ) { 
-      return false; 
-  } 
-  for ( var p in x ) { 
-      if ( x.hasOwnProperty( p ) ) { 
-          if ( ! y.hasOwnProperty( p ) ) { 
-              return false; 
-          } 
-          if ( x[ p ] === y[ p ] ) { 
-              continue; 
-          } 
-          if ( typeof( x[ p ] ) !== "object" ) { 
-              return false; 
-          } 
-          if ( ! this.objCmp( x[ p ], y[ p ] ) ) { 
-              return false; 
-          }   
-      } 
-  } 
-  for ( p in y ) { 
-      if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) { 
-          return false; 
-      } 
-  } 
-  return true; 
+Utils.objCmp = function (x, y) {
+  if (x === y) {
+    return true;
+  }
+  if (!(x instanceof Object) || !(y instanceof Object)) {
+    return false;
+  }
+  if (x.constructor !== y.constructor) {
+    return false;
+  }
+  for (var p in x) {
+    if (x.hasOwnProperty(p)) {
+      if (!y.hasOwnProperty(p)) {
+        return false;
+      }
+      if (x[p] === y[p]) {
+        continue;
+      }
+      if (typeof (x[p]) !== "object") {
+        return false;
+      }
+      if (!this.objCmp(x[p], y[p])) {
+        return false;
+      }
+    }
+  }
+  for (p in y) {
+    if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export default Utils

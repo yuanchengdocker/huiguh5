@@ -13,8 +13,6 @@ function connectNim({ state, commit, dispatch }, obj) {
     if (!state.nim || force) {
         let loginInfo = getUserCookieInfo()
         if (!loginInfo.uid) {
-            // 无cookie，直接跳转登录页
-            console.log('无历史登录记录，请重新登录', 'login')
             dispatch('updateConnectStatus',4)//未登录
             return
         } else {
@@ -31,7 +29,7 @@ function getUserCookieInfo(){
         sdktoken: cookie.readLocal('patientImToken'),
         id: cookie.readLocal('ofPatientId'),
         userAccid: cookie.readLocal('patientAccid'),
-        userName: cookie.readLocal('mobilePhone'),
+        userName: cookie.readLocal('ofPatientName'),
         userAvatar: cookie.readLocal('iconUrl'),
         userType: cookie.readLocal('userType')
     }
@@ -64,7 +62,6 @@ let indexActions = {
             dispatch('connect')
         }
         if(userInfoCompare(loginInfo,state.myInfo)) return
-        console.log('my不同')
         commit('updateUserUID', loginInfo)
         dispatch('updateUserInfor',loginInfo)
     },
@@ -81,7 +78,6 @@ let indexActions = {
         }
         
         if(!update) return
-        console.log('user不同')
         users = users.map((user)=>getUserInfo(user))
         commit('updateUserInfo',users)
         dispatch('saveData', {obj:users,table:'Users'})
@@ -133,9 +129,6 @@ let indexActions = {
     setCurrRoute({ state, commit }, route) {
         commit('setCurrRoute', route)
     },
-    updateMenuBarShow({ state, commit }, isShow) {
-        commit('updateMenuBarShow', isShow)
-    },
     updateRefreshState({ commit }) {
         commit('updateRefreshState')
     },
@@ -148,10 +141,7 @@ let indexActions = {
     },
     openDB(store,callback){
         let loginInfo = getUserCookieInfo()
-        if (!loginInfo.uid) {
-            console.log('无历史登录记录，请重新登录', 'login')
-        } else {
-            // 有cookie，重新登录
+        if (loginInfo.uid) {
             openDB(callback)
         }
     },

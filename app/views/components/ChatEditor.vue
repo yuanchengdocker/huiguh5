@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="more-send-option" v-show="currentChatWay === 3" ref="chatMoreOption">
-      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*" /><img src="../../img/album.png" />
+      <section class="option-item" @click="goAlbum(1)"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*" /><img src="../../img/album.png" />
       </section>
       <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" accept="video/*" capture="microphone" /><img src="../../img/camera.png" />
       </section>
@@ -116,9 +116,6 @@
     data() {
       return {
         msgToSent: '',
-        icon1: `${config.resourceUrl}/im/chat-editor-1.png`,
-        icon2: `${config.resourceUrl}/im/chat-editor-2.png`,
-        icon3: `${config.resourceUrl}/im/chat-editor-3.png`,
         currentChatWay: true,
         currentChatWay: 1, //1文本，2语音，3媒体
       }
@@ -164,9 +161,28 @@
         },'success')
       },
       goAlbum(e) {
-        var evt = document.createEvent("MouseEvents");
-        evt.initEvent("click", false, false);
-        e.target.previousSibling.dispatchEvent(evt);
+        
+        if(e === 1){
+          this.wxSdk.img.choose(['album','camera']).then((files)=>{
+              files&&files.map((file)=>{
+                this.sendImg(file)
+              })
+          })
+        }else if(e === 2){
+          // this.wxSdk.img.choose(['camera']).then((files)=>{
+          //     files&&files.map((file)=>{
+          //       this.sendImg(file)
+          //     })
+          // })
+          // this.wxSdk.video.choose().then(()=>{
+
+          // })
+        }else{
+          var evt = document.createEvent("MouseEvents");
+          evt.initEvent("click", false, false);
+          e.target.previousSibling.dispatchEvent(evt);
+        }
+        
       },
       // 解决输入法被激活时 底部输入框被遮住问题
       focusIpt() {
@@ -214,18 +230,22 @@
         let target = e.target
         let files = Array.from(target.files)
         files&&files.forEach((file)=>{
-          let targetType = file.type
-          if (targetType.indexOf('image/') >= 0) {
-            if(file.size/1024 > 1025) {
-              photoCompress(file,{quality: 0.2},(blob)=>{
-                this.sendImg(blob)
-              })
-            }else{
-              this.sendImg(file)
-            }
-          } else if (targetType.indexOf('video/') >= 0) {
-              this.sendVideo(file)
-          } 
+          ((file)=>{
+            setTimeout(()=>{
+              let targetType = file.type
+              if (targetType.indexOf('image/') >= 0) {
+                if(file.size/1024 > 1025) {
+                  photoCompress(file,{quality: 0.2},(blob)=>{
+                    this.sendImg(blob)
+                  })
+                }else{
+                  this.sendImg(file)
+                }
+              } else if (targetType.indexOf('video/') >= 0) {
+                  this.sendVideo(file)
+              } 
+            },0)
+          })(file)
         })
         
       },

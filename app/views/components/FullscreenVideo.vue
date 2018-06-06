@@ -23,10 +23,9 @@
                     img.alt = '图片尺寸较大，正在加载中...'
                     img.onload = function() {
                         // chatImg.appendChild(img)
-                        let videoHtml = `<video controls preload="auto" autoplay 
+                        let videoHtml = `<video id='media' controls preload="auto" autoplay 
                             width="100%" height="100%" x5-video-player-type="h5" x5-video-player-fullscreen="true" 
-                            playsinline="true" webkit-playsinline="true" x-webkit-airplay="true">
-                                    <source src="${self.$store.state.fullscreenVideo.src}">
+                            playsinline="true" webkit-playsinline="true" x-webkit-airplay="true" src="${self.$store.state.fullscreenVideo.src}">
                             </video>`
                         var objE = document.createElement("div"); 
                         objE.setAttribute('class','videoC')
@@ -60,7 +59,7 @@
             },
             musicInWeixinHandler(video) { 
                 wx.ready(function() {
-                    video.play();  
+                    document.getElementById('media').play() 
                 });
             }
         }

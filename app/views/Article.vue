@@ -1,5 +1,5 @@
 <template>
-    <div style="background-color: #f3f3f3;width: 100%;height: 100%;word-wrap: break-word;word-break: normal;white-space: normal;">
+    <div class="vue-chat-iframe">
         <iframe frameborder="0" style="height:100%;width:100%" src="/build/pages/science/list.html"></iframe>
     </div>
 </template>

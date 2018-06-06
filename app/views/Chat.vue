@@ -24,7 +24,6 @@
         mapState,
         mapGetters
     } from 'vuex'
-import { setTimeout } from 'timers';
     export default {
         components: {
             ChatEditor,
@@ -37,18 +36,14 @@ import { setTimeout } from 'timers';
         },
         
         created() {
-            this.updateMenuBarShow(false)
         },
         // 进入该页面，文档被挂载
         mounted() {
             try {
-                this.updateMenuBarShow(false)
                 this.$nextTick(function () {
-                    setTimeout(()=>{
-                        wxSdk.wxInit().then((sdk)=>{
-                            this.wxSdk = sdk
-                        })
-                    },5000)
+                    wxSdk.wxInit(this.$store.state.wxSdkUrl).then((sdk)=>{
+                        this.wxSdk = sdk
+                    })
                 })
                 // 此时设置当前会话
                 this.$store.dispatch('getDataByIndex', {callback:(data)=>{
@@ -58,19 +53,17 @@ import { setTimeout } from 'timers';
                 },table:'Msgs',id:this.sessionId})
                 
             } catch (error) {
-                alert(JSON.stringify(error))
+                alert('运行异常')
             }
         },
         updated() {
             if (this.$refs.wrapper) {
-                console.log(this.chatMsgStatus)
                 let eles = document.getElementById('chat-list').children
                 if(this.chatMsgStatus !== 2){
                     this.initScroll()
                 }
                 if(this.pullDowning){
                     if(this.chatMsgStatus === 3){
-                        console.log()
                         this.scroll.scrollToElement(eles[eles.length - this.chatItemLength + 1 ])
                     }
                 }else{
@@ -92,7 +85,6 @@ import { setTimeout } from 'timers';
             //关闭视频播放
             this.$store.dispatch('hideFullscreenVideo')
             this.$store.dispatch('resetCurrSession')
-            this.updateMenuBarShow(true)
         },
         data() {
             return {
@@ -140,10 +132,7 @@ import { setTimeout } from 'timers';
         methods: {
             isSendMsg(){
             },
-            ...mapActions(['updatedLoadingStatus', 'updateMenuBarShow', 'getLocalSessionMsg']),
-            onClickBack() {
-                this.$router.push(`/build/vuepage/session`);
-            },
+            ...mapActions(['updatedLoadingStatus', 'getLocalSessionMsg']),
             initScroll() {
                 if(!this.scroll){
                     this.scroll = new BScroll(this.$refs.wrapper, {

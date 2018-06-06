@@ -11,7 +11,6 @@ var dbName = 'huiguChat',     // 数据库名
 export function openDB(callback){
     dbName = cookie.readLocal('patientAccid')
     if(!dbName){
-        console.log('无历史登录记录，请重新登录', 'login')
         return
     }
     var request = indexedDB.open(dbName, daVer);
@@ -19,7 +18,6 @@ export function openDB(callback){
     // return 
     request.onsuccess = function(e){
         db = e.target.result;
-        console.time('indexdb')
 
         let promise1 = new Promise((resolve,reject)=>{
             searchData((dbData)=>{
