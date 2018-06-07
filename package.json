@@ -4,13 +4,13 @@
   "description": "huiguh5 embed html",
   "main": "index.js",
   "scripts": {
-    "prod": "cross-env NODE_ENV=production gulp production",
-    "prod:vue": "cross-env NODE_ENV=development webpack --config ./config/webpack.vue.config.js",
-    "build": "run-p -lns build:*",
-    "build:gulp": "cross-env NODE_ENV=development gulp",
+    "prod:gulp": "gulp production",
+    "prod:vue": "cross-env NODE_ENV=production webpack --config ./config/webpack.vue.config.js",
+    "prod": "run-p -lns prod:*",
+    "start": "run-p -lns build:*",
+    "build:gulp": "gulp",
     "build:css": "postcss ./app/style/**/*.css ./app/style/*.css -c config/postcss.config.js -d ./build/vuepage/css --poll --watch",
-    "build:vue": "cross-env NODE_ENV=development webpack-dev-server --config ./config/webpack.vue.config.js",
-    "start": "run-s -lns build "
+    "build:vue": "cross-env NODE_ENV=development webpack-dev-server --config ./config/webpack.vue.config.js"
   },
   "keywords": [
     "yike3.5",
@@ -90,15 +90,13 @@
   "dependencies": {
     "axios": "^0.18.0",
     "better-scroll": "^1.10.3",
-    "element-ui": "^2.3.7",
     "lib-flexible": "^0.3.2",
-    "mint-ui": "^2.2.13",
+    "qiniu-js": "^2.2.2",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-hot-loader": "^4.1.2",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
-    "vant": "^1.1.3",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",

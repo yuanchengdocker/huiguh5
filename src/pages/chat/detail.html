@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>患教详情</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1"/>
+  <link rel="stylesheet" type="text/css" href="/build/css/chat/patient.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+
+</head>
+<body>
+  <div class="patient-detail">
+    <div class="patient-detail-top"></div>
+    <div class="patient-detail-main">
+    </div>
+  </div>
+
+  <script src="/build/commonWX/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/common.js?v=1.0.0"></script>
+
+  <script type="text/html" id="detail">
+    <p class="detail-tit"><%= title %></p>
+    <p class="detail-con"><%= author %><span><%= formatDateTime(createDateTime) %></span></p>
+    <p class="detail-content"><%= content %></p>
+  </script>
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+      huiguPost(function(data){
+        if(data.code == 0){
+            $(".patient-detail-main").html(_.template($("#detail").html()) (data.data))
+
+            getImgUrls($(".detail-content"),2)  //点击放大
+        }else if(data.code == 71015){
+          $(".patient-detail-main").html("该患教文章不存在")
+        }
+            
+      },huiguPostUrl.getpatientEducationDetail,{"patientEducationId":optUrlParams("patientEducationId")})
+    })
+  </script>
+</body>
+</html>

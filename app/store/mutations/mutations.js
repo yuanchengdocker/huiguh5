@@ -14,7 +14,13 @@ export default {
         state.currMsgAudioId = id
     },
     loadToad(state,msg){
-        state.showToastMsg = msg
+        state.showToastMsg = ''
+        setTimeout(()=>{
+            state.showToastMsg = msg
+        },10)
+    },
+    updateIsQuestionSubmit(state,status){
+        state.isQuestionSubmit = status
     },
     updateCurrDoctorBind(state,isBind){
         state.currDoctorBind = isBind
@@ -114,7 +120,6 @@ export default {
                 }
             }
         })
-        // console.log(state.sessionMap)
         state.sessionlist = totalSessions
         state.sessionUnreadCount = unReadCount
     },
@@ -158,7 +163,6 @@ export default {
                 })
             }
         }
-        state.updateChatMsgStatus = 2 //更新消息
     },
     // 更新追加消息，追加一条消息
     putMsg(state, msg) {
@@ -221,6 +225,8 @@ export default {
         let type = obj.type || ''
         if (type === 'destroy') {
             state.currSessionId = null
+            state.currSessionLastMsg = null
+            state.currDoctorBind = false //还原是否绑定医生
         } else if (type === 'init') {
             if (obj.sessionId && (obj.sessionId !== state.currSessionId)) {
                 state.currSessionId = obj.sessionId
@@ -234,8 +240,7 @@ export default {
     updateCurrSessionMsgs(state, obj) {
         let type = obj.type || ''
         if (type === 'destroy') { // 清空会话消息
-            state.currSessionMsgs = []
-            state.currSessionLastMsg = null
+            // state.currSessionMsgs = []
             store.commit('updateCurrSessionId', {
                 type: 'destroy'
             })

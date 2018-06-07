@@ -3,7 +3,7 @@ var codeData = $.getUrlParam('code');
 
 if (isWechat) {
    if(codeData == undefined || codeData == null || codeData == "" || codeData == "null"){
-     window.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ window.location.href+'&response_type=code&scope=snsapi_base&state=1#wechat_redirect';
+     top.location.href ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ top.location.href +'&response_type=code&scope=snsapi_base&state=1#wechat_redirect';
    }else{
     huiguPost(function(data){
       if(data.code == 0){

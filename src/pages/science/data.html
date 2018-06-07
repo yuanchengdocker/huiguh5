@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>科普文章</title>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1"/>
+  <link rel="stylesheet" type="text/css" href="/build/css/science/data.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+
+</head>
+<body style="background-color: #fff">
+
+  <div class="patient-detail">
+    <div class="patient-detail-top"></div>
+    <div class="patient-detail-main">
+    </div>
+  </div>
+
+  <script src="/build/commonWX/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+  <script src="/build/common/js/common.js?v=1.0.0"></script>
+
+  <script type="text/html" id="detail">
+    <p class="detail-tit"><%= title %></p>
+    <p class="detail-con"><%= author %><span><%= formatDateTime(createDateTime) %></span></p>
+    <p class="detail-content"><%= content %></p>
+  </script>
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+      huiguPost(function(data){
+        if(data.code == 0){
+            $(".patient-detail-main").html(_.template($("#detail").html()) (data.data))
+
+            getImgUrls($(".detail-content"),2)  //点击放大
+        }else if(data.code == 71015){
+          $(".patient-detail-main").html("该患教文章不存在")
+        }
+            
+      },huiguPostUrl.getEducationDetail,{"patientEducationId":optUrlParams("patientEducationId")})
+    })
+  </script>
+</body>
+</html>

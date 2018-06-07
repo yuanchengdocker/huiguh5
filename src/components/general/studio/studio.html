@@ -86,11 +86,17 @@
                                     <% if(item.serviceInfo&&item.serviceInfo.indexOf(1)>=0){ %>
                                     <span class="item art">术</span>
                                     <% } %>
+                                    <% if(item.serviceInfo&&item.serviceInfo.indexOf(3)>=0){ %>
+                                    <span class="item examine">诊</span>
+                                    <% } %>
                                     <% if(item.serviceInfo&&item.serviceInfo.indexOf(2)>=0){ %>
                                     <span class="item teacg">教</span>
                                     <% } %>
-                                    <% if(item.serviceInfo&&item.serviceInfo.indexOf(3)>=0){ %>
-                                    <span class="item examine">诊</span>
+                                    <% if(item.serviceInfo&&item.serviceInfo.indexOf(4)>=0){ %>
+                                    <span class="item zhuan">专</span>
+                                    <% } %>
+                                    <% if(item.serviceInfo&&item.serviceInfo.indexOf(5)>=0){ %>
+                                    <span class="item tuan">团</span>
                                     <% } %>
                                 </span>
                                 <% if(item.role==1){ %>
@@ -102,8 +108,8 @@
                                 <% } %>
                             </div>
                             <p class="hospital hg-word-clamp hg-word-clamp-1"><%= item.professionalTitleName %> | <%= item.hospitalName %></p>
-                            <p class="gootat hg-mt10 hg-word-clamp hg-word-clamp-1"><%= item.expertiseTag&&item.expertiseTag.length>0?
-                                '擅长：'+item.expertiseTag.filter(function(item){return item;}).join('、'):'' %></p>
+                            <p class="gootat hg-mt10 hg-word-clamp hg-word-clamp-1"><%= item.expertise?
+                                '擅长：'+item.expertise:'' %></p>
                         </div>
                     </a>
                     <% }) %>
@@ -116,7 +122,7 @@
                         <a class="article-item hg-clear" href="<%- 
                             item.itemType==1?'/build/components/general/course/course.html?courseId='+item.itemId:
                             (item.itemType==2?'/build/components/general/courseSeries/courseSeries.html?projectId='+item.itemId:
-                            '/build/pages/article-share/article-share.html?newsId='+item.itemId)
+                            '/build/pages/article/article.html?newsId='+item.itemId)
                         %>">
                             <div class="hg-clear">
                                 <p class="title hg-mt10 hg-word-clamp hg-word-clamp-3"><%= item.itemType==2?'【专题】':'' %><%= item.itemName %></p>
@@ -159,9 +165,9 @@
                             <img src="<%- item.img %>" alt=""/>
                             <span class="title"><%= item.title %></span>
                         </div>
-                        <div class="service-link">
+                        <!-- <div class="service-link">
                             <a href="javascript:void(0);" class="link" onclick='linkToDownload()'><%= item.linkname %></a>
-                        </div>
+                        </div> -->
                     </li>
                     <% }) %>    
                 </script>

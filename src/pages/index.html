@@ -3,7 +3,7 @@
 
 	<head>
 		<meta charset="UTF-8">
-		<title>慧骨患者端</title>
+		<title>个人中心</title>
 		<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
 		<link rel="stylesheet" type="text/css" href="/build/commonWX/css/base.css">
 		<link rel="stylesheet" type="text/css" href="/build/css/styleWX.css">
@@ -13,11 +13,12 @@
 	<body class="index">
 	  <section class="index-top">
       <div class="upload">
-        <input id="img" type="file" accept="image/*">
+        <input id="img" type="file" accept="image/*" name="file">
+        <input id="inputImg"  name="fileType" value="1">
         <img src="/build/imgWX/updata.png" class="updata photos" />
       </div>
 	  	<div class="login">
-	  		<a class="btn-login" href="login.html?source=1">立即登录</a>
+	  		<a class="btn-login" onclick="top.location.href='login.html?source=1'">立即登录</a>
 	  	</div>
 	  	<div class="sign">
 	  		<p>欢迎您</p>
@@ -32,8 +33,10 @@
 	  </section>
 	  <section class="index-layout">
 			<div class="layout-main">
-				<p>退出登录后，将解除当前手机号和该微信账号的绑定，重新登录需要再次绑定手机</p>
-				<a class="quit" onclick="indexAction.quitQuit();">退出登录</a><a class="cancel" onclick="indexAction.quitCancel();">保持登录</a>
+			  <img src="/build/img/indexTost.png" class="layout-img">
+			  <p class="layout-tit">退出登录</p>
+				<p class="layout-con">退出登录后重新登录需要再次绑定手机</p>
+				<a class="quit" onclick="indexAction.quitQuit();">退出登录</a><a class="cancel" onclick="indexAction.quitCancel();">暂不退出</a>
 			</div>
 		</section>
 	  <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
@@ -41,20 +44,7 @@
 	  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
 	  <script src="/build/commonWX/js/common.js"></script>
 	  <script src="/build/js/index.js"></script>
-
-	  <script type="text/javascript">
-    $(document).ready(function() {
-        var dt = new Date();
-        dt.setHours(dt.getHours() + 24);
-        document.cookie = "apiVer=3; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "appSrc=420000; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "appType=5; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "appVer=210; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "cType=6; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "osVer=21; expires=" + dt.toGMTString() + ";path=/";
-        document.cookie = "osUUID=45298B7AF43B066B786532C00CBC26E4; expires=" + dt.toGMTString() + ";path=/";
-    });
-  </script>
+    
 	</body>
 
 </html>

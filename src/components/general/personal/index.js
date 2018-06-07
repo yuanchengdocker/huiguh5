@@ -184,7 +184,8 @@ $(document).ready(function() {
     $(".detail-cont").html(_.template($("#personal_detail_cont").html()) ({
         "conferenceId":0,
         "userDescribe":'',
-        "serviceInfo":''
+        "serviceInfo":'',
+        "expertise":'',
     }))
     $(".detail-header").html(_.template($("#personal_detail").html()) ({
         "conferenceId":0,

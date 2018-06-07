@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>科普文章</title>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="/build/commonWX/css/base.css?v=1.0.1"/>
+  <link rel="stylesheet" type="text/css" href="/build/css/science/list.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+
+</head>
+<body>
+  <div class="science-list" id="scienceList">
+    <ul></ul>
+    <div class="flup-empty">
+      <img src="/build/img/fulp-empty.png" class="emptyImg">
+      <p>暂无记录</p>
+    </div>
+  </div>
+
+  <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/address.js?v=1.0.0"></script>
+  <script src="/build/commonWX/js/common.js?v=1.0.0"></script>
+  
+  <script type="text/html" id="list">
+    <% _.forEach(data,function(item) { %>
+      <li class="list-cont" onclick="top.location.href='data.html?patientEducationId=<%- item.patientEducationId %>'">
+        <div class="list-date">
+          <p class="date-day"><%= formatDateTime(item.createDateTime,"day") %></p>
+          <p class="date-year"><%= formatDateTime(item.createDateTime,"mouth") %></p>
+        </div>
+        <div class="list-main">
+          <p class="list-tit"><%= item.title %></p>
+          <p class="list-artor">作者：<%= item.author %></p>
+          <p class="list-content"><%= item.content %></p>
+        </div>
+      </li>
+    <% }) %>
+  </script>
+  
+  <script type="text/javascript">
+  $(document).ready(function(){
+    var startIndex=0,pageSize=10,ajaxLock = false;
+    $("html").height("auto");
+    function dataList(){
+      huiguPost(function(data){
+        ajaxLock = false;
+        if(data.code == 0){
+          if (data.data == null) {
+            ajaxLock = true;
+            if(startIndex == 0){
+              $(".flup-empty").show();
+              $(".flup-main").hide();
+            }
+            return;
+          }else{
+            var datalenght = data.data.length;
+            if(datalenght < pageSize){
+              ajaxLock = true;
+            }
+            if (datalenght == 0) {
+              ajaxLock = true;
+              $(".flup-empty").show();
+              $(".flup-main").hide();
+              return
+            }
+          }
+          
+        }else{
+          ajaxLock = true;
+          $(".flup-empty").show();
+          $(".flup-main").hide();
+          return;
+        }
+        var ele =  _.template($("#list").html()) (data);
+        $(".science-list ul").append(ele);
+        if(startIndex==0&&$(".flup-main ul").height() < window.screen.height){
+            $("html").height("100%")
+            $("body").height("100%")
+        }   
+      },huiguPostUrl.getqueryEducation,{"startIndex":startIndex,"pageSize":pageSize})
+    }
+    dataList();
+    
+    $("#scienceList").on('scroll', function (e) {
+      var wScrollY = window.pageYOffset|| document.documentElement.scrollTop || document.body.scrollTop || 0;
+      var wInnerH = window.innerHeight; // 设备窗口的高度（不会变）
+      var bScrollH = document.body.scrollHeight; // 滚动条总高度
+      if (wScrollY + wInnerH >= bScrollH - 100) {
+           if (!ajaxLock) {
+            startIndex = startIndex + pageSize;
+            dataList();  
+            ajaxLock = true;
+          }
+      }
+    });
+  })
+  </script>
+</body>
+</html>

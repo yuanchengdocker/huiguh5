@@ -13,25 +13,22 @@ function resolve(dir) {
     return path.join(__dirname, '..', dir)
 }
 const devServer = {
-    port: '9999',
-    host: 'localhost',
-    // progress: true,
-    // disableHostCheck: true,
-    overlay: {
-    },
+    port: '86',
+    host: '0.0.0.0',
     //   errors: true
     hot: true,
     historyApiFallback: {
-        index: '/build/vuepage/index.html'
+      index: '/build/vuepage/index.html'
     },
     proxy: {
-        '/huiguapi/*': {
+        '/huiguapi/*': { 
             target: 'http://192.168.0.54:3362',
             // target: 'http://192.168.27.35:8082',
             secure: false, // 接受 运行在 https 上的服务
             changeOrigin: true
         },
-        '/thirdpartyapi/*': {
+        '/thirdpartyapi/*': { 
+            // target: 'http://192.168.27.50:3459',
             target: 'http://192.168.0.54:3362',
             // target: 'http://10.0.0.167:3362',
             secure: false, // 接受 运行在 https 上的服务
@@ -80,6 +77,9 @@ if (isDev) {
     })
 } else {
     config = webpackMerge(config, {
+        entry:{
+            vendor: ['vue','vue-router','vuex','better-scroll','axios']
+        },
         plugins: [
             new webpack.optimize.CommonsChunkPlugin({
                 name: 'vendor',

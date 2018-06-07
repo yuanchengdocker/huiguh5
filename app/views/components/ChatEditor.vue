@@ -207,13 +207,13 @@
         
         this.sendMyBuildMsg((msg)=>{
           this.sendNimMsg(msg)
-          this.msgToSent = ''
+          
         },{
           mediaContent: '',
           messageContentType: 1,
           textContent: this.msgToSent
         })
-
+        this.msgToSent = ''
       },
       getObjectURL(file) {
         var url = null;

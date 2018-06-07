@@ -30,7 +30,7 @@
             return false;
         }
         setTimeout(function(){
-          window.location.href = dataPath.WXhttpPathch + 'build/pages/patient/details/details.html?appointmentId='+$.getUrlParam('appointmentId')+'&AlipayWxPay';
+          top.location.href = dataPath.WXhttpPathch + 'build/pages/patient/details/details.html?appointmentId='+$.getUrlParam('appointmentId')+'&AlipayWxPay';
         },20000);
       }else{
         huiguPost(function(data){

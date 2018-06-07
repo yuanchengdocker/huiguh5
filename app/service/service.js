@@ -1,16 +1,19 @@
 import axios from 'axios'
 import urls from '../config/urls'
+import store from '../store'
 
 export default (type = 'post', turl, data, config) => {
     function checkStatus(response) {
         // loading
         // 如果http状态码正常，则直接返回数据
         if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
+            console.log(response.data)
+            if(response.data.code === 10016){
+                store.dispatch('userLogoOut')
+                location.href = '/build/pages/login.html'
+            }
             return response.data
             // 如果不需要除了data之外的数据，可以直接 return response.data
-        }
-        if(response.status === 10016){
-            alert('登录时间超时，请重新登录！')
         }
         // 异常状态下，把错误信息返回去
         return {
@@ -24,9 +27,6 @@ export default (type = 'post', turl, data, config) => {
         if (res.status === -404) {
             alert(res.msg)
         }
-        // if (res.data && (!res.data.success)) {
-        //     alert(res.data.error_msg)
-        // }
         return Promise.resolve(res)
     }
     let url = urls[turl]

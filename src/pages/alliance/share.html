@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>专科联盟</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build2/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build2/css/alliance/index.css?v=1.0.1">
+  <script src="/build2/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="alliance-index-box" style="margin-top: 0;padding-bottom: 1.333333rem"></div>
+
+
+  <script src="/build2/common/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build2/common/js/lodash.js?v=1.0.0"></script>
+  <script src="/build2/common/js/address.js?v=1.0.0"></script>
+  <script src="/build2/common/js/common.js?v=1.0.0"></script>
+  <script src="/build2/common/js/download-bar.js?v=1.0.2"></script>
+  
+  <script type="text/html" id="detail">
+      <div class="alliance-banner">
+      <img src="<%- data.coverUrl %>">
+    </div>
+    <div class="alliance-info">
+      <p class="alliance-tit"><i></i>联盟介绍</p>
+      <p class="alliance-info-main"><%= data.introduction %></p>
+    </div>
+    <div class="alliance-expert">
+      <p class="alliance-tit"><i></i>合作专家</p>
+      <div class="aliiance-expert-main">
+        <ul style="width:1100px">
+          <% _.forEach(data.cooperateExperts,function(item) { %>
+          <li>
+            <a class="expert-img" href="/build/components/general/personal/index.html?doctorUserId=<%- item.userId %>">
+            <% if(item.avatarUrl){ %>
+            <img src="<%- item.avatarUrl %>"></a>
+            <% }else{ %>
+            <img src="/build2/img/icon.png"></a>
+            <% } %>
+            <p class="expert-tit"><%= item.doctorName %></p>
+            <p class="expert-con"><%= item.professionalTitleName %></p>
+          </li>
+        <% }) %>
+        </ul>
+      </div>
+    </div>
+    <div class="alliance-hosp">
+      <p class="alliance-tit"><i></i>签约医院</p>
+      <ul>
+      </ul>
+    </div>
+  </script>
+  <script type="text/html" id="AllianceHosp">
+    <% _.forEach(data,function(list) { %>
+      <li>
+        <div class="hosp-img">
+        <% if(list.hospitalPicUrl){ %>
+        <img src="<%- list.hospitalPicUrl %>">
+        <% }else{ %>
+        <img src="/build2/img/img.png">
+        <% } %>
+        </div>
+        <div class="hosp-main">
+          <p class="hosp-main-tit"><%= list.hospitalName %></p>
+          <p class="hosp-main-con"><%= list.hospitalAddress %></p>
+        </div>
+      </li>
+    <% }) %>
+  </script>
+
+  <script type="text/javascript">
+  $(document).ready(function(){
+     huiguPost(function(data){
+      if(data.code == 0){
+        $(".alliance-index-box").html(_.template($("#detail").html()) (data))
+        
+        var widthUl = 140 * data.data.cooperateExperts.length + "px";
+        $(".aliiance-expert-main ul").width(widthUl);
+        
+         HospitalList(); //合作医院列表
+      }
+    },huiguPostUrl.getAllianceDetail,{"expertAllianceId":optUrlParams("expertAllianceId")})
+    
+    function HospitalList(){
+      var startIndex=0,pageSize=10,ajaxLock = false;
+      $("html").height("auto")
+      var getData = function(){
+          huiguPost(function(data){
+              ajaxLock = false;
+              if(data.code==0){
+
+                  if (data.data == null) {
+                    ajaxLock = true;
+                    if(startIndex == 0){
+                      //$(".detail-tab-team .personal-empty").show();
+                    }
+                    return;
+                  }else{
+                    var datalenght = data.data.length;
+                    if(datalenght < pageSize){
+                      ajaxLock = true;
+                    }
+                    if (datalenght == 0) {
+                      ajaxLock = true;
+                      if(startIndex == 0){
+                        //$(".detail-tab-team .personal-empty").show();
+                      }
+                      return
+                    }
+                }
+
+              }else{
+                  ajaxLock = true;
+                  return
+              }
+              var ele =  _.template($("#AllianceHosp").html()) (data);
+              $(".alliance-hosp ul").append(ele);
+              if(startIndex==0 && $(".alliance-index-box").height() < window.screen.height){
+                  $("html").height("100%")
+                  $("body").height("100%")
+              }
+          },huiguPostUrl.getHospitalList,{"expertAllianceId":optUrlParams("expertAllianceId"),"startIndex":startIndex,"pageSize":pageSize})
+      }
+      
+     getData();
+     window.addEventListener('scroll', function (e) {
+          var wScrollY = window.pageYOffset|| document.documentElement.scrollTop || document.body.scrollTop || 0;
+          var wInnerH = window.innerHeight; // 设备窗口的高度（不会变）
+          var bScrollH = document.body.scrollHeight; // 滚动条总高度
+          if (wScrollY + wInnerH >= bScrollH - 100) {
+             if (!ajaxLock) {
+              startIndex = startIndex + pageSize;
+              getData();  
+              ajaxLock = true;
+            }
+        }
+      });
+    }
+})
+</script>
+
+</body>
+</html>

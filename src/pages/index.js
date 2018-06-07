@@ -5,61 +5,62 @@ var indexAction={
   login: $(".index-top .login"),
   btnQuit: $(".index-bottom .btn-quit"),
   phoneData: "", //登录手机号
+  iconUrl: "", //登录手机号
   init: function(){
     indexAction.phoneData = localStorage.getItem('mobilePhone');
-    localStorage.setItem('doctorid', $.getUrlParam('doctorid')||"");
+    indexAction.iconUrl = localStorage.getItem('iconUrl');
+    var url = top.location.href;
+    
 
     if(indexAction.phoneData == null || indexAction.phoneData == undefined || indexAction.phoneData == "" || indexAction.phoneData == "null"){
 
       //授权接口
       Authorized(function(data){
-        // console.log(data);
-        if(data.data.isBindAccount == true){
-          if(data.data.isSubscribe == true){
-            indexAction.phoneData = data.data.mobilePhone;
-            localStorage.setItem('mobilePhone', data.data.mobilePhone);
-            setCookie('token',data.data.loginToken);  //设置token
+        var datavalue = data.data;
+        if(datavalue.isBindAccount == true){
+          if(datavalue.isBindOfPatient == true){
+
+            indexAction.phoneData = datavalue.mobilePhone;
+            localStorage.setItem('mobilePhone', datavalue.mobilePhone);
+            localStorage.setItem('iconUrl', datavalue.iconUrl);
+            setCookie('token',datavalue.loginToken);  //设置token
             indexAction.login.css("display","none");
             indexAction.sign.css("display","block");
             indexAction.btnQuit.css("display","block");
-            indexAction.signPhone.html(data.data.mobilePhone);
-            $("#img").show();
-            $('#img').change(function() { 
-              var file = this.files[0]; 
-              var r = new FileReader(); 
-              r.readAsDataURL(file); 
-              $(r).load(function() { 
-                //上传
-                huiguPost(function(data){
-                  if(data.code == 0){
-                    $(".updata").removeClass("photos");
-                    $('.updata').attr("src",data.data.iconUrl); 
-                  }else{
-                    setToast3("您还未登录，需要去登录");
-                    $("#img").hide();
-                  }
-                },huiguPostUrl.getupdateIcon,{'file':this.result})
+            indexAction.signPhone.html(datavalue.mobilePhone);
 
-              })
-                  
-            }) 
+            $("#img").show();
+            $(".updata").removeClass("photos");
+            $('.updata').attr("src",datavalue.iconUrl); 
+
           }
+        }else{
+
+          $(".upload .updata").on("click",function(){
+            setToast3("您还未登录，需要去登录");
+            $("#img").hide();
+          })
         }
         
       },1); 
       
     }else{
-      
-      indexAction.signPhone.html(indexAction.phoneData);
-        setCookie('token',localStorage.getItem('token'));  //设置token
-        indexAction.login.css("display","none");
-        indexAction.sign.css("display","block");
-        indexAction.btnQuit.css("display","block");
 
-        $(".upload #img").on("click",function(){
-          setToast3("您还未登录，需要去登录");
-          $("#img").hide();
-        })
+      if(url.indexOf("doctorid")>0 && optUrlParams('doctorid') != localStorage.getItem('doctorid')){
+        localStorage.setItem('doctorid',optUrlParams('doctorid'));
+        //进行重新绑定患者步骤
+        huiguPost(function(data){},huiguPostUrl.getDoctorRelation,{'ofPatientId':localStorage.getItem('ofPatientId'),'doctorUserId':optUrlParams('doctorid')})
+      }
+
+      indexAction.signPhone.html(indexAction.phoneData);
+      setCookie('token',localStorage.getItem('token'));  //设置token
+      indexAction.login.css("display","none");
+      indexAction.sign.css("display","block");
+      indexAction.btnQuit.css("display","block");
+
+      $("#img").show();
+      $(".updata").removeClass("photos");
+      $('.updata').attr("src",indexAction.iconUrl); 
       
     }
     
@@ -69,17 +70,16 @@ var indexAction={
     if(indexAction.phoneData == null || indexAction.phoneData == undefined || indexAction.phoneData == "" || indexAction.phoneData == "null"){
       setToast3("您还没登录，需要去登录");
     }else{
-      window.location.href= dataPath.WXhttpPathch + 'build/pages/patient/orderlist/orderlist.html';
+      top.location.href = dataPath.WXhttpPathch + 'build/pages/patient/orderlist/orderlist.html';
     }
   },
   clickquit: function(){
     if(indexAction.phoneData == null || indexAction.phoneData == undefined || indexAction.phoneData == "" || indexAction.phoneData == "null"){
       setToast3("您还没登录");
       setTimeout(function(){
-        window.location.href= dataPath.WXhttpPathch + 'build/pages/login.html';
+        top.location.href = dataPath.WXhttpPathch + 'build/pages/login.html';
       },1000);
     }else{
-      console.log(4);
       indexAction.quit(); //执行方法
     }
   },
@@ -102,7 +102,8 @@ var indexAction={
         indexAction.sign.css("display","none");
         indexAction.login.css("display","block");
         indexAction.btnQuit.css("display","none");
-
+        
+        $("#img").hide();
         $(".updata").addClass("photos");
         $('.updata').attr("src","/build/imgWX/updata.png"); 
 
@@ -117,9 +118,62 @@ var indexAction={
         indexAction.login.css("display","block");
         indexAction.btnQuit.css("display","none");
 
-        window.location.href= dataPath.WXhttpPathch + 'build/pages/login.html';
+        top.location.href = dataPath.WXhttpPathch + 'build/pages/login.html';
       }
     },huiguPostUrl.getLogoutToken);
   }
 }
 indexAction.init();
+
+
+$('#img').change(function() { 
+  var file = this.files[0]; 
+  var r = new FileReader(); 
+  r.readAsDataURL(file); 
+  $(r).load(function() { 
+    //上传
+    var dataFile = new FormData();
+    dataFile.append('file', $('input[name=file]')[0].files[0]);
+    //dataFile.append('file', this.result);
+    dataFile.append('fileType', 1);
+
+    $.ajax({
+      url: huiguPostUrl.getuploadMultipartFile,
+      type: 'post',
+      contentType: false,
+      processData: false,
+      cache: false,
+      //contentType: 'multipart/form-data',
+      data:dataFile,
+      success: function(data){
+        if(data.code == 0){
+          var formvalue = data.data;
+          //修改患者头像
+          huiguPost(function(data){
+            if(data.code == 0){
+              $('.updata').attr("src",data.data.iconUrl); 
+              localStorage.setItem('iconUrl', data.data.iconUrl);
+            }
+          },huiguPostUrl.getupdateIcon,{"iconUrl":formvalue.largeImagePath,"thumbUrl":formvalue.smallImagePath});
+        }else{
+          setToast3("您还未登录，需要去登录");
+          $("#img").hide();
+        }
+      },
+      error: function(){
+        setToast3("提交失败");
+      }
+    });
+    // huiguPost(function(data){
+    //   if(data.code == 0){
+        
+    //     $('.updata').attr("src",data.data.iconUrl); 
+    //   }else{
+    //     setToast3("您还未登录，需要去登录");
+    //     $("#img").hide();
+    //   }
+    // },huiguPostUrl.getupdateIcon,{'file':this.result,"fileType":1,})
+
+  })
+              
+}) 

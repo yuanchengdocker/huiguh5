@@ -128,8 +128,14 @@ var loginAction={
           setToast3("登录成功");
         }
         localStorage.setItem('mobilePhone', loginAction.mobilePhone);
+        localStorage.setItem('iconUrl', dataValue.iconUrl);
         localStorage.setItem('token', dataValue.loginToken);//存储token
         localStorage.setItem('isSubscribe', dataValue.isSubscribe);//存储是否关注过公众账号
+        localStorage.setItem('ofPatientId', dataValue.ofPatientId); //存储就诊人Id
+        localStorage.setItem('patientId', dataValue.patientId);  //患者Id
+        localStorage.setItem('patientAccid', dataValue.patientAccid);  //患者聊天Id
+        localStorage.setItem('patientImToken', dataValue.patientImToken);  //云信token
+        localStorage.setItem('ofPatientName', dataValue.ofPatientName); //患者名称
 
         //判断是否有患者
         if(dataValue.isBindOfPatient == true){
@@ -137,30 +143,30 @@ var loginAction={
           if(localStorage.getItem('doctorid') == "" || localStorage.getItem('doctorid') == null){
             if(dataValue.isSubscribe == true){
               if(loginAction.sourcedata == 2){
-                window.location.href= dataPath.WXhttpPathch + 'build/pages/index.html';
+                top.location.href = dataPath.WXhttpPathch + 'build/vuepage/menu/self';
               }else if(loginAction.sourcedata == 3){
-                window.location.href= dataPath.WXhttpPathch + 'build/pages/patient/orderlist/orderlist.html';
+                top.location.href = dataPath.WXhttpPathch + 'build/pages/patient/orderlist/orderlist.html';
               }else{
-                window.location.href= dataPath.WXhttpPathch + 'build/pages/index.html';
+                top.location.href = dataPath.WXhttpPathch + 'build/vuepage/menu/self';
               }
               
             }else{
-              window.location.href= dataPath.WXhttpPathch + 'build/pages/card/follow.html';
+              top.location.href = dataPath.WXhttpPathch + 'build/pages/card/follow.html';
             }
           }else{
             huiguPost(function(data){
               if(data.code == 0){
                 if(dataValue.isSubscribe == true){
-                  window.location.href= dataPath.WXhttpPathch + 'build/pages/index.html';
+                  top.location.href = dataPath.WXhttpPathch + 'build/vuepage/menu/self';
                 }else{
-                  window.location.href= dataPath.WXhttpPathch + 'build/pages/card/follow.html';
+                  top.location.href = dataPath.WXhttpPathch + 'build/pages/card/follow.html';
                   
                 }
               }
             },huiguPostUrl.getDoctorRelation,{'ofPatientId':dataValue.ofPatientId,'doctorUserId':localStorage.getItem('doctorid')})
           }
         }else{
-          window.location.href= dataPath.WXhttpPathch + 'build/pages/card/card.html';
+          top.location.href = dataPath.WXhttpPathch + 'build/pages/card/card.html';
         }
         
 

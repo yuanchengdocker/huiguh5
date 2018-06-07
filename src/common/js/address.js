@@ -17,18 +17,18 @@ var huiguPostUrl = {
 
     getExpertSummary: basePath + apiPath + '/expert/summary', //专家主页调取-宁方明
     getExpertGroup: basePath + apiPath + '/expert/group', //专家主页的团队列表-宁方明
-    getExpertProduction: basePath + apiPath + '/workingGroup/queryProduction', //专家主页的作品列表-宁方明
+    getExpertProduction: basePath + apiPath + '/doctorStudio/queryProduction', //专家主页的作品列表-宁方明
     getExpertService: basePath + apiPath + '/expert/service', //专家主页的服务列表-宁方明
     
-    getDoctorHomeService: basePath + apiPath + '/doctorShare/getDoctorHomePage',  //医生主页
-    getQueryDoctorStudio: basePath + apiPath + '/workingGroup/queryDoctorStudio',  //医生主页的团队列表
+    getDoctorHomeService: basePath + apiPath + '/doctorUser/getDoctorHomePage',  //医生主页
+    getQueryDoctorStudio: basePath + apiPath + '/doctorStudio/queryDoctorStudio',  //医生主页的团队列表
 
     
     courseDetail:basePath + apiPath + '/video/video/courseDetail',   //课程详情
     
-    queryDoctorStudioMembers:basePath + apiPath + '/workingGroup/queryDoctorStudioMembers',// 工作室成员
-    getDoctorStudioSpecificInfo:basePath + apiPath + '/workingGroup/getDoctorStudioSpecificInfo', //工作室详情
-    queryService:basePath + apiPath + '/workingGroup/queryService', //工作室服务列表
+    queryDoctorStudioMembers:basePath + apiPath + '/doctorStudio/queryDoctorStudioMembers',// 工作室成员
+    getDoctorStudioSpecificInfo:basePath + apiPath + '/doctorStudio/getDoctorStudioSpecificInfo', //工作室详情
+    queryService:basePath + apiPath + '/doctorStudio/queryService', //工作室服务列表
     querySchemeDetail:basePath + apiPath + '/diseaseSurgery/querySchemeDetail', //手术方案详情
 
 
@@ -44,6 +44,20 @@ var huiguPostUrl = {
     getCollegeHome : basePath + apiPath + '/college/home',
     getChannelArticle : basePath + apiPath + '/channel/queryChannelArticle',
     getChannelBanner : basePath + apiPath + '/channel/queryAdvertisement',
+
+
+    //3.2
+    getExpertList: basePath + apiPath + '/expert/list' , //专家列表
+    getDepartmentQueryList: basePath + apiPath + '/common/department/queryList', //获取骨科科室列表
+    getAreaQueryRegionArea: basePath + apiPath + '/common/area/queryRegionArea', //查询区域地址
+
+    getAllianceList: basePath + apiPath + '/expertAlliance/expertAllianceList', //专科联盟列表
+
+    getAllianceDetail: basePath + apiPath + '/expertAlliance/expertAllianceDetail',//专科联盟详情
+    getHospitalList: basePath + apiPath + '/expertAlliance/cooperateHospitalList', //专科联盟详情的合作医院
+    queryConferenceList:basePath + apiPath + '/expertAlliance/queryConferenceList',//查询专科联盟关联的会议列表
+    queryServiceList:basePath + apiPath + '/expertAlliance/queryServiceList',//查询专科联盟提供的服务列表（科室管理写死）
+    queryServiceMemberList:basePath + apiPath + '/expertAlliance/queryServiceMemberList',//查询服务下的成员列表
 }
 
 

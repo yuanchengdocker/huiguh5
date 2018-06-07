@@ -126,16 +126,6 @@ function setCookie (name, value) {
   document.cookie = name + "=" + value + 
   "; expires=" + dt.toGMTString() + "; path=/"; 
 }
-setCookie("token",getCookie("token"));
-setCookie("apiVer",getCookie("apiVer"));
-setCookie("cType",getCookie("cType"));
-setCookie("appVer",getCookie("appVer"));
-setCookie("appType",getCookie("appType"));
-setCookie("PhoneOS",getCookie("PhoneOS"));
-setCookie("osVer",getCookie("osVer"));
-setCookie("osUUID",getCookie("osUUID"));
-setCookie("appSrc",getCookie("appSrc"));
-setCookie("IDFA",getCookie("IDFA"));
 
 //获取手机端存储的cookie信息
 function getCookie(name) {
@@ -232,6 +222,11 @@ function huiguPost(callback,url,params,obj){
     success: function(data){
       if(data.code == 0){
         callback&&callback(data);
+      }else if(data.indexOf('10016')){
+          localClear(5); //清除localStorage
+          deleteCookie("token"); //清除token
+
+          top.location.href='/build/pages/login.html';
       }else{
         callback&&callback(data);
         setToast3(data.msg);
@@ -245,6 +240,23 @@ function huiguPost(callback,url,params,obj){
     }
   });
 }
+
+function localClear(clearnum){
+  if(clearnum == 1){
+    localStorage.removeItem('code');
+  }else{
+    localStorage.removeItem('mobilePhone'); //清除患者手机号
+    localStorage.removeItem('token'); 
+    localStorage.removeItem('openid');
+    localStorage.removeItem('isSubscribe');  //是否关注公众账号
+    localStorage.removeItem('ofPatientId');  //就诊人Id
+    localStorage.removeItem('iconUrl');  //就诊人头像
+    localStorage.removeItem('patientId');  //患者Id
+    localStorage.removeItem('patientAccid');  //患者聊天Id
+    localStorage.removeItem('patientImToken');  //云信token
+  }
+}
+
 function optUrlParams(name){
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     var target = window.location.hash||window.location.search;
@@ -374,4 +386,15 @@ function getImgUrls(box,type) {
 
 };
 
-
+function cookiceData(){
+  var dt = new Date();
+  dt.setHours(dt.getHours() + 24);
+  document.cookie = "apiVer=3; expires=" + dt.toGMTString() + ";path=/";
+  document.cookie = "appSrc=420000; expires=" + dt.toGMTString() + ";path=/";
+  document.cookie = "appType=5; expires=" + dt.toGMTString() + ";path=/";
+  document.cookie = "appVer=210; expires=" + dt.toGMTString() + ";path=/";
+  document.cookie = "cType=6; expires=" + dt.toGMTString() + ";path=/";
+  document.cookie = "osVer=21; expires=" + dt.toGMTString() + ";path=/";
+  document.cookie = "osUUID=45298B7AF43B066B786532C00CBC26E4; expires=" + dt.toGMTString() + ";path=/";
+}
+cookiceData();

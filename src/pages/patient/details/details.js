@@ -12,7 +12,7 @@ $(function(){
         Timerun(data.data.remainingTime) //开始倒计时
 
         //判断是否从支付宝之后回调过来的页面
-        var url = location.href;
+        var url = top.location.href;
         if (url.indexOf('AlipayWxPay') >=1) {
           $(".opera-defrayal").fadeIn(300);
           $(".opera-pay-confirm").css("display","block");
@@ -47,7 +47,6 @@ $(function(){
             var t = this;
             var tClass = this.className;
             if(tClass == "payWx"){ //调用微信支付
-              console.log(1); 
               $(".opera-defrayal-main li").removeClass("payActive");
               t.className = tClass + " payActive";
 
@@ -59,7 +58,6 @@ $(function(){
               }
 
             }else if(tClass == "payZfb"){ //调用支付宝支付
-              console.log(2);
               $(".opera-defrayal-main li").removeClass("payActive");
               t.className = tClass + " payActive";
 
@@ -71,7 +69,6 @@ $(function(){
               }
 
             }else if(tClass == "payEwm"){  //调用二维码
-              console.log(3);
               $(".opera-defrayal-main li").removeClass("payActive");
               t.className = tClass + " payActive";
 
@@ -105,7 +102,9 @@ $(function(){
       localClear(5);  //清除localStorage
 
 
-      window.location.href= dataPath.WXhttpPathch + 'build/pages/login.html?source=3';
+      top.location.href= dataPath.WXhttpPathch + 'build/pages/login.html?source=3';
+    }else{
+      setToast3("页面报错");
     }
   },huiguPostUrl.getDetail,{"appointmentId":$.getUrlParam('appointmentId')});
 
@@ -198,7 +197,7 @@ function payBtn(id,type){
     // var isAliWAP = (/AlipayClient/ig).test(navigator.userAgent)
     //调起支付宝APP
       if(isWechat){
-        window.location.href = dataPath.WXhttpPathch + 'build/pages/patient/details/AlipayWxPay.html?orderId='+ orderId +'&appointmentId='+ $.getUrlParam('appointmentId');
+        top.location.href = dataPath.WXhttpPathch + 'build/pages/patient/details/AlipayWxPay.html?orderId='+ orderId +'&appointmentId='+ $.getUrlParam('appointmentId');
 
         // $(".opera-defrayal-main ").fadeOut(300);  //支付弹窗关闭
         // $(".opera-defrayal-main li").removeClass("payActive"); //支付按钮取消
@@ -207,7 +206,7 @@ function payBtn(id,type){
         // AlipayWxPay();
       }else{
         huiguPost(function(data){
-          window.location.href = data;
+          top.location.href = data;
         },huiguPostUrl.getAliWAPPay,{"orderId":$.getUrlParam('orderId')});
       }
   }

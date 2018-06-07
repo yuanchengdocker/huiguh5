@@ -32,9 +32,18 @@ var huiguPostUrl = {
     getDoctorRelation: basePath + apiPath + '/patientUser/bindDoctorRelation', //新增加
     getthirdPartyLogin: basePath + apiPath + '/patientUser/thirdPartyLogin', //授权登录接口
 
+    //3.2
+    getuploadMultipartFile: basePath + apiPath + '/upload/uploadMultipartFile', //上传患者头像
+    getupdateIcon: basePath + apiPath + '/patientUser/updateIcon', //修改患者头像
+    getqueryEducation: basePath + apiPath + '/patientEducation/queryEducation', //科普文章列表
+    getEducationDetail: basePath + apiPath + '/patientEducation/getEducationDetail', //科普文章详情
+
+    getpatientEducationDetail: basePath + apiPath + '/patientEducation/patientEducationDetail', //聊天获取患教详细信息
+    getSearchFollowUp: basePath + apiPath + '/questionnaire/searchFollowUp', //聊天随访问卷
+    getAnswerFollowUp: basePath + apiPath + '/questionnaire/answerFollowUp', //患者提交分享出去的信息
 }
 
-
+//var httpPathch = 'http://ddpaya.huiguqx.com/'; //开发环境地址
 var httpPathch = 'http://ddpay.huiguqx.com/'; //测试环境地址
 //var httpPathch = 'http://patienth5.szyyky.com/'; //正式环境地址
 var valuePath = 'wxf5bdc71fe3151bc4'; //慧骨健康

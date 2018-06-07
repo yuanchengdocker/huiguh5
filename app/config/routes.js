@@ -26,7 +26,13 @@ export default [
         ]
     },
     {
-        path: '/build/vuepage/question/:followupQuestionnaireId/:ofPatientId/:sessionId',
+        path: '/build/vuepage/materials/:patientEducationId',
+        props: true,
+        component: () => import('../views/Materials.vue'),
+        meta: { keepAlive: false }
+    },
+    {
+        path: '/build/vuepage/question/:sessionId/:followupQuestionnaireId/:ofPatientId',
         props: true,
         component: () => import('../views/Question.vue'),
         meta: { keepAlive: false }

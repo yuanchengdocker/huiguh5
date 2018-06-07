@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>慧骨专家</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="../serviceMember/index.css">
+ 
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+    <div class="page-main">
+      <div class="special-index-select">
+        <div class="index-select-top">
+          <a class="selectRegion"><span>全国</span><i class=""></i></a>
+          <a class="selectDepartment"><span>学科</span><i class=""></i></a>
+        </div>
+        <div class="index-select-detail select-detail1">
+          <ul id="regionDetail"></ul>
+          <div id="areaDetail"></div>
+          <script type="text/html" id="regionList">
+            <% _.forEach(data,function(item,index) { %>
+              <li class="regionList<%- index+1 %>">
+                 <span class="regionName"><%= item.regionName %></span>
+                </li>
+            <% }) %>
+          </script>
+          <script type="text/html" id="areaList">
+            <% _.forEach(data,function(item,index) { %>
+              <ul class="areaDetail<%- index+1 %>" data-id="<%- item.regionAreaBaseDtoList.areaId %>">
+                <li class="areaList00 areaActive">不限</li>
+                <% _.forEach(item.regionAreaBaseDtoList,function(list,listindex) { %>
+                  <%if(listindex < 10){%>
+                  <li class="areaList0<%- listindex+1 %>" data-id="<%- list.areaId %>">
+                  <%}else{%>
+                  <li class="areaList<%- listindex+1 %>" data-id="<%- list.areaId %>">
+                  <%}%><%= list.areaName %></li>
+                <% }) %>
+              </ul>
+            <% }) %>
+          </script>
+          <div class="disHidden"></div>
+        </div>
+        <div class="index-select-detail select-detail2">
+          <ul id="departmentDetail"></ul>
+          <script type="text/html" id="departmentList">
+            <li class="departlist00 departActive">不限</li>
+            <% _.forEach(data,function(item,index) { %>
+              <%if(index < 10){%>
+                <li class="departlist0<%- index+1 %>" data-id="<%- item.departmentId %>">
+                <%}else{%>
+                <li class="departlist<%- index+1 %>" data-id="<%- item.departmentId %>">
+              <%}%><%= item.departmentName %></li>
+            <% }) %>
+          </script>
+          <div class="disHidden"></div>
+        </div>
+      </div>
+      <div id="service-member-page" class="service-item-page service-member">
+          <ul class="member-container" id="member-container"></ul>
+          <script type="text/html" id="member-item">
+              <% _.forEach(data,function(item,index) { %>
+              <a class="member-item hg-clear" href="../personal/index.html?doctorUserId=<%- item.userId %>">
+                  <span style="background-image:url('<%- item.avatarUrl||'../../../img/icon.png' %>')" class="member-header hg-header-img"></span>
+                  <div class="member-main hg-ml40">
+                      <div class="hg-clear hg-alin-middle">
+                          <span class="name hg-mr20 hg-word-clamp hg-word-clamp-1 hg-left"><%= item.doctorName %></span>
+                          <span class="flag hg-left">
+                              <% if(item.serviceInfo&&item.serviceInfo.indexOf(1)>=0){ %>
+                              <span class="item art">术</span>
+                              <% } %>
+                              <% if(item.serviceInfo&&item.serviceInfo.indexOf(3)>=0){ %>
+                              <span class="item examine">诊</span>
+                              <% } %>
+                              <% if(item.serviceInfo&&item.serviceInfo.indexOf(2)>=0){ %>
+                              <span class="item teacg">教</span>
+                              <% } %>
+                              <% if(item.serviceInfo&&item.serviceInfo.indexOf(4)>=0){ %>
+                              <span class="item zhuan">专</span>
+                              <% } %>
+                              <% if(item.serviceInfo&&item.serviceInfo.indexOf(5)>=0){ %>
+                              <span class="item tuan">团</span>
+                              <% } %>
+                          </span>
+                      </div>
+                      <p class="hospital hg-mt10 hg-word-clamp hg-word-clamp-1">
+                          <%= item.professionalTitleName %>
+                          <% if(item.professionalTitleName &&item.hospitalName ){ %>
+                          <span class="hg-pl20 hg-pr20">|</span>
+                          <% } %>
+                          <%= item.hospitalName %></p>
+                      <p class="gootat hg-mt10 hg-word-clamp hg-word-clamp-2"><%= item.expertise?
+                          '擅长：'+item.expertise:'' %></p>
+                  </div>
+              </a>
+              <% }) %>
+          </script>
+          <div class="special-empty">
+            <img src="/build/img/fulp-empty.png" class="emptyImg"><p>暂无记录</p>
+          </div>
+      </div>  
+    </div> 
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="../../../common/js/require.js" defer async="true" data-main="../serviceMember/index.js"></script>
+</body>
+</html>

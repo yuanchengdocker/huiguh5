@@ -39,6 +39,7 @@
         beforeRouteEnter: (to, from, next) => {
             next((v)=>{
                 util.updateChatUserName(v.sessionTitle)
+                v.$store.dispatch('resetCurrSession')
             })
         },
         data() {

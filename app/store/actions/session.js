@@ -13,7 +13,7 @@ export function setCurrSession ({state, commit, dispatch}, sessionId) {
         sessionId
       })
       let currentSession = state.sessionMap[sessionId]
-      if(currentSession.unread > 0){
+      if(currentSession && currentSession.unread > 0){
         currentSession.unread = 0
         store.dispatch('saveData', {obj:currentSession,table:'Sessions'})
       }

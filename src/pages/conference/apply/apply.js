@@ -70,7 +70,6 @@ var conferenceApplyAction={
             }
         }
         if(type<0&&this.prodParams.prodNum<=1){
-            console.log("过小")
             return;
         }
         this.prodParams.prodNum += type;

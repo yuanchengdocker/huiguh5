@@ -34,6 +34,18 @@ function getUserCookieInfo(){
         userType: cookie.readLocal('userType')
     }
 }
+function userLogoOut(){
+    cookie.delLocal('patientAccid'),
+    cookie.delLocal('patientImToken'),
+    cookie.delLocal('ofPatientId'),
+    cookie.delLocal('patientAccid'),
+    cookie.delLocal('ofPatientName'),
+    cookie.delLocal('iconUrl'),
+    cookie.delLocal('userType')
+
+    cookie.delCookie('token')
+}
+
 function getUserInfo(loginInfo){
     if(!loginInfo) loginInfo = {}
     return {
@@ -111,6 +123,12 @@ let indexActions = {
     loadToad({ state, commit },msg){
         commit('loadToad', msg)
     },
+    updateIsQuestionSubmit({ state, commit },status){
+        commit('updateIsQuestionSubmit', status)
+    },
+    updateChatMsgStatus({ state, commit },status){
+        commit('updateChatMsgStatus', status)
+    },
     updateCurrMsgAudioId({ state, commit },id){
         commit('updateCurrMsgAudioId', id)
     },
@@ -185,6 +203,7 @@ let indexActions = {
     resetNoMoreHistoryMsgs,
     getLocalHistoryMsgs,
     checkHaveBindDoctor,
+    userLogoOut,
     deleteOneData(store, {id,table,callback}){
         deleteOneData(id,table,callback)
     },

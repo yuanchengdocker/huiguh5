@@ -237,7 +237,7 @@
   /* 聊天页面 */
   .m-chat-main {
     /* 聊天页面有输入框 */
-    padding: 0 0 64px 0;
+    padding: 0 0 50px 0;
     /* 聊天历史记录没有输入框 */
     &.m-chat-history {
       padding-bottom: 0;

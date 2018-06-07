@@ -84,6 +84,9 @@ function onSendMsgDone (error, msg) {
 }
 
 export function buildAndPutMsg({state, commit},{callback,content,status}){
+  if(!state.currDoctorBind) {
+    status = 'fail'
+  }
   let msg = util.buildSelfDefinedMsg(content,status)
   store.commit('putMsg', msg)
   store.commit('updateCurrSessionMsgs', {
@@ -92,7 +95,12 @@ export function buildAndPutMsg({state, commit},{callback,content,status}){
   })
   store.dispatch('saveData', {obj:msg,table:'Msgs'})
   store.dispatch('onUpdateSession',msg)
-  callback&&callback(msg)
+  if(state.currDoctorBind) { //绑定该医生才能聊天
+    callback&&callback(msg)
+  }else{
+    callback&&callback()
+    store.dispatch('loadToad','您还未与医生绑定，发送失败！')
+  }
   return msg
 }
 

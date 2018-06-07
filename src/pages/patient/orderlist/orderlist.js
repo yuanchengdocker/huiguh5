@@ -17,7 +17,7 @@ var orderAction = {
             orderAction.mobileValue = data.data.mobilePhone;
             scrollFresh($(".order-box ul"),"orderlist",huiguPostUrl.getQueryOrder,10);
           }else{
-            window.location.href= dataPath.WXhttpPathch + 'build/pages/card/follow.html'; //关注公众账号
+            top.location.href= dataPath.WXhttpPathch + 'build/pages/card/follow.html'; //关注公众账号
           }
           
         }

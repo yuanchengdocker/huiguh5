@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>专科联盟详情</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="../alliance/index.css">
+ 
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+  
+</head>
+<body>
+    <div class="alliance-index-box">
+        <div class="alliance-banner">
+            <img class="banner" src="/build/img/img.png">
+            <a class="group">
+                <img src="/build/img/learn-group.png" alt="">
+                交流群
+            </a>
+        </div>
+        <script type="text/html" id="banner">
+            <% if(data.groupUrl){ %>
+            <a href="<%-data.groupUrl%>" class="group">
+            <% }else{ %>
+            <a class="group" onclick="linkToDownload()">
+            <% } %>    
+                <img src="/build/img/learn-group.png" alt="">
+                <span>交流群</span>
+            </a>
+            <img class="banner" src="<%- data.coverUrl||'/build/img/img.png' %>">
+        </script>
+        <div class="alliance-tab">
+            <ul class="alliance-tab-container">
+                <li class="alliance-tab-item alliance-tab-active"><a>联盟介绍</a></li>
+                <li class="alliance-tab-item"><a>相关会议</a></li>
+                <li class="alliance-tab-item"><a>联盟服务</a></li>
+                <span class="active-flag"></span>
+            </ul>
+        </div>
+    
+        <div class="alliance-list">
+            <div id="alliance-container" class="alliance-container hg-clear">
+                <div class="alliance-detail alliance-item">
+                    <div id="alliance-introduce-container">
+                        <div class="alliance-info">
+                            <p class="alliance-tit"><i></i>联盟介绍</p>
+                        </div>
+                        <div class="alliance-expert">
+                            <p class="alliance-tit"><i></i>合作专家</p>
+                        </div>
+                    </div>
+                    <div class="alliance-hosp">
+                        <p class="alliance-tit"><i></i>签约医院</p>
+                        <ul id="alliance-hosp-container"></ul>
+                    </div>
+                </div> 
+                <script type="text/html" id="detail">
+                    <div class="alliance-info">
+                        <p class="alliance-tit"><i></i>联盟介绍</p>
+                        <p class="alliance-info-main"></p>
+                    </div>
+                    <div class="alliance-expert">
+                        <p class="alliance-tit"><i></i>合作专家</p>
+                        <div class="aliiance-expert-main">
+                            <ul style="width:1100px">
+                                <% _.forEach(data.cooperateExperts,function(item) { %>
+                                    <li>
+                                        <a class="expert-img" href="<%- item.userUrl %>">
+                                            <% if(item.avatarUrl){ %>
+                                            <img src="<%- item.avatarUrl %>">
+                                            <% }else{ %>
+                                            <img src="/build/img/icon.png">
+                                            <% } %>
+                                        </a>
+                                        <p class="expert-tit"><%= item.doctorName %></p>
+                                        <p class="expert-con"><%= item.professionalTitleName %></p>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </script>
+                
+                <script type="text/html" id="AllianceHosp">
+                    <% _.forEach(data,function(list) { %>
+                        <li>
+                            <div class="hosp-img">
+                                <% if(list.hospitalPicUrl){ %>
+                                    <img src="<%- list.hospitalPicUrl %>">
+                                <% }else{ %>
+                                    <img src="/build/img/img.png">
+                                <% } %>
+                            </div>
+                            <div class="hosp-main">
+                                <p class="hosp-main-tit"><%= list.hospitalName %></p>
+                                <p class="hosp-main-con"><%= list.hospitalAddress %></p>
+                            </div>
+                        </li>
+                    <% }) %>
+                </script>
+
+                <div class="alliance-conference alliance-item" id="alliance-conference"></div>
+
+                <div class="alliance-service alliance-item">
+                    <ul class="service-container" id="service-container">
+                    </ul>
+                </div>
+                <script type="text/html" id="service">
+                    <% _.forEach(data,function(item,index) { %>
+                    <li class="service-item">
+                        <div class="service-main">
+                            <img src="<%- item.img %>" alt=""/>
+                            <span class="title"><%= item.title %></span>
+                        </div>
+                        <!-- <div class="service-link">
+                            <% if(item.url){ %>
+                            <a href="<%- item.url %>" class="link"><%= item.linkname %></a>
+                            <% }else{ %>
+                            <a class="link" onclick='linkToDownload()'><%= item.linkname %></a>
+                            <% } %>
+                        </div> -->
+                    </li>
+                    <% }) %>    
+                </script>
+            </div>
+        </div>
+    </div>
+    <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+    <script src="/build/common/js/common.js?v=1.0.0"></script>
+    <!-- <script src="/build/commonWX/js/common.js?v=1.0.0"></script> -->
+    <script src="../../../common/js/require.js" defer async="true" data-main="../alliance/index.js"></script>
+</body>
+</html>

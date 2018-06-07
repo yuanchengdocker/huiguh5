@@ -16,12 +16,6 @@ var revCollector = require('gulp-rev-collector')
 var runSequence = require('run-sequence')
 var through2 = require('through2')
 
-const webpack = require('webpack')
-const webpackVueConfig = require('./config/webpack.vue.config.js')
-const webpackReactConfig = require('./config/webpack.react.config.js')
-
-const isDev = process.env.NODE_ENV === 'development' ? true : false;
-
 /*
  * px2rem 的相关配置
  */
@@ -56,13 +50,6 @@ gulp.task('serve', [], function () {
     gulp.watch('./src/components/common/**/*.html', commonWatch).on('change', browserSync.reload);
     gulp.watch('./src/components/general/**/*.html', generalWatch).on('change', browserSync.reload);
 
-    gulp.watch('./app/*', ['webpack']).on('change', browserSync.reload);
-    gulp.watch('./app/**/*', ['webpack']).on('change', browserSync.reload);
-    gulp.watch('./app/**/**/*', ['webpack']).on('change', browserSync.reload);
-
-    gulp.watch('./client/*', ['webpack-react']).on('change', browserSync.reload);
-    gulp.watch('./client/**/*', ['webpack-react']).on('change', browserSync.reload);
-    gulp.watch('./client/**/**/*', ['webpack-react']).on('change', browserSync.reload);
 });
 
 function commonWatch(e){
@@ -311,19 +298,6 @@ gulp.task('clean', function () {
 });
 
 
-gulp.task('webpack', function(callback){
-    webpack(webpackVueConfig, function(err, stats) {
-        callback();
-    });
-})
-
-gulp.task('webpack-react', function(callback){
-    webpack(webpackReactConfig, function(err, stats) {
-        callback();
-    });
-})
-
-
 gulp.task('production', function (done) {
     condition = false;
     runSequence(    //需要说明的是，用gulp.run也可以实现以上所有任务的执行，只是gulp.run是最大限度的并行执行这些任务，而在添加版本号时需要串行执行（顺序执行）这些任务，故使用了runSequence.
@@ -342,8 +316,6 @@ gulp.task('production', function (done) {
         ['revCommonHTML'],
         ['revGeneralJS'],
         ['revGeneralHtml'],
-        ['webpack'],
-        ['webpack-react'],
         done);
 })
 gulp.task('default', function (done) {

@@ -33,6 +33,7 @@ export default {
     chatMsgStatus:1, //1进入底部，2更新不做调整，3下拉历史记录回到查看点
     //上拉加载聊天时候显示
     isChatLoading:false,
+    isQuestionSubmit:false,
     //聊天未读数量
     sessionUnreadCount:0,
     showToastMsg:'',

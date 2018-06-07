@@ -16,10 +16,10 @@
       <p class="msg-user" v-else-if="msg.type!=='notification'"><em>{{msg.showTime}}</em>{{msg.from}}</p>
       <span v-if="msg.type==='text'" class="msg-text" v-html="msg.showText"></span>
       <span v-else-if="msg.type==='article'" class="msg-text" ref="mediaMsg">
-        <a :href="msg.articleLink" class="msg-share-container" target="_blank">
+        <router-link :to="{path:msg.articleLink}" class="msg-share-container">
           <p class="msg-share-title hg-word-clamp hg-word-clamp-1">{{msg.articleTitle}}</p>
           <section class="msg-share-content hg-word-clamp hg-word-clamp-2">{{msg.showText}}</section>
-        </a>
+        </router-link>
         <span class="msg-share-tip">{{'我向您分享的患教资料'}}</span>
       </span>
       <span v-else-if="msg.type==='question'" :class="msg.flow==='out'?'msg-text my-question-msg':'msg-text'" ref="mediaMsg">
@@ -260,7 +260,7 @@
           }else{
             avatar = content.fromUserAvatarUrl
           }
-          this.customMsg['link'] = `/build/components/general/personal/index.html?doctorUserId=${this.userInfos[content.fromUserAccid].id}`
+          this.customMsg['link'] = content.fromUserAccid?`/build/components/general/personal/index.html?doctorUserId=${this.userInfos[content.fromUserAccid].id}`:''
           this.customMsg['avatar'] = avatar || config.defaultUserIcon
         }
 
@@ -310,7 +310,7 @@
             this.customMsg['type'] = 'file';
             break; //文件
           case 14:
-            this.customMsg['articleLink'] = `/build/pages/chat/detail.html?patientEducationId=${mediaContent.shareItemID}`;
+            this.customMsg['articleLink'] = `/build/vuepage/materials/${mediaContent.shareItemID}`;
             this.customMsg['articleTitle'] = mediaContent.shareTitle;
             this.customMsg['showText'] = mediaContent.shareBrief;
             this.customMsg['type'] = 'article';

@@ -39,6 +39,15 @@ function formatDateTime(time,type) {
   minute = minute < 10 ? ('0' + minute) : minute; 
   var second = date.getSeconds();
   second = second < 10 ? ('0' + second) : second;
+  if(type=="year") {
+      return y
+  }
+  if(type=="mouth") {
+      return y+'-'+m
+  }
+  if(type=="day") {
+      return d
+  }
   if(type=="hour") {
       return y+'-'+m+'-'+d+" "+h
   }
@@ -144,6 +153,15 @@ function deleteCookie(name)
     if(cval!=null)  
         document.cookie= name + "="+cval+";expires="+exp.toGMTString()+"; path=/";  
 } 
+
+function optUrlParams(name){
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var target = window.location.hash||window.location.search||top.location.href;
+    if(!target) return null;
+    var r = target.split("?")[1].match(reg);  
+    if (r != null) return unescape(r[2]);  
+    return null;  
+}
 
 //字符多出显示...
 function cutstr(str, len) {
@@ -265,7 +283,7 @@ function scrollFresh(u_list,tem_id,serviceUrl,pageSize){
         	localClear(5); //清除localStorage
           deleteCookie("token"); //清除token
 
-          window.location.href='../../pages/login.html';
+          top.location.href='/build/pages/login.html';
         }else{
             ajaxLock = true;
             $("#pullUp").css("display","none");
@@ -345,27 +363,30 @@ function getImgUrls(box,type) {
 
 //页面授权  type:来源 =1首页，2订单列表，3登录页面
 function Authorized(callback,type){
-  var codedata = $.getUrlParam('code');
-  var url = window.location.href;
-  if(url.indexOf("doctorid") >= 0){
-    sessionStorage.setItem('doctorid',$.getUrlParam('doctorid'));
+  // var codedata = optUrlParams('code');
+  var codedata = '';
+  var url = top.location.href;
+  var reg = new RegExp("(^|&)" + 'code' + "=([^&]*)(&|$)");
+  var r = window.parent.location.search.substr(1).match(reg);
+  if(r){
+    codedata = decodeURIComponent(r[2]);
   }
-  
 
+  if(url.indexOf("doctorid") >= 0){
+    localStorage.setItem('doctorid',optUrlParams('doctorid'));
+  }
   if(codedata == null || codedata == undefined || codedata == "" || codedata == "null"){
     if(url.indexOf("doctorid") >= 0){
-      localStorage.setItem('doctorid', $.getUrlParam('doctorid'));  //插入doctorid信息
-      window.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ window.location.href+'&doctorid='+ $.getUrlParam('doctorid') +'&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect';
+      localStorage.setItem('doctorid', optUrlParams('doctorid'));  //插入doctorid信息
+      top.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ url +'&doctorid='+ $.getUrlParam('doctorid') +'&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect';
     }else{
-      window.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ window.location.href+ '&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect';
+      top.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ url + '&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect';
     }
     
   }else{
-    cookiceData();  //写入cookies信息
     huiguPost(function(data){
         if(data.code == 0){
           localClear();  //先清空
-          localStorage.setItem('doctorid', sessionStorage.getItem("doctorid"));  //插入doctorid信息
 
           callback&&callback(data);
 
@@ -374,6 +395,12 @@ function Authorized(callback,type){
           if(datasource.isBindAccount == true){
             localStorage.setItem('token', datasource.loginToken); //存储token
             localStorage.setItem('mobilePhone', datasource.mobilePhone); //存储手机
+            localStorage.setItem('iconUrl', datasource.iconUrl); //存储头像
+            localStorage.setItem('patientId', datasource.patientId);  //患者Id
+            localStorage.setItem('patientAccid', datasource.patientAccid);  //患者聊天Id
+            localStorage.setItem('patientImToken', datasource.patientImToken);  //云信token
+            localStorage.setItem('ofPatientName', datasource.ofPatientName);  //患者名称
+            
             //判断是否绑定就诊人
             if(datasource.isBindOfPatient == true){
               localStorage.setItem('ofPatientId', datasource.ofPatientId); //存储就诊人Id
@@ -388,7 +415,7 @@ function Authorized(callback,type){
                   setToast3("您还没关注公众账号");
 
                   if(type != 1){
-                    window.location.href= dataPath.WXhttpPathch + 'build/pages/card/follow.html'; //关注公众账号
+                    top.location.href = dataPath.WXhttpPathch + 'build/pages/card/follow.html'; //关注公众账号
                   }
 
                 }
@@ -405,7 +432,7 @@ function Authorized(callback,type){
                       setToast3("您还没关注公众账号");
 
                       setTimeout(function(){
-                        window.location.href= dataPath.WXhttpPathch + 'build/pages/card/follow.html'; //关注公众账号
+                        top.location.href = dataPath.WXhttpPathch + 'build/pages/card/follow.html'; //关注公众账号
                       },1000)
                     }
                   }
@@ -416,7 +443,7 @@ function Authorized(callback,type){
               setToast3("您还没绑定就诊人，需要先绑定就诊人");
 
               setTimeout(function(){
-                window.location.href= dataPath.WXhttpPathch + 'build/pages/card/card.html'; //添加就诊人
+                top.location.href = dataPath.WXhttpPathch + 'build/pages/card/card.html'; //添加就诊人
               },1000)
               
             }
@@ -428,14 +455,14 @@ function Authorized(callback,type){
               setToast3("您还没登录，需要先登录");
 
               setTimeout(function(){
-                window.location.href= dataPath.WXhttpPathch + 'build/pages/login.html?sourcedata=3'; //去到登录页面
+                top.location.href = dataPath.WXhttpPathch + 'build/pages/login.html?sourcedata=3'; //去到登录页面
               },1000)
               
             }
           }
         }else if(data.code == '40163' || data.code == '40029' || data.code == '48001'){
           //判断来源
-          window.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ dataPath.WXhttpPathch +'build/pages/index.html&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect'; 
+          top.location.href ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ dataPath.WXhttpPathch +'build/vuepage/self&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect'; 
         }else if(data.code == 10000){
 
           setToast3("目前登录存在问题，请稍后登录");
@@ -459,6 +486,11 @@ function localClear(clearnum){
     localStorage.removeItem('openid');
     localStorage.removeItem('isSubscribe');  //是否关注公众账号
     localStorage.removeItem('ofPatientId');  //就诊人Id
+    localStorage.removeItem('iconUrl');  //就诊人头像
+    localStorage.removeItem('patientId');  //患者Id
+    localStorage.removeItem('patientAccid');  //患者聊天Id
+    localStorage.removeItem('patientImToken');  //云信token
+    localStorage.removeItem('ofPatientName');  //患者名称
   }
 }
 
@@ -473,3 +505,4 @@ function cookiceData(){
   document.cookie = "osVer=21; expires=" + dt.toGMTString() + ";path=/";
   document.cookie = "osUUID=45298B7AF43B066B786532C00CBC26E4; expires=" + dt.toGMTString() + ";path=/";
 }
+cookiceData();  //写入cookies信息

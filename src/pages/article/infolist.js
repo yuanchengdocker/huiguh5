@@ -91,7 +91,6 @@
     
     
     if(m_str == null){
-      console.log("页面解析失败");
       $('.ar-cont').html(str);
       return false;
     }

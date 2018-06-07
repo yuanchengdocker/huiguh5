@@ -6,13 +6,6 @@
     ],
     "plugins": [
         "syntax-dynamic-import",
-        "transform-async-to-generator",
-        [
-            "component",
-            {
-                "libraryName": "element-ui",
-                "styleLibraryName": "theme-chalk"
-            }
-        ]
+        "transform-async-to-generator"
     ]
 }

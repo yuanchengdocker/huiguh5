@@ -9,7 +9,7 @@
     <view-box ref="viewBox" :body-padding-top="'0'" body-padding-bottom="0">
       <!-- remember to import BusPlugin in main.js if you use components: x-img and sticky -->
       <transition :name="transitionName">
-        <keep-alive :include="/mmenu|chat|question/">
+        <keep-alive :include="/mmenu|chat/">
           <router-view class="router-view"></router-view>
         </keep-alive>
       </transition>
@@ -61,16 +61,34 @@
           }
           if(toPath.indexOf('/build/vuepage/question') >= 0
             && fromPath.indexOf('/build/vuepage/chat') >= 0){
+            this.$store.dispatch('updateChatMsgStatus',2)
             this.transitionName = 'forward'
           }
           if(toPath.indexOf('/build/vuepage/chat') >= 0 
             && fromPath.indexOf('/build/vuepage/question') >= 0){
+              if(this.$store.state.isQuestionSubmit){ //问卷回复触底
+                this.$store.dispatch('updateIsQuestionSubmit',false)
+              }else{
+                this.$store.dispatch('updateChatMsgStatus',2)
+              }
+              this.transitionName = 'backward'
+          }
+          if(toPath.indexOf('/build/vuepage/materials') >= 0
+            && fromPath.indexOf('/build/vuepage/chat') >= 0){
+            this.$store.dispatch('updateChatMsgStatus',2)
+            this.transitionName = 'forward'
+          }
+          if(toPath.indexOf('/build/vuepage/chat') >= 0 
+            && fromPath.indexOf('/build/vuepage/materials') >= 0){
+              this.$store.dispatch('updateChatMsgStatus',2)
               this.transitionName = 'backward'
           }
         }
       },
       showToastMsg(curValue){
-        this.$toast(curValue)
+        if(curValue){
+          this.$toast(curValue)
+        }
       }
     },
     computed: {

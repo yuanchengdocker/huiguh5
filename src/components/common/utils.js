@@ -150,11 +150,11 @@ define(['jquery','address','lodash','commons','flexible'],function($) {
                 moveEndY = e.changedTouches[0].pageY;
                 X = moveEndX - startX;
                 Y = moveEndY - startY;
-                if ( X < -60 ) { RightCallBack&&RightCallBack();e.preventDefault(); }
-                else if ( X > 60 ) { leftCallBack&&leftCallBack();e.preventDefault(); }
+                if ( X < -80 ) { RightCallBack&&RightCallBack();e.preventDefault(); }
+                else if ( X > 80 ) { leftCallBack&&leftCallBack();e.preventDefault(); }
             });
             container.addEventListener('touchend', function(e){
-                if((!X && !Y) || (Math.abs(X) < 60 && Math.abs(Y) < 60)){
+                if((!X && !Y) || (Math.abs(X) < 80 && Math.abs(Y) < 80)){
                     clickCallBack&&clickCallBack(e);
                 }
             })

@@ -12,9 +12,9 @@ function resolve(dir) {
 
 module.exports = {
     // mode: process.env.NODE_ENV,
-    devtool: process.env.NODE_ENV === 'development' ? '#source-map' : 'none',
+    devtool: isDev ? 'source-map' : 'none',
     output: {
-        filename: isDev ? 'js/[name].[hash:8].js' : 'js/bunld.[chunkhash:8].js',
+        filename: isDev ? 'js/[name].[hash:8].js' : 'js/[name].[chunkhash:8].js',
         publicPath: '/build/vuepage/'
     },
     module: {
@@ -22,6 +22,9 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
+                options: {
+                    cacheDirectory: true
+                },
                 exclude: [/node-modules/, /NIM_Web_SDK.*\.js/],
             },
             {
@@ -67,54 +70,6 @@ module.exports = {
                     'stylus-loader'
                 ]
             },
-            // {
-            //     test: /\.css$/,
-            //     use: [
-            //         MiniCssExtractPlugin.loader,
-            //         // 'style-loader',
-            //         {
-            //             loader: 'css-loader',
-            //             options: { importLoaders: 1 }
-            //         },
-            //         // {
-            //         //     loader: 'px2rem-loader',
-            //         //     options: {
-            //         //       remUnit: 75,
-            //         //       remPrecision: 8
-            //         //     }
-            //         // },
-            //         'postcss-loader',
-            //         // 'webpack-px2rem-loader',   
-
-            //     ],
-            //     // include: [resolve('app/style')],
-            //     // exclude: /node-modules/,
-            // },
-            // {
-            //     test: /\.styl$/,
-            //     use: [
-            //         // MiniCssExtractPlugin.loader,
-            //         'vue-style-loader',
-            //         'css-loader',
-            //         {
-            //             loader: 'px2rem-loader',
-            //             options: {
-            //                 baseDpr: 2,             // base device pixel ratio (default: 2)
-            //                 threeVersion: false,    // whether to generate @1x, @2x and @3x version (default: false)
-            //                 remVersion: true,       // whether to generate rem version (default: true)
-            //                 remUnit: 75,            // rem unit value (default: 75)
-            //                 remPrecision: 6  
-            //             }
-            //         },
-            //         {
-            //             loader: 'postcss-loader',
-            //             options: {
-            //               sourceMap: true
-            //             }
-            //         },
-            //         'stylus-loader',
-            //     ]
-            // },
             {
                 test: /\.(eot|woff|woff2|ttf)([\?]?.*)$/,
                 loader: 'file-loader',
@@ -140,14 +95,23 @@ module.exports = {
             }
         }),
         new ExtractTextPlugin({
-            filename: 'style.[chunkhash:8].css',
+            filename: 'style.[contenthash:8].css',
             allChunks: true  //会导致console报错call undefined
         }),
         // new MiniCssExtractPlugin({
         //     // Options similar to the same options in webpackOptions.output
         //     // both options are optional
-        //     filename: "[name].[chunkhash:8].css",
-        //     chunkFilename: "[id].[chunkhash:8].css"
+        //     filename: "[name].[contenthash:8].css",
+        //     chunkFilename: "[id].[contenthash:8].css"
         // }),
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                postcss: [
+                    require("autoprefixer")({
+                        browsers: ['ie>=8', '>1% in CN']
+                    })
+                ]
+            }
+        })
     ]
 }

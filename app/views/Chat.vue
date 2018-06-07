@@ -25,38 +25,62 @@
         mapGetters
     } from 'vuex'
     export default {
+        name:'chat',
         components: {
             ChatEditor,
             ChatList
         },
         props: ['id'],
         beforeRouteEnter: (to, from, next) => {
-            next((v)=>{
+            next((that)=>{
+                let urlSessionId = to.params.sessionId
+                if(from.path === '/' || from.path === '/build/vuepage/menu/session'){
+                    //加载页面内容
+                    that.$nextTick(function () {
+                        wxSdk.wxInit(that.$store.state.wxSdkUrl).then((sdk)=>{
+                            that.wxSdk = sdk
+                        })
+                    })
+                    // 此时设置当前会话
+                    that.$store.dispatch('getDataByIndex', {callback:(data)=>{
+                        that.$store.dispatch('setCurrSession', urlSessionId)
+                        that.$store.dispatch('checkHaveBindDoctor')
+                        that.$store.commit('updateMsgs', data)
+                    },table:'Msgs',id:urlSessionId})
+                }
             })
         },
-        
+        deactivated(){
+            //离开页面关闭语音播放
+            this.$store.dispatch('updateCurrMsgAudioId','')
+            //关闭图片预览
+            this.$store.dispatch('hideFullscreenImg')
+            //关闭视频播放
+            this.$store.dispatch('hideFullscreenVideo')
+        },
         created() {
         },
         // 进入该页面，文档被挂载
         mounted() {
-            try {
-                this.$nextTick(function () {
-                    wxSdk.wxInit(this.$store.state.wxSdkUrl).then((sdk)=>{
-                        this.wxSdk = sdk
-                    })
-                })
-                // 此时设置当前会话
-                this.$store.dispatch('getDataByIndex', {callback:(data)=>{
-                    this.$store.dispatch('setCurrSession', this.sessionId)
-                    this.$store.dispatch('checkHaveBindDoctor')
-                    this.$store.commit('updateMsgs', data)
-                },table:'Msgs',id:this.sessionId})
+            // try {
+            //     this.$nextTick(function () {
+            //         wxSdk.wxInit(this.$store.state.wxSdkUrl).then((sdk)=>{
+            //             this.wxSdk = sdk
+            //         })
+            //     })
+            //     // 此时设置当前会话
+            //     this.$store.dispatch('getDataByIndex', {callback:(data)=>{
+            //         this.$store.dispatch('setCurrSession', this.sessionId)
+            //         this.$store.dispatch('checkHaveBindDoctor')
+            //         this.$store.commit('updateMsgs', data)
+            //     },table:'Msgs',id:this.sessionId})
                 
-            } catch (error) {
-                alert('运行异常')
-            }
+            // } catch (error) {
+            //     alert('运行异常')
+            // }
         },
         updated() {
+            debugger
             if (this.$refs.wrapper) {
                 let eles = document.getElementById('chat-list').children
                 if(this.chatMsgStatus !== 2){
@@ -94,7 +118,7 @@
                 },
                 chatItemLength: 0,
                 pullDowning:false,
-                wxSdk:null
+                wxSdk:null,
             }
         },
         computed: {
@@ -102,15 +126,14 @@
             chatMsgStatus(){
                 return this.$store.state.chatMsgStatus
             },
-            sessionId() {
-                let sessionId = this.$route.params.sessionId
-                return sessionId
+            sessionId(){
+                return this.$route.params.sessionId
             },
             scene() {
-                return util.parseSession(this.sessionId).scene
+                return this.sessionId?util.parseSession(this.sessionId).scene:''
             },
             to() {
-                return util.parseSession(this.sessionId).to
+                return this.sessionId?util.parseSession(this.sessionId).to:''
             },
             myInfo() {
                 return this.$store.state.myInfo

@@ -33,18 +33,20 @@ var applyAction={
     huiguPost(function(data){
       if(data.code == 0){
         setToast3("绑定成功");
+
+        localStorage.setItem('ofPatientName', nameData.value); //患者名称
         
         var dataValue = data.data;
         //判断是否是二维码扫描进入的
         if(localStorage.getItem('doctorid') == "" || localStorage.getItem('doctorid') == null){
-          window.location.href= dataPath.WXhttpPathch + 'build/pages/index.html';
+          top.location.href = dataPath.WXhttpPathch + 'build/vuepage/self';
         }else{
           huiguPost(function(data){
             if(data.code == 0){
               if(localStorage.getItem('isSubscribe') == "true"){
-                window.location.href= dataPath.WXhttpPathch + 'build/pages/index.html';
+                top.location.href = dataPath.WXhttpPathch + 'build/vuepage/self';
               }else{
-                window.location.href='follow.html';
+                top.location.href ='follow.html';
               }
               
             }else{

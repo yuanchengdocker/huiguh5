@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>专科联盟详情</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build2/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build2/css/alliance/index.css?v=1.0.1">
+  <script src="/build2/common/js/flexible.js?v=1.0.0"></script>
+  <script type="text/javascript">
+    YYKY_CONTEXT_DATA = {};
+    YYKY_CONTEXT_DATA["components_option_nav"] = {"isHideNav":false,"needShowButton":true,"buttonStyle":0,"buttonIconStyle":1,"buttonActionType":1}; 
+  </script>
+</head>
+<body>
+  <div class="huigu-header">
+    <a class="return-container" href="list.html">
+      <span class="return"></span>
+    </a>
+    <p class="header-tit">专科联盟详情</p>
+    <img src="/build2/img/shareBtn.png" class="shareBtn" id="shareBtn">
+  </div>
+  <div class="alliance-index-box"></div>
+  <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+
+  <script src="/build2/common/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build2/common/js/lodash.js?v=1.0.0"></script>
+  <script src="/build2/common/js/address.js?v=1.0.0"></script>
+  <script src="/build2/common/js/common.js?v=1.0.0"></script>
+  <script src="/build2/common/js/yykyjsbridge.js?v=1.0.0"></script>
+  
+  <script type="text/html" id="detail">
+      <div class="alliance-banner">
+      <img src="<%- data.coverUrl %>">
+    </div>
+    <div class="alliance-info">
+      <p class="alliance-tit"><i></i>联盟介绍</p>
+      <p class="alliance-info-main"><%= data.introduction %></p>
+    </div>
+    <div class="alliance-expert">
+      <p class="alliance-tit"><i></i>合作专家</p>
+      <div class="aliiance-expert-main">
+        <ul style="width:1100px">
+          <% _.forEach(data.cooperateExperts,function(item) { %>
+          <li>
+            <a class="expert-img" href="yiyikangyunhuigu://bll/app.com?functype=112&itemid=<%- item.userId %>">
+            <% if(item.avatarUrl){ %>
+            <img src="<%- item.avatarUrl %>"></a>
+            <% }else{ %>
+            <img src="/build2/img/icon.png"></a>
+            <% } %>
+            <p class="expert-tit"><%= item.doctorName %></p>
+            <p class="expert-con"><%= item.professionalTitleName %></p>
+          </li>
+        <% }) %>
+        </ul>
+      </div>
+    </div>
+    <div class="alliance-hosp">
+      <p class="alliance-tit"><i></i>签约医院</p>
+      <ul></ul>
+    </div>
+  </script>
+  <script type="text/html" id="AllianceHosp">
+    <% _.forEach(data,function(list) { %>
+      <li>
+        <div class="hosp-img">
+        <% if(list.hospitalPicUrl){ %>
+        <img src="<%- list.hospitalPicUrl %>">
+        <% }else{ %>
+        <img src="/build2/img/img.png">
+        <% } %>
+        </div>
+        <div class="hosp-main">
+          <p class="hosp-main-tit"><%= list.hospitalName %></p>
+          <p class="hosp-main-con"><%= list.hospitalAddress %></p>
+        </div>
+      </li>
+    <% }) %>
+  </script>
+
+  <script type="text/javascript">
+    //分享
+    YYKY_CONTEXT_DATA["components_option_share"] = {"dataSource":1,"itemId":optUrlParams("expertAllianceId"),"topicType":11};
+    //判断版本号
+    //当版本号为3.0版本时候   头部导航栏显示；
+    //当版本号为3.1版本时候   头部导航栏消失
+   var str = navigator.userAgent.toLowerCase();
+    //var str = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_1_2 like Mac OS X) AppleWebKit/604.3.5 (KHTML, like Gecko) Mobile/15B202;szyyky_huigu_version_3.0.0';
+    var strs = str.split(";"); //字符分割 
+    for (var i=0;i<strs.length; i++) {
+      if(strs[i].indexOf("szyyky_huigu_version_") >= 0){
+        if(strs[i].substring(21) == '3.0.0'){
+        }else{
+          $(".huigu-header").hide();
+          $(".alliance-index-box").css("margin-top",0);
+        }
+      }
+    }
+    // var shareBtn = document.getElementById('shareBtn');
+    // shareBtn.onclick = function () {
+      
+    //   huiguPost(function(data){
+    //     if(data.code == 0){
+
+    //       var shareModel_1 = {
+
+    //         "action": "yyky_share",
+    //         "title": data.data.shareTitle,
+    //         "desc": data.data.shareContent,
+    //         "link": data.data.shareUrl,
+    //         "img_url": data.data.shareImgUrl,
+    //         "share_content_type": 11, //专科联盟字段
+    //         "share_to": [5, 1, 2, 4],      //分享到哪些平台(可选项；若不设值，则默认分享的平台顺序依次为： 5-1-2-4)：1微信好友；2微信朋友圈；3新浪微博；4复制链接；5医生好友；6慧骨患者;
+
+    //       };
+
+
+    //       window.callNativeApi('YYKYBridgeFun', 'yykyJSCallToShare', shareModel_1, function (result) {
+    //           //h5处理回调
+    //           document.getElementById('log').innerHTML = JSON.stringify(result) + '，分享操作完成';
+    //       });
+    //     }
+              
+    //   },huiguPostUrl.getShare,{"topicId": optUrlParams("expertAllianceId"),"topicType": 11})
+      
+    // };
+    
+    //判断返回
+    var type = optUrlParams("type"); //type1 回到我的联盟列表
+    $(".return-container").on("click",function(){
+      if(type == 1){
+        window.location.href='list.html';
+      }else{
+        window.history.go(-1);
+      }
+    })
+   
+   huiguPost(function(data){
+      if(data.code == 0){
+        $(".alliance-index-box").html(_.template($("#detail").html()) (data))
+        
+        var widthUl = 140 * data.data.cooperateExperts.length + "px";
+        $(".aliiance-expert-main ul").width(widthUl);
+        
+         HospitalList(); //合作医院列表
+      }
+    },huiguPostUrl.getAllianceDetail,{"expertAllianceId":optUrlParams("expertAllianceId")})
+    
+    function HospitalList(){
+      var startIndex=0,pageSize=10,ajaxLock = false;
+      $("html").height("auto")
+      var getData = function(){
+          huiguPost(function(data){
+              ajaxLock = false;
+              if(data.code==0){
+                  if (data.data == null) {
+                    ajaxLock = true;
+                    if(startIndex == 0){
+                      //$(".detail-tab-team .personal-empty").show();
+                    }
+                    return;
+                  }else{
+                    var datalenght = data.data.length;
+                    if(datalenght < pageSize){
+                      ajaxLock = true;
+                    }
+                    if (datalenght == 0) {
+                      ajaxLock = true;
+                      if(startIndex == 0){
+                        //$(".detail-tab-team .personal-empty").show();
+                      }
+                      return
+                    }
+                }
+
+              }else{
+                  ajaxLock = true;
+                  return
+              }
+              var ele =  _.template($("#AllianceHosp").html()) (data);
+              $(".alliance-hosp ul").append(ele);
+              if(startIndex==0 && $(".alliance-index-box").height() < window.screen.height){
+                  $("html").height("100%")
+                  $("body").height("100%")
+              }
+          },huiguPostUrl.getHospitalList,{"expertAllianceId":optUrlParams("expertAllianceId"),"startIndex":startIndex,"pageSize":pageSize})
+      }
+      
+     getData();
+     window.addEventListener('scroll', function (e) {
+          var wScrollY = window.pageYOffset|| document.documentElement.scrollTop || document.body.scrollTop || 0;
+          var wInnerH = window.innerHeight; // 设备窗口的高度（不会变）
+          var bScrollH = document.body.scrollHeight; // 滚动条总高度
+          if (wScrollY + wInnerH >= bScrollH - 100) {
+             if (!ajaxLock) {
+              startIndex = startIndex + pageSize;
+              getData();  
+              ajaxLock = true;
+            }
+        }
+      });
+    }
+</script>
+</body>
+</html>

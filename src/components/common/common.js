@@ -21,6 +21,7 @@ require.config({
         CourseSeries: 'components/common/courseSeries/CourseSeries.js',
         Conference: 'components/common/conference/Conference.js',
         ArticleModel: 'components/common/articleModel/ArticleModel.js',
+        HeadOpacity: 'components/common/headOpacity/HeadOpacity.js',
     },
     map: {
         '*': {

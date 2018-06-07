@@ -21,7 +21,7 @@ router.beforeEach((to, from,next) => {
     let path = to.path
     if(path === '/build/vuepage/menu/session' || path === '/build/vuepage/chat'){
         if(!cookie.readLocal('patientAccid')){
-            store.dispatch('loadToad','无法咨询医生，请重新登录！')
+            store.dispatch('loadToad','无法咨询医生，请先登录！')
             router.push(`/build/vuepage/menu/self`);
             return
         }
@@ -49,13 +49,13 @@ new Vue({
 // document.cookie = "osVer=22; expires=" + dt.toGMTString() + ";path=/";
 // document.cookie = "token=06671900FDC840609A27F2E61F0D1C47; expires=" + dt.toGMTString() + ";path=/";
 
-// document.cookie = "sdktoken=e1e81c1a1696ca9f42d499822d0be9c3; expires=" + dt.toGMTString() + ";path=/";
-// document.cookie = "uid=yuancheng520; expires=" + dt.toGMTString() + ";path=/";
+// document.cookie = "sdktoken=acc9eb19212a0a449476a06cd2f516f3; expires=" + dt.toGMTString() + ";path=/";
+// document.cookie = "uid=yuancheng521; expires=" + dt.toGMTString() + ";path=/";
 // localStorage.setItem('sdktoken','e1e81c1a1696ca9f42d499822d0be9c3')
 // localStorage.setItem('uid','yuancheng520')
 
-// localStorage.setItem('patientImToken','e1e81c1a1696ca9f42d499822d0be9c3')
-// localStorage.setItem('patientAccid','yuancheng520')
+// localStorage.setItem('patientImToken','acc9eb19212a0a449476a06cd2f516f3')
+// localStorage.setItem('patientAccid','yuancheng521')
 // localStorage.setItem('ofPatientId','7464455396707573761')
 // localStorage.setItem('ofPatientName','袁成test520')
 // localStorage.setItem('iconUrl','https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1526718199&di=f7a5b666e1c02bbce5395ffbd7c7f39b&src=http://pic1.win4000.com/pic/a/e1/7eebfcb75b.jpg')

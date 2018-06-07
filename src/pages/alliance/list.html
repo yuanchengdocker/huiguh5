@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>专科联盟</title>
+  <meta name="keywords" content="your keywords">
+  <meta name="description" content="your description">
+  <meta name="format-detection" content="telephone=no, email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="/build/common/css/base.css?v=1.0.1">
+  <link rel="stylesheet" href="/build/css/alliance/list.css?v=1.0.1">
+  <script src="/build/common/js/flexible.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="alliance-list-box"><ul></ul></div>
+
+  <div class="alliance-empty">
+    <img src="/build/img/fulp-empty.png" class="emptyImg">
+    <p>暂无记录</p>
+  </div>
+  
+  <div id="toastId2" class="toasttj2" style="display: none; opacity: 0;"></div>
+
+  <script src="/build/common/js/jquery.min.js?v=1.0.0"></script>
+  <script src="/build/common/js/lodash.js?v=1.0.0"></script>
+  <script src="/build/common/js/address.js?v=1.0.0"></script>
+  <script src="/build/common/js/common.js?v=1.0.0"></script>
+  
+  <script type="text/html" id="list">
+  <% _.forEach(data,function(item) { %>
+    <li onclick="location.href='/build/components/general/alliance/index.html?expertAllianceId=<%- item.expertAllianceId %>&type=1'">
+      <p class="list-tit"><%= item.name %></p>
+      <img src="<%- item.coverUrl %>" />
+      <div class="list-con"><%= item.introduction %></div>
+    </li>
+  <% }) %>
+  </script>
+  
+  <script type="text/javascript">
+    
+    var startIndex=0,pageSize=10,ajaxLock = false;
+    $("html").height("auto");
+    function dataList(){
+      huiguPost(function(data){
+        ajaxLock = false;
+        if(data.code == 0){
+          if (data.data == null) {
+            ajaxLock = true;
+            if(startIndex == 0){
+              $(".alliance-empty").show();
+              $(".alliance-list-box").hide();
+            }
+            return;
+          }else{
+            var datalenght = data.data.length;
+            if(datalenght < pageSize){
+              ajaxLock = true;
+            }
+            if (datalenght == 0) {
+              ajaxLock = true;
+              $(".alliance-empty").show();
+              $(".alliance-list-box").hide();
+              return
+            }
+          }
+          
+        }else{
+          ajaxLock = true;
+          $(".alliance-empty").show();
+          $(".alliance-list-box").hide();
+          return;
+        }
+        var ele =  _.template($("#list").html()) (data);
+        $(".alliance-list-box ul").append(ele);
+        if(startIndex==0&&$(".flup-main ul").height() < window.screen.height){
+            $("html").height("100%")
+            $("body").height("100%")
+        }   
+      },huiguPostUrl.getAllianceList,{"startIndex":startIndex,"pageSize":pageSize})
+    }
+    dataList();
+
+    window.addEventListener('scroll', function (e) {
+      var wScrollY = window.pageYOffset|| document.documentElement.scrollTop    
+                || document.body.scrollTop    
+                || 0;
+        var wInnerH = window.innerHeight; // 设备窗口的高度（不会变）
+        var bScrollH = document.body.scrollHeight; // 滚动条总高度
+        if (wScrollY + wInnerH >= bScrollH - 100) {
+             if (!ajaxLock) {
+              startIndex = startIndex + pageSize;
+              dataList();  
+              ajaxLock = true;
+            }
+        }
+  });
+  </script>
+
+</body>
+</html>
