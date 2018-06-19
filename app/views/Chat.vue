@@ -35,18 +35,22 @@
             next((that)=>{
                 let urlSessionId = to.params.sessionId
                 if(from.path === '/' || from.path === '/build/vuepage/menu/session'){
-                    //加载页面内容
-                    that.$nextTick(function () {
-                        wxSdk.wxInit(that.$store.state.wxSdkUrl).then((sdk)=>{
-                            that.wxSdk = sdk
+                    try {
+                        //加载页面内容
+                        that.$nextTick(function () {
+                            wxSdk.wxInit(that.$store.state.wxSdkUrl).then((sdk)=>{
+                                that.wxSdk = sdk
+                            })
                         })
-                    })
-                    // 此时设置当前会话
-                    that.$store.dispatch('getDataByIndex', {callback:(data)=>{
-                        that.$store.dispatch('setCurrSession', urlSessionId)
-                        that.$store.dispatch('checkHaveBindDoctor')
-                        that.$store.commit('updateMsgs', data)
-                    },table:'Msgs',id:urlSessionId})
+                        // 此时设置当前会话
+                        that.$store.dispatch('getDataByIndex', {callback:(data)=>{
+                            that.$store.dispatch('setCurrSession', urlSessionId)
+                            that.$store.dispatch('checkHaveBindDoctor')
+                            that.$store.commit('updateMsgs', data)
+                        },table:'Msgs',id:urlSessionId})
+                    } catch (error) {
+                        alert('运行异常')
+                    }
                 }
             })
         },
@@ -62,42 +66,29 @@
         },
         // 进入该页面，文档被挂载
         mounted() {
-            // try {
-            //     this.$nextTick(function () {
-            //         wxSdk.wxInit(this.$store.state.wxSdkUrl).then((sdk)=>{
-            //             this.wxSdk = sdk
-            //         })
-            //     })
-            //     // 此时设置当前会话
-            //     this.$store.dispatch('getDataByIndex', {callback:(data)=>{
-            //         this.$store.dispatch('setCurrSession', this.sessionId)
-            //         this.$store.dispatch('checkHaveBindDoctor')
-            //         this.$store.commit('updateMsgs', data)
-            //     },table:'Msgs',id:this.sessionId})
-                
-            // } catch (error) {
-            //     alert('运行异常')
-            // }
         },
         updated() {
-            debugger
             if (this.$refs.wrapper) {
-                let eles = document.getElementById('chat-list').children
-                if(this.chatMsgStatus !== 2){
-                    this.initScroll()
-                }
-                if(this.pullDowning){
-                    if(this.chatMsgStatus === 3){
-                        this.scroll.scrollToElement(eles[eles.length - this.chatItemLength + 1 ])
+                setTimeout(() => {
+                    console.log(this.chatMsgStatus)
+                    let eles = document.getElementById('chat-list').children
+                    if(this.chatMsgStatus !== 2){
+                        this.initScroll()
                     }
-                }else{
-                    if(this.chatMsgStatus === 1){ //初始化
-                        this.scroll.scrollToElement(eles[eles.length - 1])
-                    } 
-                }
-                this.chatItemLength = eles.length
-               
-                this.pullDowning = false
+                    console.log(this.pullDowning,eles.length,this.chatItemLength)
+                    if(this.pullDowning){
+                        if(this.chatMsgStatus === 3){
+                            this.scroll.scrollToElement(eles[eles.length - this.chatItemLength + 1 ])
+                        }
+                    }else{
+                        if(this.chatMsgStatus === 1){ //初始化
+                            this.scroll.scrollTo(0,this.scroll.maxScrollY)
+                        } 
+                    }
+                    this.chatItemLength = eles.length
+                
+                    this.pullDowning = false
+                },20) 
             }
         },
         // 离开该页面，此时重置当前会话
@@ -108,7 +99,6 @@
             this.$store.dispatch('hideFullscreenImg')
             //关闭视频播放
             this.$store.dispatch('hideFullscreenVideo')
-            this.$store.dispatch('resetCurrSession')
         },
         data() {
             return {
@@ -160,23 +150,27 @@
                 if(!this.scroll){
                     this.scroll = new BScroll(this.$refs.wrapper, {
                         probeType: 3,    
-                        scrollY: true,
                         click: true,
+                        scrollbar: true,
+                        momentumLimitTime:150,
+                        momentumLimitDistance:10,
                         mouseWheel: { // pc端同样能滑动
                             speed: 20,
                             invert: false
                         },
                         useTransition: true, // 防止iphone微信滑动卡顿
                     });
+                    this.scroll.on('scroll', (pos) => {
+                        if (pos.y >= 0 && this.canLoadMore && !this.pullDowning) {
+                            this.pullDowning = true
+                            setTimeout(()=>{
+                                this.getHistoryMsgs()
+                            },500)
+                        }
+                    });
                 }else{
                     this.scroll.refresh();
                 }
-                this.scroll.on('scroll', (pos) => {
-                    if (pos.y >= 60 && this.canLoadMore && !this.pullDowning) {
-                        this.getHistoryMsgs()
-                        this.pullDowning = true
-                    }
-                });
             },
             getHistoryMsgs() {
                 this.$store.dispatch('getLocalHistoryMsgs',this.sessionId)

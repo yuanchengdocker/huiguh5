@@ -27,6 +27,7 @@
   .m-main {
     padding-bottom: $height_nav;
     background: $theme_background;
+    position: relative;
   }
   .m-article {
     background: $theme_background;

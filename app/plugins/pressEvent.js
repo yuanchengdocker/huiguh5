@@ -15,11 +15,6 @@ PressEventPlugin.install = function (Vue) {
       var timeCount = 1
       var time = null
       element.addEventListener('touchstart', function(e) {
-        var recording = document.querySelector('.recording'),
-          recordingVoice = document.querySelector('.recording-voice'),
-          recordingCancel = document.querySelector('.recording-cancel')
-        element.className = "chat-say say-active"
-        recording.style.display = recordingVoice.style.display = "block"
         if(!myWxSdk)
           myWxSdk = wxSdk()
         if (myWxSdk.isWx) {
@@ -27,7 +22,14 @@ PressEventPlugin.install = function (Vue) {
           time = setInterval(()=>{
             timeCount++
           },1000)
-          myWxSdk.audio.start().then(({localId,res}) => {
+          myWxSdk.audio.start(()=>{
+            //开始录音的回调
+            var recording = document.querySelector('.recording'),
+              recordingVoice = document.querySelector('.recording-voice'),
+              recordingCancel = document.querySelector('.recording-cancel')
+            element.className = "chat-say say-active"
+            recording.style.display = recordingVoice.style.display = "block"
+          }).then(({localId,res}) => {
             element.className = "chat-say"
             recordingCancel.style.display = recording.style.display = recordingVoice.style.display = "none"
             if(time){
@@ -54,7 +56,7 @@ PressEventPlugin.install = function (Vue) {
             timeCount = 1
             clearInterval(time)
             time = null
-            myWxSdk.audio.stop()
+            myWxSdk.audio.stop(true) //为true代表取消停止后的上传
           } else {
             myWxSdk.audio.stop().then(({localId,res}) => {
               if(time){

@@ -94,7 +94,6 @@
     computed: {
       ...mapState({
         loadingStatus: state => state.loadingStatus,
-        route: state => state.route,
         showToastMsg: state => state.showToastMsg
       }),
       ...mapGetters(['sessionUnreadCount'])

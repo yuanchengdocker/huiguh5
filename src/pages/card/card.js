@@ -39,12 +39,12 @@ var applyAction={
         var dataValue = data.data;
         //判断是否是二维码扫描进入的
         if(localStorage.getItem('doctorid') == "" || localStorage.getItem('doctorid') == null){
-          top.location.href = dataPath.WXhttpPathch + 'build/vuepage/self';
+          top.location.href = dataPath.WXhttpPathch + 'build/vuepage/menu/self';
         }else{
           huiguPost(function(data){
             if(data.code == 0){
               if(localStorage.getItem('isSubscribe') == "true"){
-                top.location.href = dataPath.WXhttpPathch + 'build/vuepage/self';
+                top.location.href = dataPath.WXhttpPathch + 'build/vuepage/menu/self';
               }else{
                 top.location.href ='follow.html';
               }

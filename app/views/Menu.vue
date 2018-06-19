@@ -1,10 +1,10 @@
 <template>
     <div style="height:100%;">
         <!-- main content -->
-        <view-box ref="viewBox" :body-padding-top="'0'" body-padding-bottom="50px">
+        <view-box ref="viewBox" :body-padding-top="'0'" body-padding-bottom="48px">
             <!-- remember to import BusPlugin in main.js if you use components: x-img and sticky -->
             <!-- <transition :name="transitionName"> -->
-                <keep-alive :include="/session|self|article/">
+                <keep-alive :include="/session|self|hgarticle/">
                     <router-view class="router-view"></router-view>
                 </keep-alive>
             <!-- </transition> -->

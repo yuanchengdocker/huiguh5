@@ -187,17 +187,21 @@
                 return false
             },
             initScroll() {
-                this.scroll = new BScroll(this.$refs.sessionWrapper, {
-                    // probeType: 3,    
-                    scrollY: true,
-                    click: true,
-                    mouseWheel: { // pc端同样能滑动
-                        speed: 20,
-                        invert: false
-                    },
-                    useTransition: true, // 防止iphone微信滑动卡顿
-                });
-               
+                if(this.scroll){
+                    this.scroll.refresh();
+                }else{
+                    this.scroll = new BScroll(this.$refs.sessionWrapper, {
+                        // probeType: 3,    
+                        scrollY: true,
+                        click: true,
+                        mouseWheel: { // pc端同样能滑动
+                            speed: 20,
+                            invert: false
+                        },
+                        useTransition: true, // 防止iphone微信滑动卡顿
+                    });
+                   
+                }
             },
         }
     }
@@ -232,7 +236,7 @@
         overflow: hidden;
     }
     .session-container {
-        height: 101%;
+        min-height: 101%;
     }
 </style>
 <style lang="less" scoped>

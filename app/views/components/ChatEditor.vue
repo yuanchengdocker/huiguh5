@@ -48,7 +48,7 @@
     <div class="more-send-option" v-show="currentChatWay === 3" ref="chatMoreOption">
       <section class="option-item" @click="goAlbum(1)"><input @change="sendFileMsg" v-show="false" type="file" multiple="multiple" size="9" accept="image/*" /><img src="../../img/album.png" />
       </section>
-      <section class="option-item" @click="goAlbum"><input @change="sendFileMsg" v-show="false" type="file" accept="video/*" capture="microphone" /><img src="../../img/camera.png" />
+      <section class="option-item" @click="goAlbum(2)"><input @change="sendFileMsg" v-show="false" type="file" accept="video/*" capture="microphone" /><img src="../../img/camera.png" />
       </section>
     </div>
   </div>
@@ -163,17 +163,17 @@
       goAlbum(e) {
         
         if(e === 1){
-          this.wxSdk.img.choose(['album','camera']).then((files)=>{
+          this.wxSdk.img.choose(['album']).then((files)=>{
               files&&files.map((file)=>{
                 this.sendImg(file)
               })
           })
         }else if(e === 2){
-          // this.wxSdk.img.choose(['camera']).then((files)=>{
-          //     files&&files.map((file)=>{
-          //       this.sendImg(file)
-          //     })
-          // })
+          this.wxSdk.img.choose(['camera']).then((files)=>{
+              files&&files.map((file)=>{
+                this.sendImg(file)
+              })
+          })
           // this.wxSdk.video.choose().then(()=>{
 
           // })

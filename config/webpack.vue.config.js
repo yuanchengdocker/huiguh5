@@ -5,6 +5,9 @@ const webpackBase = require('./webpack.base.config')
 const vueloaderConfig = require('./vueload.config.js')
 const vuxLoader = require('vux-loader')
 const webpack = require('webpack')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
+
 // const postcss = require('postcss')
 
 const isDev = process.env.NODE_ENV === 'development' ? true : false;
@@ -46,7 +49,7 @@ let config = webpackMerge(webpackBase, {
     resolve: {
         extensions: ['.js', '.json', '.css', '.vue'],
         alias: {
-            'vue$': 'vue/dist/vue.js',
+            'vue$': 'vue/dist/vue.min.js',
             '@': resolve('src')
         }
     },
@@ -89,7 +92,19 @@ if (isDev) {
                 name: 'runtime',
                 minChunks: Infinity
             }),
-            new webpack.optimize.UglifyJsPlugin()
+            // new webpack.optimize.UglifyJsPlugin(),
+            new ParallelUglifyPlugin({
+                cacheDir: '.cache/',
+                uglifyJS:{
+                  output: {
+                    comments: false
+                  },
+                  compress: {
+                    warnings: false
+                  }
+                }
+            }),
+            new BundleAnalyzerPlugin()
         ]
     })
 }

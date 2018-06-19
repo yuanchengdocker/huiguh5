@@ -31,9 +31,10 @@ let config = {
       appId: 'wxf5bdc71fe3151bc4'
     },
     production: {
-      appkey: 'f192481ccf5d1f3ee1394790a99f221e',
-      appId: 'wxf5bdc71fe3151bc4',
-      // appId: 'wx00d754ba950e306a'
+      // appkey: 'f192481ccf5d1f3ee1394790a99f221e', //测试环境
+      appkey: '5aeb1f85bd69048d1f0a440dacaa68c3',//正式环境
+      // appId: 'wxf5bdc71fe3151bc4', //测试环境
+      appId: 'wx00d754ba950e306a' //正式环境
     }
   }
   

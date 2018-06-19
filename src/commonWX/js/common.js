@@ -462,7 +462,7 @@ function Authorized(callback,type){
           }
         }else if(data.code == '40163' || data.code == '40029' || data.code == '48001'){
           //判断来源
-          top.location.href ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ dataPath.WXhttpPathch +'build/vuepage/self&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect'; 
+          top.location.href ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + dataPath.WXvalueApich + '&redirect_uri='+ dataPath.WXhttpPathch +'build/vuepage/menu/self&response_type=code&scope=snsapi_userinfo&state=2#wechat_redirect'; 
         }else if(data.code == 10000){
 
           setToast3("目前登录存在问题，请稍后登录");

@@ -7,7 +7,7 @@
 <script>
     import util from '../utils'
     export default {
-        name: 'article',
+        name: 'hgarticle',
         beforeRouteEnter: (to, from, next) => {
             util.updateChatUserName('科普文章')
             next()

@@ -64,11 +64,12 @@ function buildSdk(){
                     });
                 })
             },
-            start: function(){
+            start: function(callback){
                 return new Promise((resolve,reject)=>{
                     wx.ready(function() {
                         wx.startRecord({
-                            success: function(res) {    
+                            success: function(res) { 
+                                callback&&callback()   
                             },
                             fail: function(res) {     //录音失败
                                 alert('录音失败')
@@ -93,21 +94,23 @@ function buildSdk(){
                     })
                 })
             },
-            stop:function(){
+            stop:function(isCancel){
                 return new Promise((resolve,reject)=>{
                     wx.stopRecord({
                         success: function (res) {
                             var localId = res.localId;
-                            wx.uploadVoice({
-                                localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
-                                isShowProgressTips: 1, // 默认为1，显示进度提示
-                                success: function (res) {
-                                    resolve({localId,res})
-                                },
-                                fail: function(res){
-                                    alert('语音上传失败')
-                                }
-                            });
+                            if(!isCancel){
+                                wx.uploadVoice({
+                                    localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+                                    isShowProgressTips: 1, // 默认为1，显示进度提示
+                                    success: function (res) {
+                                        resolve({localId,res})
+                                    },
+                                    fail: function(res){
+                                        alert('语音上传失败')
+                                    }
+                                });
+                            }
                         },
                         fail: function(res) {
                             alert('语音停止失败')
